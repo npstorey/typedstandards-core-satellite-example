@@ -11,7 +11,8 @@
   "scripts": {
     "verify": "node verify.mjs",
     "page": "node site/generate.mjs",
-    "check:page": "node site/generate.mjs --check"
+    "check:page": "node site/generate.mjs --check",
+    "test:page": "node --test site/generate.test.mjs"
   },
   "dependencies": {
     "@typedstandards/produce-core": "0.5.0",
