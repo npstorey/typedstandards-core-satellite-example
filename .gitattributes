@@ -2,3 +2,8 @@
 # may touch them on checkout, or `shasum -a 256` would stop matching contentHash.sha256.
 core.md -text
 map.yaml -text
+
+# docs/index.html is compared byte for byte with a fresh generation (`npm run check:page`), and
+# README.md is one of the three inputs whose SHA-256 the page embeds. Neither may be converted either.
+docs/index.html -text
+README.md -text
