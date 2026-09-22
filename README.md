@@ -2,7 +2,8 @@
 
 This repository applies the "core and satellite" model from SciOS's paper *The Core-Satellite Model*
 (scios.tech/thoughts, dated 2026-06-30) to the domain [Typed Standards](https://typedstandards.org) works
-in. Its two published files are signed as Typed Standards records that verify offline.
+in. Its two published files are signed as Typed Standards records that verify offline. A web page generated
+from them shows the map and the records as a picture and tables: https://core-satellite.typedstandards.org/
 
 - **`core.md`** puts Typed Standards in the core-record front-matter shape the paper's examples use,
   filled from public sources. It assesses the project as a satellite, omits `type: core`, and marks
@@ -228,6 +229,8 @@ Every line should match `docs/verify-output.txt`. Further checks:
 - **`docs/`:**
   - `index.html`: the map and the records as a picture and tables. It is generated and committed, and
     it is a view of the signed files, not a record.
+  - `CNAME` and `.nojekyll`: GitHub Pages serves `docs/` at https://core-satellite.typedstandards.org/,
+    byte for byte, with no Jekyll build.
   - The verify output, the pin record, the G1 rulings and the findings.
 
 `data/` is git-ignored: the fetched third-party bytes are pinned by hash, never committed.

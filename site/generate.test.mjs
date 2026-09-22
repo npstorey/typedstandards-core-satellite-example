@@ -380,6 +380,12 @@ test('table cells wrap at word boundaries; links and code in cells, and cells at
   assert.match(phone, /table\.stack td\{[^}]*overflow-wrap:anywhere[^}]*\}/);
 });
 
+test('G2 preparation: docs/CNAME names the custom domain exactly, docs/.nojekyll is empty, README gives the URL', () => {
+  assert.equal(read('docs/CNAME'), 'core-satellite.typedstandards.org');
+  assert.equal(fs.statSync(path.join(ROOT, 'docs', '.nojekyll')).size, 0);
+  assert.ok(read('README.md').includes('https://core-satellite.typedstandards.org/'));
+});
+
 // ---------- C6: self-contained; escaping ----------
 
 test('C6 the page is self-contained: nothing in it fetches on load', () => {
