@@ -1,0 +1,13 @@
+# Fetched third-party bytes: pinned by hash in corpus/manifest.json, never committed.
+data/
+
+# Dependencies: pinned exactly in package.json and package-lock.json.
+node_modules/
+
+# Signing seeds live outside the repository (~/.config/typedstandards-core-satellite-example/);
+# these are second guards in case a key path is ever pointed inside it.
+*.seed
+.keys/
+
+# OS
+.DS_Store

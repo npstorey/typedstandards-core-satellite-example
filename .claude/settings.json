@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "sandbox": {
+    "enabled": true,
+    "allowUnsandboxedCommands": false,
+    "excludedCommands": [
+      "gh *",
+      "git *"
+    ],
+    "filesystem": {
+      "allowWrite": [
+        "~/.npm",
+        "~/.local/state/fnm_multishells",
+        "~/.config/typedstandards-core-satellite-example"
+      ]
+    },
+    "network": {
+      "allowedDomains": [
+        "registry.npmjs.org",
+        "github.com",
+        "api.github.com",
+        "raw.githubusercontent.com",
+        "objects.githubusercontent.com",
+        "codeload.github.com",
+        "scios.tech",
+        "www.w3.org",
+        "www.rfc-editor.org",
+        "datatracker.ietf.org",
+        "w3c-ccg.github.io",
+        "slsa.dev",
+        "in-toto.io",
+        "docs.sigstore.dev",
+        "c2pa.org",
+        "spec.c2pa.org",
+        "www.researchobject.org",
+        "modelcontextprotocol.io",
+        "atproto.com",
+        "proofofinsight.org",
+        "nanopub.net"
+      ]
+    }
+  }
+}

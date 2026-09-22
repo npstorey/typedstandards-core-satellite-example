@@ -1,0 +1,55 @@
+# typedstandards-core-satellite-example: repository instructions
+
+One worked example: the SciOS "core and satellite" model applied to the domain Typed Standards works
+in, with the example's two published content files signed as Typed Standards records that verify
+offline. The working contract is the owner's IMPL CORE-SATELLITE-EXAMPLE brief and its gate rulings
+(G1, G2). It wins over anything here.
+
+## Fixed
+
+- Packages: `@typedstandards/produce-core` 0.5.0 and `@typedstandards/verify-core` 0.10.0, pinned
+  exactly. Never modify them. A gap in either is a finding for the owner, not a patch.
+- Records: exactly two, one per published content file (`core.md`, `map.yaml`). Each carries its
+  file's exact UTF-8 bytes inline as `output` under `raw-bytes/v1`. Nothing else is a record.
+- Labels: `producerProfile: scripted-recomputation/<subtype>`, `captureMethod: script-run`,
+  `metadata.contentProfile` absent. `RAW_BYTES_CANONICALIZATION` is imported from verify-core
+  (produce-core 0.5.0 does not re-export it, typedstandards#91); the URI is never written by hand.
+- Signer: a `did:key` derived from a fresh Ed25519 seed, `bindingTier: pseudonymous`, no trust
+  registry. The one identifier string is `signingKeyId`, the envelope `kid` and `signer.identifier`.
+  `displayName` names the example, not a person.
+- No external proofs in this version: no RFC 3161 token, no Rekor entry.
+- The seed lives at `~/.config/typedstandards-core-satellite-example/`, mode 600, outside the
+  repository. It is never printed.
+
+## Two programs
+
+1. `corpus/pin.mjs` fetches every source once into `data/` (git-ignored), writes
+   `corpus/manifest.json` once (it refuses to overwrite without `--force`), then writes `core.md`
+   and `map.yaml` as a pure function of `corpus/sources.json` and the manifest. A rerun is
+   byte-identical: `git diff --exit-code core.md map.yaml`.
+2. `package/build.mjs`, run afterwards, reads those two files from disk and packages them. That is
+   what makes the capture method `script-run` (hub ADR-0029 §2).
+
+## Refs
+
+A ref is a file at a 40-character commit SHA, a dated W3C TR URL, an rfc-editor.org text URL, or a
+published release archive. A landing page, a rendered view or a homepage is not a ref. Where a project
+offers no immutable location, the edge carries the location, `sha256: null` and the reason. A fetch
+must answer HTTP 200 with a non-empty body, and no two sources may share a digest.
+
+## Runtimes
+
+- Node 22 via fnm: `eval "$(fnm env --shell zsh)" && fnm use 22`. Network I/O is curl, so the
+  sandbox proxy applies and each response keeps a header dump.
+
+## Working rules
+
+- Public sources only; every fact carries its source and fetch date.
+- Relations are described technically. No partnership, adoption, conversation, meeting, event or
+  outreach wording in any file, commit message or issue.
+- A `could-emit` relation needs the other project's own public statement, cited by URL and date.
+- Do not change the typedstandards or hub repositories.
+- Code is MIT (`LICENSE`). Text is CC BY 4.0 (`LICENSE-CC-BY-4.0.txt`). Third-party bytes keep the
+  licence their source states, or "not stated", and are never committed.
+- Commit to `main`, signed. Push only after the owner creates the remote at G2. The global pre-push
+  guard is never bypassed.

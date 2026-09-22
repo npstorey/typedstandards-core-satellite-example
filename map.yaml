@@ -1,0 +1,799 @@
+# map.yaml: Typed Standards' technical relations to public projects, in three rings.
+# After this comment, one header document, then one YAML document per edge. Outside x-typedstandards,
+# each edge uses only the field names the SciOS core-and-satellite examples show for an edge
+# (id, createdAt, subject, object). Every other field is under x-typedstandards.
+# Written by corpus/pin.mjs from corpus/sources.json and corpus/manifest.json. This file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+---
+x-typedstandards:
+  map: "Typed Standards: relations to public projects"
+  domain: analysis-provenance
+  subject: typedstandards.org
+  createdAt: pending
+  writtenFrom: { sources: corpus/sources.json, manifest: corpus/manifest.json, manifestSha256: pending }
+  edgeTypes: The published schema shows one edge type, orbits, from a satellite to a core. This map has no orbits edge. No core record exists in this domain to be the object of one, and the model says a core is never a satellite. Each edge names its relation in x-typedstandards.relation, because the published schema has no edge type for any of these relations.
+  relations:
+    builds-on: The subject implements, or normatively uses, the object's published specification or code.
+    complements: The two address different layers or artifact classes of one job and can be used together. Neither depends on the other.
+    could-emit: The subject's own public text states an intent to produce Typed Standards records, cited by URL and date.
+    adjacent: A related problem space. Neither depends on the other, and there is no public statement of an intent to emit or evaluate Typed Standards records.
+  rings:
+    1: Standards the specification builds on.
+    2: Adjacent standards, drafts and proposals.
+    3: Implementations, possible emitters, and agent runtimes.
+  refs: Each ref is either a file at a 40-character commit SHA, a dated W3C TR URL, an rfc-editor.org text URL, or a published npm release tarball. A ref gives both the location and the SHA-256 of the bytes that location served when it was fetched. Where a project has no immutable location, the ref gives the location, a null sha256, and the reason in x-typedstandards.pin.
+  dropped:
+    - name: DSSE (Dead Simple Signing Envelope)
+      seed: Ring 1, listed with in-toto
+      reason: "Typed Standards uses neither the DSSE envelope nor its pre-authentication encoding. It signs an Ed25519ph signature over the envelope-hash hex string (specification §8.3.1). The in-toto entry covers the conventions it does use."
+---
+id: typedstandards.org/map/w3c-prov-o
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: w3.org/TR/prov-o
+  ref: { location: https://www.w3.org/TR/2013/REC-prov-o-20130430/, sha256: pending }
+x-typedstandards:
+  relation: builds-on
+  basis: "Every record's provenance graph is PROV-O JSON-LD, and the envelope does not redefine derivation, attribution or generation (specification §5.5, §8.1.4)."
+  ring: 1
+  name: W3C PROV-O
+  publisher: W3C
+  pin:
+    basis: W3C Recommendation, 30 April 2013
+    licence: W3C document use rules, as the document's copyright line states
+  curation: { seed: kept }
+---
+id: typedstandards.org/map/in-toto-attestation
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: github.com/in-toto/attestation
+  ref:
+    location: https://raw.githubusercontent.com/in-toto/attestation/df02077bf97218a8860a5c534eff1f1381f56984/spec/v1/digest_set.md
+    sha256: pending
+x-typedstandards:
+  relation: builds-on
+  basis: "The contentHash field uses the in-toto DigestSet convention (algorithm name to hex digest), and the type URIs follow the pattern of in-toto's predicateType (specification §5.5)."
+  ring: 1
+  name: in-toto Attestation Framework (DigestSet)
+  publisher: in-toto project
+  pin: { basis: "tag v1.2.0, the latest release (2026-03-18)", licence: Apache-2.0 (repository LICENSE notice) }
+  curation: { seed: kept, reason: "Kept for in-toto. DSSE, listed beside it, is dropped (see the header)." }
+---
+id: typedstandards.org/map/sigstore-rekor
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: github.com/sigstore/rekor
+  ref:
+    location: https://raw.githubusercontent.com/sigstore/rekor/a36bd716fd0d81c314092718f37b53dc26b2af38/pkg/types/hashedrekord/v0.0.1/hashedrekord_v0_0_1_schema.json
+    sha256: pending
+x-typedstandards:
+  relation: builds-on
+  basis: "Records submit hashedrekord entries, and verify-core checks Merkle inclusion against a pinned Rekor log key (specification §8.3.2, §9.2 check #8). This example's records carry no Rekor entry."
+  ring: 1
+  name: Sigstore Rekor (hashedrekord)
+  publisher: Sigstore
+  pin: { basis: "tag v1.5.4, the latest release (2026-08-20)", licence: Apache-2.0 (repository LICENSE) }
+  curation: { seed: kept }
+---
+id: typedstandards.org/map/rfc-3161
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: rfc-editor.org/rfc/rfc3161
+  ref: { location: https://www.rfc-editor.org/rfc/rfc3161.txt, sha256: pending }
+x-typedstandards:
+  relation: builds-on
+  basis: "Records carry RFC 3161 timestamp tokens, which verify-core checks against pinned TSA anchors (specification §9.2 check #7). This example's records carry none."
+  ring: 1
+  name: RFC 3161 Time-Stamp Protocol
+  publisher: IETF
+  pin:
+    basis: RFC 3161, August 2001 (Proposed Standard)
+    licence: The Internet Society Full Copyright Statement (2001), in the document
+  curation: { seed: kept }
+---
+id: typedstandards.org/map/rfc-8785
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: rfc-editor.org/rfc/rfc8785
+  ref: { location: https://www.rfc-editor.org/rfc/rfc8785.txt, sha256: pending }
+x-typedstandards:
+  relation: builds-on
+  basis: "The envelope hash is the SHA-256 of the RFC 8785 canonicalization of the unsigned envelope (specification §8.2)."
+  ring: 1
+  name: RFC 8785 JSON Canonicalization Scheme
+  publisher: RFC Editor (Independent Submission)
+  pin:
+    basis: RFC 8785, June 2020 (Informational)
+    licence: IETF Trust Legal Provisions (BCP 78), as the document states
+  curation: { seed: kept }
+---
+id: typedstandards.org/map/rfc-8032
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: rfc-editor.org/rfc/rfc8032
+  ref: { location: https://www.rfc-editor.org/rfc/rfc8032.txt, sha256: pending }
+x-typedstandards:
+  relation: builds-on
+  basis: "Every record signature is Ed25519ph, defined in RFC 8032 §5.1 (specification §8.3.1)."
+  ring: 1
+  name: RFC 8032 EdDSA (Ed25519ph)
+  publisher: IRTF Crypto Forum Research Group
+  pin:
+    basis: RFC 8032, January 2017 (Informational)
+    licence: IETF Trust Legal Provisions (BCP 78), as the document states
+  curation: { seed: added, reason: "The signature algorithm of every record, this example's two included." }
+---
+id: typedstandards.org/map/did-key
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: github.com/w3c-ccg/did-key-spec
+  ref:
+    location: https://raw.githubusercontent.com/w3c-ccg/did-key-spec/2cc490c38c5aacf58497a87fc0cf8794668bf716/index.html
+    sha256: pending
+x-typedstandards:
+  relation: builds-on
+  basis: "A self-certifying signer's identifier is a did:key in base58btc form, derived from the signing key (specification §8.5.1, hub ADR-0030). This example's two records use one."
+  ring: 1
+  name: The did:key Method v0.9
+  publisher: W3C Credentials Community Group
+  pin:
+    basis: "main HEAD on 2026-09-22 (the repository has no tags); the document states v0.9, a Community Group draft"
+    licence: W3C Software and Document License (LICENSE.md)
+  curation: { seed: kept }
+---
+id: typedstandards.org/map/discourse-graphs
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: github.com/DiscourseGraphs/schemas
+  ref:
+    location: https://raw.githubusercontent.com/DiscourseGraphs/schemas/19403e9e28d505dbce6cd2af5868eb27af6e3e36/owl/dg_core.ttl
+    sha256: pending
+x-typedstandards:
+  relation: builds-on
+  basis: "The specification takes its claim, question and evidence content types and its support, opposition and answer relations from the Discourse Graphs pattern (§5.5, §7.5). Those content types are specified, not built, and the current schema file names its relations differently."
+  ring: 1
+  name: Discourse Graphs
+  publisher: Discourse Graphs project
+  pin: { basis: main HEAD on 2026-09-22 (the repository has no tags), licence: CC0-1.0 (repository LICENSE) }
+  curation: { seed: kept }
+---
+id: typedstandards.org/map/c2pa
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: github.com/c2pa-org/specifications
+  ref:
+    location: https://raw.githubusercontent.com/c2pa-org/specifications/6998a277b4519fc652550686861f0b97a64e5c19/build/site/specifications/2.3/specs/C2PA_Specification.html
+    sha256: pending
+x-typedstandards:
+  relation: complements
+  basis: "C2PA binds signed provenance manifests to media assets, and Typed Standards signs production records for analytical artifacts. It is the same job for a different artifact class, and neither depends on the other (specification §5.5)."
+  ring: 2
+  name: C2PA Technical Specification 2.3
+  publisher: Coalition for Content Provenance and Authenticity
+  pin:
+    basis: tag 2.3, release 'C2PA Specification 2.3' (2026-01-11)
+    licence: CC BY 4.0 except where noted (repository LICENSE and the document)
+  curation: { seed: kept }
+---
+id: typedstandards.org/map/w3c-vc-2
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: w3.org/TR/vc-data-model-2.0
+  ref: { location: https://www.w3.org/TR/2025/REC-vc-data-model-2.0-20250515/, sha256: pending }
+x-typedstandards:
+  relation: adjacent
+  basis: "A data model for issuer-secured claims about a subject. It does not model how an artifact was produced (specification §5.5)."
+  ring: 2
+  name: W3C Verifiable Credentials Data Model v2.0
+  publisher: W3C
+  pin:
+    basis: W3C Recommendation, 15 May 2025
+    licence: W3C Software and Document License, as the document's copyright block states
+  curation: { seed: kept }
+---
+id: typedstandards.org/map/ietf-scitt
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: rfc-editor.org/rfc/rfc9943
+  ref: { location: https://www.rfc-editor.org/rfc/rfc9943.txt, sha256: pending }
+x-typedstandards:
+  relation: complements
+  basis: An architecture for transparency services that register signed statements of any payload type and return receipts. That is the transparency layer Typed Standards fills with Sigstore Rekor today.
+  ring: 2
+  name: IETF SCITT architecture (RFC 9943)
+  publisher: IETF
+  pin:
+    basis: RFC 9943, June 2026 (Proposed Standard), the SCITT architecture
+    licence: IETF Trust Legal Provisions (BCP 78), as the document states
+  curation: { seed: kept, reason: RFC 9943 confirmed at rfc-editor.org as the SCITT architecture (June 2026). }
+---
+id: typedstandards.org/map/slsa
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: github.com/slsa-framework/slsa
+  ref:
+    location: https://raw.githubusercontent.com/slsa-framework/slsa/19e4e2f005f871270c4f555fc47afecfb37f3efe/docs/spec/v1.2/build-provenance.md
+    sha256: pending
+x-typedstandards:
+  relation: adjacent
+  basis: "Build provenance for software artifacts, carried as an in-toto predicate. Typed Standards covers analytical artifacts instead (specification §5.5)."
+  ring: 2
+  name: SLSA Build Provenance v1.2
+  publisher: SLSA project
+  pin:
+    basis: tag v1.2, the latest tag (the repository has no releases)
+    licence: Community Specification License 1.0 (LICENSE.md)
+  curation: { seed: kept }
+---
+id: typedstandards.org/map/nanopublications
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: github.com/Nanopublication/Guidelines
+  ref:
+    location: https://raw.githubusercontent.com/Nanopublication/Guidelines/8388dd90795b264f4b01c64d0f7218babcae4871/index.html
+    sha256: pending
+x-typedstandards:
+  relation: adjacent
+  basis: "Nanopublications are RDF named graphs that pair an atomic assertion with its provenance and publication information. Typed Standards is envelope-first JSON with capture-method labels, and consuming one as the other is not built (specification §5.5)."
+  ring: 2
+  name: Nanopublication Guidelines
+  publisher: Nanopublication community
+  pin:
+    basis: master HEAD on 2026-09-22 (the only tag dates from 2013)
+    licence: Creative Commons ShareAlike Attribution 3.0, as the document states (the repository has no LICENSE file)
+  curation: { seed: kept }
+---
+id: typedstandards.org/map/proof-of-control
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: github.com/LFDT-ProofOfControl/ov-poc-standard
+  ref:
+    location: https://raw.githubusercontent.com/LFDT-ProofOfControl/ov-poc-standard/22c7b625be459f5eee7dd8690afd080b5141b8c6/0.1/en/0x01-Frontispiece.md
+    sha256: pending
+x-typedstandards:
+  relation: complements
+  basis: "Specifies audit requirements and an evidence-token format (JWT and CWT) for an agent's runtime control: the data it touched, the authority it used, the tools it invoked. It points to SLSA and in-toto for artifact provenance and defines no record of how an analytical artifact was produced."
+  ring: 2
+  name: "Open Verification: the Proof-of-Control Standard for Agents"
+  publisher: Advanced AI Society (steward), in the LFDT-ProofOfControl GitHub organization
+  pin:
+    basis: "master HEAD on 2026-09-22 (the repository has no tags); the document states v1.0, a working draft for public comment until 2026-10-30"
+    licence: Apache-2.0 (LICENSE.md, which changed from CC BY 4.0 in the commit of 2026-09-19)
+  curation:
+    seed: kept
+    reason: "The seed described a v0.1 working draft; the pinned document states v1.0, a working draft for public comment."
+---
+id: typedstandards.org/map/proof-of-insight
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: github.com/proof-of-insight/spec
+  ref:
+    location: https://raw.githubusercontent.com/proof-of-insight/spec/6f390d76a3a660d3863fd7341062bdfdc3ec29f2/versions/v0.7.0.md
+    sha256: pending
+x-typedstandards:
+  relation: adjacent
+  basis: "Specifies the same kind of object as Typed Standards: a signed, content-addressed record of how an analysis was produced, as a graph of observe, compute, reason and attest steps, with a Sigstore Rekor profile. It is working draft v0.7.0, and neither depends on the other."
+  ring: 2
+  name: The Proof of Insight Protocol
+  publisher: Arclio LLC, as interim editor
+  pin:
+    basis: "tag v0.7.0, the latest release (a prerelease); the document states Version 0.7.0, Working Draft"
+    licence: "CC BY 4.0 for the specification text (§0 and LICENSE)"
+  curation: { seed: kept }
+---
+id: typedstandards.org/map/nanda-agentfacts
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: github.com/projnanda/agentfacts-format
+  ref:
+    location: https://raw.githubusercontent.com/projnanda/agentfacts-format/89e938c08a7166341201568055c0a3b6852d26e4/agentfacts_schema.json
+    sha256: pending
+x-typedstandards:
+  relation: adjacent
+  basis: A JSON Schema for agent metadata (identity, endpoints, capabilities, evaluations, certification), used for discovery and routing. It defines no record of how an output was produced.
+  ring: 2
+  name: Project NANDA AgentFacts
+  publisher: Project NANDA
+  pin:
+    basis: main HEAD on 2026-09-22, a single commit of 2025-06-17 (the repository has no tags)
+    licence: MIT, as one line of README.md states (the repository has no LICENSE file)
+  curation: { seed: kept }
+---
+id: typedstandards.org/map/mcp-sep-3094
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: github.com/modelcontextprotocol/modelcontextprotocol/pull/3094
+  ref:
+    location: https://raw.githubusercontent.com/modelcontextprotocol/modelcontextprotocol/109bbfe75d43c93a23ee17aa2b6dcdf05d21b338/seps/3094-granular-citations-and-fragment-addressing.md
+    sha256: pending
+x-typedstandards:
+  relation: complements
+  basis: Proposes that MCP tool results carry citations to source fragments. Its content-integrity section says the proposal 'punts on a decision to add integrity checks', which a signed record provides at another layer.
+  ring: 2
+  name: "MCP SEP-3094: Granular Citations Format (draft)"
+  publisher: Model Context Protocol project (open proposal)
+  pin:
+    basis: "head commit of the open pull request #3094 (2026-09-04); the commit is on the proposer's fork and resolves through the base repository; the document states Status: Draft"
+    licence: "not stated in the file; the repository LICENSE assigns Apache-2.0 to specification contributions"
+  curation: { seed: kept }
+---
+id: typedstandards.org/map/atproto-lexicon
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: atproto.com/specs/lexicon
+  ref:
+    location: "https://raw.githubusercontent.com/bluesky-social/atproto-website/7a6cdd6c7b48d2aa8d93293827374e0c4fdbb305/src/app/%5Blocale%5D/specs/lexicon/en.mdx"
+    sha256: pending
+x-typedstandards:
+  relation: adjacent
+  basis: A schema language for typed records in the AT Protocol. The SciOS paper names it as a model for its common schema. Neither depends on the other.
+  ring: 2
+  name: ATProto Lexicon
+  publisher: Bluesky Social PBC (AT Protocol)
+  pin:
+    basis: "main HEAD on 2026-09-22 (the repository has no tags); the source of atproto.com/specs/lexicon"
+    licence: CC BY 4.0 for documentation text and specifications (README)
+  curation: { seed: kept }
+---
+id: typedstandards.org/map/google-okf
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: github.com/GoogleCloudPlatform/knowledge-catalog/okf
+  ref:
+    location: https://raw.githubusercontent.com/GoogleCloudPlatform/knowledge-catalog/22efaa5402775a7c4d4c37f89e41258daaf3cb65/okf/SPEC.md
+    sha256: pending
+x-typedstandards:
+  relation: complements
+  basis: Organisational knowledge as Markdown files with YAML front matter, with provenance and attested-computation fields that are not signed. A raw-bytes/v1 record can sign such a file byte for byte, as this example signs core.md. The SciOS paper names it as a model for its schema.
+  ring: 2
+  name: Open Knowledge Format v0.2
+  publisher: Google Cloud
+  pin:
+    basis: "main HEAD on 2026-09-22 (the repository has no tags); the document states Version 0.2"
+    licence: Apache-2.0 (okf/LICENSE.md)
+  curation: { seed: kept }
+---
+id: typedstandards.org/map/w3c-dcat-3
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: w3.org/TR/vocab-dcat-3
+  ref: { location: https://www.w3.org/TR/2024/REC-vocab-dcat-3-20240822/, sha256: pending }
+x-typedstandards:
+  relation: complements
+  basis: "DCAT describes datasets and catalogs for discovery. A record's data-source references may cite DCAT-described datasets (specification §5.5)."
+  ring: 2
+  name: W3C DCAT 3
+  publisher: W3C
+  pin:
+    basis: W3C Recommendation, 22 August 2024
+    licence: W3C Software and Document License, as the document's copyright line states
+  curation:
+    seed: moved
+    reason: "Moved from Ring 1. The specification calls DCAT a different layer (§5.5), so the relation is complements, not builds-on."
+---
+id: typedstandards.org/map/ro-crate
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: github.com/ResearchObject/ro-crate
+  ref:
+    location: https://raw.githubusercontent.com/ResearchObject/ro-crate/22fbd7e098ccd2839c80967e363a2201528a2efe/docs/_specification/1.3/structure.md
+    sha256: pending
+x-typedstandards:
+  relation: adjacent
+  basis: A JSON-LD packaging format for research data. The specification names an RO-Crate compatibility profile as the direction for a multi-file package (open question Q1). Nothing is built.
+  ring: 2
+  name: RO-Crate 1.3
+  publisher: researchobject.org community
+  pin:
+    basis: "tag 1.3.0, release of 2026-06-22; the file that defines RO-Crate packages"
+    licence: Apache-2.0 (repository LICENSE)
+  curation:
+    seed: moved
+    reason: Moved from Ring 1, where it was listed with WRROC. It is a direction under an open question, not something the specification builds on. Split from WRROC because the two are separate specifications.
+---
+id: typedstandards.org/map/workflow-run-crate
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: github.com/ResearchObject/workflow-run-crate
+  ref:
+    location: https://raw.githubusercontent.com/ResearchObject/workflow-run-crate/3c5b530c3d2784169e461d3273855a6b3a57246e/docs/profiles/0.6/workflow_run_crate/index.md
+    sha256: pending
+x-typedstandards:
+  relation: adjacent
+  basis: RO-Crate profiles for recording tool and workflow executions. The specification names WRROC with RO-Crate as the direction for a multi-file package. Nothing is built.
+  ring: 2
+  name: Workflow Run RO-Crate 0.6
+  publisher: Workflow Run RO-Crate working group
+  pin: { basis: "tag 0.6.0, the latest release (2026-09-07)", licence: Apache-2.0 (the document's License header) }
+  curation: { seed: moved, reason: "Moved from Ring 1 and split from RO-Crate, for the same reasons." }
+---
+id: typedstandards.org/map/mira-schema
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: github.com/MIRA-science/schema
+  ref:
+    location: https://raw.githubusercontent.com/MIRA-science/schema/f42c5966629cbc90ca09464b52d55c82c4f21116/mira.yaml
+    sha256: pending
+x-typedstandards:
+  relation: adjacent
+  basis: A draft LinkML schema for question, claim and evidence graphs over research papers, built on Discourse Graphs and PROV. It signs nothing.
+  ring: 2
+  name: MIRA schema (draft)
+  publisher: MIRA-science
+  pin:
+    basis: "main HEAD on 2026-09-22 (the repository has no tags); its README calls it a draft"
+    licence: Apache-2.0 (repository LICENSE)
+  curation:
+    seed: added
+    reason: Listed at scios.tech/thoughts (read 2026-09-22) as a published schema. It builds on Discourse Graphs, as the specification does.
+---
+id: typedstandards.org/map/civicaitools-org
+createdAt: pending
+subject:
+  id: civicaitools.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools-website/109eecb809a53bd36cc3468c79d243457570a49d/README.md
+    sha256: pending
+object:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+x-typedstandards:
+  relation: builds-on
+  basis: The reference publishing application. It answers questions over civic open data through MCP servers and packages each published analysis as a signed record package.
+  ring: 3
+  name: civicaitools.org
+  publisher: Civic AI Tools
+  pin: { basis: npstorey/civic-ai-tools-website main HEAD 109eecb on 2026-09-22, licence: MIT (repository LICENSE) }
+  curation:
+    seed: kept
+    reason: Listed with socrata-mcp-server in the seed, and split from it because the two relate to the specification differently.
+---
+id: typedstandards.org/map/socrata-mcp-server
+createdAt: pending
+subject:
+  id: github.com/npstorey/socrata-mcp-server
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/socrata-mcp-server/5b18c979b37465999d686785074973a340207555/README.md
+    sha256: pending
+object:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+x-typedstandards:
+  relation: complements
+  basis: An MCP server that gives AI tools query access to Socrata open-data portals. It serves the tool results an analysis cites, and signs nothing itself.
+  ring: 3
+  name: socrata-mcp-server
+  publisher: Civic AI Tools
+  pin:
+    basis: npstorey/socrata-mcp-server main HEAD 5b18c97 on 2026-09-22
+    licence: MIT (repository LICENSE, two copyright lines)
+  curation: { seed: kept }
+---
+id: typedstandards.org/map/typedstandards-verifier
+createdAt: pending
+subject:
+  id: typedstandards.org/verify
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/typedstandards/b0bf0a447ba35991ca2a211fa71983e1ba9ac78e/README.md
+    sha256: pending
+object:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+x-typedstandards:
+  relation: builds-on
+  basis: The site's client-side verifier runs verify-core's checks on a record package in the browser.
+  ring: 3
+  name: typedstandards.org verifier
+  publisher: Typed Standards
+  pin: { basis: npstorey/typedstandards main HEAD b0bf0a4 on 2026-09-22, licence: MIT (repository LICENSE) }
+  curation: { seed: kept }
+---
+id: typedstandards.org/map/eval-run-example
+createdAt: pending
+subject:
+  id: github.com/npstorey/typedstandards-eval-run-example
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/typedstandards-eval-run-example/9031a94eebe0d800e52eab6fd4e01c7e788603a6/README.md
+    sha256: pending
+object:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+x-typedstandards:
+  relation: builds-on
+  basis: Turns one public AI benchmark evaluation run into two signed record packages that verify offline with one command (hub ADR-0028).
+  ring: 3
+  name: typedstandards-eval-run-example
+  publisher: Typed Standards
+  pin:
+    basis: npstorey/typedstandards-eval-run-example main HEAD 9031a94 on 2026-09-22
+    licence: MIT for code, CC BY 4.0 for text (README)
+  curation: { seed: kept }
+---
+id: typedstandards.org/map/qsv
+createdAt: pending
+subject:
+  id: github.com/dathere/qsv
+  ref:
+    location: https://raw.githubusercontent.com/dathere/qsv/7c43b6bc77b22556220328eef22f29b9fac6d24b/README.md
+    sha256: pending
+object:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+x-typedstandards:
+  relation: could-emit
+  basis: An open issue on the project's own tracker, titled with the intent, and a plan comment posted from the maintainer account describe emitting JCS envelopes and Ed25519ph signatures for the Data Schematic output. The issue is open and labelled revisit-later.
+  ring: 3
+  name: qsv
+  publisher: datHere
+  intent:
+    readAt: "2026-09-22"
+    state: "open; labels include revisit-later, added 2026-09-13"
+    statedIn:
+      - url: https://github.com/dathere/qsv/issues/4448
+        date: "2026-08-20"
+        quote: "Data Schematic: Replace Provenance free-text info with TypedStandards cryptographic signature"
+      - url: "https://github.com/dathere/qsv/issues/4448#issuecomment-5440060941"
+        date: "2026-08-27"
+        quote: "Phase 2 (signing) — Ed25519ph via --sign-key; signature envelope embedded in the HTML + sidecar"
+      - url: "https://github.com/dathere/qsv/issues/4448#issuecomment-5649582321"
+        date: "2026-09-13"
+        quote: Revisit once TypedStandards supports something like Decentralized Identifiers
+  pin: { basis: "tag 23.0.1, the latest release (2026-09-13)", licence: MIT (COPYING and Cargo.toml at the tag) }
+  curation: { seed: kept, reason: The one Ring 3 intent stated on the project's own public record. }
+---
+id: typedstandards.org/map/verikan
+createdAt: pending
+subject:
+  id: github.com/dathere/Verikan
+  ref:
+    location: https://raw.githubusercontent.com/dathere/Verikan/8e5e85fdda9829d142358c51f9b5db797333ed47/README.md
+    sha256: pending
+object:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+x-typedstandards:
+  relation: builds-on
+  basis: Its README at the pinned release lists a module that builds 'Typed Standards evidence packages' and states 'Evidence format by Typed Standards'. Its package builder targets the datHere content profile at specification revision v0.1.7.
+  ring: 3
+  name: Verikan
+  publisher: datHere
+  pin: { basis: "tag V1.0.1, the latest release (2026-08-31)", licence: MIT (repository LICENSE) }
+  curation:
+    seed: added
+    reason: Found by searching the qsv publisher's public repositories for the specification's name. Its own source states the relation.
+---
+id: typedstandards.org/map/okfn-ckan-mcp
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: github.com/okfn/mcp-server
+  ref:
+    location: https://raw.githubusercontent.com/okfn/mcp-server/38f65642325067feb3c0354f046a19b80520d526/README.md
+    sha256: pending
+x-typedstandards:
+  relation: adjacent
+  basis: An MCP server for CKAN portals, in an early research phase, whose repository states the aim of making AI-generated answers traceable to their underlying datasets. It states no intent to produce signed records.
+  ring: 3
+  name: MCP for CKAN (okfn/mcp-server)
+  publisher: Open Knowledge Foundation
+  pin: { basis: main HEAD on 2026-09-22 (the repository has no tags or releases), licence: not stated }
+  curation: { seed: kept }
+---
+id: typedstandards.org/map/humane-intelligence-red-teaming
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: github.com/humane-intelligence/hi-oss-ai-red-teaming
+  ref:
+    location: https://raw.githubusercontent.com/humane-intelligence/hi-oss-ai-red-teaming/046a45d5a37339133c4b3f527276bbf9fb2b61bc/README.md
+    sha256: pending
+x-typedstandards:
+  relation: adjacent
+  basis: A platform for human red-teaming evaluations of AI systems that keeps reviewable records (conversation capture, reviewer verdicts, an append-only audit trail). None is signed, and its public text states no intent to produce signed evaluation records, so no evaluator relation is asserted.
+  ring: 3
+  name: hi-oss-ai-red-teaming
+  publisher: Humane Intelligence
+  pin: { basis: "tag v0.1.0, the latest release (2026-09-10)", licence: Apache-2.0 (repository LICENSE) }
+  curation: { seed: kept }
+---
+id: typedstandards.org/map/strands-agents
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: github.com/strands-agents/harness-sdk
+  ref:
+    location: https://raw.githubusercontent.com/strands-agents/harness-sdk/45c2ffd3333cdb67c1dd9f4f208639ce3b89aa19/strands-py/README.md
+    sha256: pending
+x-typedstandards:
+  relation: adjacent
+  basis: "An agent SDK that runs the model and tool calls a producer records in queries[] and trace. Its README states nothing about provenance or signing."
+  ring: 3
+  name: Strands Agents (Python SDK)
+  publisher: Strands Agents
+  pin:
+    basis: tag python/v1.56.0, the latest Python SDK release (2026-09-15)
+    licence: Apache-2.0 (LICENSE.APACHE)
+  curation: { seed: kept }
+---
+id: typedstandards.org/map/microsoft-agent-framework
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: github.com/microsoft/agent-framework
+  ref:
+    location: https://raw.githubusercontent.com/microsoft/agent-framework/0c9944cc9f577d51277ac7c55dbc388b60a577af/README.md
+    sha256: pending
+x-typedstandards:
+  relation: adjacent
+  basis: An agent and workflow framework with built-in OpenTelemetry tracing, the trace shape a record's trace field carries. Its README states nothing about signed records.
+  ring: 3
+  name: Microsoft Agent Framework
+  publisher: Microsoft
+  pin: { basis: "tag dotnet-1.22.0, the latest release (2026-09-18)", licence: MIT (repository LICENSE) }
+  curation: { seed: kept }
+---
+id: typedstandards.org/map/mila-mozilla-foundation-layer
+createdAt: pending
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: pending
+object:
+  id: mila.quebec/en/news/mila-and-mozilla-announce-new-initiative-to-build-trustworthy-open-source-ai-for-everyone
+  ref:
+    location: https://mila.quebec/en/news/mila-and-mozilla-announce-new-initiative-to-build-trustworthy-open-source-ai-for-everyone
+    sha256: null
+x-typedstandards:
+  relation: adjacent
+  basis: An announced open standard of interface contracts, with a self-hosted reference implementation for running AI systems. Nothing is published yet, and the announcement says nothing about provenance or signing.
+  ring: 3
+  name: Open-source AI foundation layer (Mila and Mozilla initiative)
+  publisher: Mila and Mozilla
+  pin:
+    basis: Only announcement pages exist, from Mila and from Mozilla, both dated 2026-09-17. No repository, specification or release is published, and an announcement page is not immutable.
+    licence: not stated
+  curation: { seed: kept }
