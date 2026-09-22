@@ -1,0 +1,4 @@
+# The two published content files are signed byte for byte (raw-bytes/v1). No line-ending conversion
+# may touch them on checkout, or `shasum -a 256` would stop matching contentHash.sha256.
+core.md -text
+map.yaml -text
