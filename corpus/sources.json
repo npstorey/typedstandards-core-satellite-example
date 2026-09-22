@@ -29,7 +29,7 @@
       {
         "name": "DSSE (Dead Simple Signing Envelope)",
         "seed": "Ring 1, listed with in-toto",
-        "reason": "Typed Standards uses neither the DSSE envelope nor its pre-authentication encoding. It signs an Ed25519ph signature over the envelope-hash hex string (specification §8.3.1). The in-toto entry covers the conventions it does use."
+        "reason": "Typed Standards uses neither the DSSE envelope nor its pre-authentication encoding. It signs an Ed25519ph signature over the envelope-hash hex string (specification §8.3.1). The specification does name DSSE: its adjacent-standards table lists in-toto / DSSE (§5.5), and Appendix C lists DSSE as a candidate envelope-serialization profile for in-toto-native consumers. Nothing is built on it. The in-toto entry covers the conventions the specification does use."
       }
     ]
   },

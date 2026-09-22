@@ -6,7 +6,7 @@
 # type: core       NOT DECLARED. The self-assessment below is "satellite"; see x-typedstandards.
 name: Typed Standards
 id: typedstandards.org
-createdAt: pending
+createdAt: 2026-09-22
 domain: analysis-provenance              # horizontal: spans the fields whose analyses it records
 mission: Make how an analytical artifact was produced checkable by anyone, offline, without trusting its publisher.
 description: A specification for signed records of how analytical artifacts were produced, including AI-assisted analyses of public data, with a reference producer, a reference verifier and a reference publishing application.
@@ -29,35 +29,35 @@ x-typedstandards:
   specification:
     version: v0.1.9
     licence: CC BY 4.0
-    ref: { location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md, sha256: pending }
+    ref: { location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md, sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5 }
   artifacts:
     - name: "@typedstandards/verify-core"
       kind: library
       version: "0.10.0"
-      ref: { location: https://registry.npmjs.org/@typedstandards/verify-core/-/verify-core-0.10.0.tgz, sha256: pending }
+      ref: { location: https://registry.npmjs.org/@typedstandards/verify-core/-/verify-core-0.10.0.tgz, sha256: cb37b7491a5e150c80e3075a35c7e0a23accfa15633604c03ba2d235962e1738 }
     - name: "@typedstandards/produce-core"
       kind: library
       version: "0.5.0"
-      ref: { location: https://registry.npmjs.org/@typedstandards/produce-core/-/produce-core-0.5.0.tgz, sha256: pending }
+      ref: { location: https://registry.npmjs.org/@typedstandards/produce-core/-/produce-core-0.5.0.tgz, sha256: 77f9414ee03f3054f09fff83786b4cabd41871acb9b137e506b5dcf6a207c143 }
     - name: typedstandards.org
       kind: site and client-side verifier
-      ref: { location: https://raw.githubusercontent.com/npstorey/typedstandards/b0bf0a447ba35991ca2a211fa71983e1ba9ac78e/README.md, sha256: pending }
+      ref: { location: https://raw.githubusercontent.com/npstorey/typedstandards/b0bf0a447ba35991ca2a211fa71983e1ba9ac78e/README.md, sha256: c0a1894c4089a615d685b420d632f50b9edfadd963a58fda9c7b9e025a086f9c }
     - name: civicaitools.org
       kind: reference publishing application
-      ref: { location: https://raw.githubusercontent.com/npstorey/civic-ai-tools-website/109eecb809a53bd36cc3468c79d243457570a49d/README.md, sha256: pending }
+      ref: { location: https://raw.githubusercontent.com/npstorey/civic-ai-tools-website/109eecb809a53bd36cc3468c79d243457570a49d/README.md, sha256: ba16dd52cf07fe369bf6359d22bfe36bae345614179fd14d5e814ac481cde89f }
     - name: socrata-mcp-server
       kind: MCP server for civic open data
-      ref: { location: https://raw.githubusercontent.com/npstorey/socrata-mcp-server/5b18c979b37465999d686785074973a340207555/README.md, sha256: pending }
+      ref: { location: https://raw.githubusercontent.com/npstorey/socrata-mcp-server/5b18c979b37465999d686785074973a340207555/README.md, sha256: 7e4a5242bf2d8f2439ef0963b9afb823fbfced25bcc7bad59375c5dca618ae02 }
     - name: typedstandards-eval-run-example
       kind: worked example
-      ref: { location: https://raw.githubusercontent.com/npstorey/typedstandards-eval-run-example/9031a94eebe0d800e52eab6fd4e01c7e788603a6/README.md, sha256: pending }
+      ref: { location: https://raw.githubusercontent.com/npstorey/typedstandards-eval-run-example/9031a94eebe0d800e52eab6fd4e01c7e788603a6/README.md, sha256: 3e405213b53a67e9ebffa7e1f332b34ddbbd3c894d6b1c556c8ca25109930529 }
   governance:
     decisionRecords: '29 public ADRs in the hub repository at the pinned commit, each stating "Decision-maker: Solo maintainer"'
     decisionRecordsCited:
-      - { location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/adr/0029-scripted-recomputation-producer-profile.md, sha256: pending }
-      - { location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/adr/0030-self-certifying-signer-did-key.md, sha256: pending }
-    roadmap: { location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/ROADMAP.md, sha256: pending }
-    licensing: { location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/LICENSING.md, sha256: pending }
+      - { location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/adr/0029-scripted-recomputation-producer-profile.md, sha256: 77bac194751209d897438b5e8f7b716fe84804ba3388d0c7a61ff790810697f5 }
+      - { location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/adr/0030-self-certifying-signer-did-key.md, sha256: 0e237cd72737e4e3ab115e0a2515be8d9d3d1f4440f75323b5983433468fde55 }
+    roadmap: { location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/ROADMAP.md, sha256: 691cce2f7419e3e0514654ecbd17538c56fdd2bc55eb9f30225a2130d48795d6 }
+    licensing: { location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/LICENSING.md, sha256: bba91fe755ada927433253be351d3b6475e39a03adbce568da2303e26c379c19 }
   satelliteLifecycle: none
   map: map.yaml
 ---
@@ -103,24 +103,24 @@ this record's self-assessment says the project is not one.
 Each source was fetched once by `corpus/pin.mjs` and is pinned in `corpus/manifest.json`.
 
 - `ts-spec`: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
-  sha256 pending; licence: CC BY 4.0, as the document states (§3)
+  sha256 `0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5`, 294146 bytes, HTTP 200, fetched 2026-09-22T19:20:25Z; licence: CC BY 4.0, as the document states (§3)
 - `hub-roadmap`: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/ROADMAP.md
-  sha256 pending; licence: MIT (repository LICENSE)
+  sha256 `691cce2f7419e3e0514654ecbd17538c56fdd2bc55eb9f30225a2130d48795d6`, 36097 bytes, HTTP 200, fetched 2026-09-22T19:20:25Z; licence: MIT (repository LICENSE)
 - `hub-licensing`: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/LICENSING.md
-  sha256 pending; licence: MIT (repository LICENSE)
+  sha256 `bba91fe755ada927433253be351d3b6475e39a03adbce568da2303e26c379c19`, 5160 bytes, HTTP 200, fetched 2026-09-22T19:20:25Z; licence: MIT (repository LICENSE)
 - `hub-adr-0029`: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/adr/0029-scripted-recomputation-producer-profile.md
-  sha256 pending; licence: MIT (repository LICENSE)
+  sha256 `77bac194751209d897438b5e8f7b716fe84804ba3388d0c7a61ff790810697f5`, 26099 bytes, HTTP 200, fetched 2026-09-22T19:20:25Z; licence: MIT (repository LICENSE)
 - `hub-adr-0030`: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/adr/0030-self-certifying-signer-did-key.md
-  sha256 pending; licence: MIT (repository LICENSE)
+  sha256 `0e237cd72737e4e3ab115e0a2515be8d9d3d1f4440f75323b5983433468fde55`, 35063 bytes, HTTP 200, fetched 2026-09-22T19:20:25Z; licence: MIT (repository LICENSE)
 - `typedstandards-repo`: https://raw.githubusercontent.com/npstorey/typedstandards/b0bf0a447ba35991ca2a211fa71983e1ba9ac78e/README.md
-  sha256 pending; licence: MIT (repository LICENSE)
+  sha256 `c0a1894c4089a615d685b420d632f50b9edfadd963a58fda9c7b9e025a086f9c`, 7358 bytes, HTTP 200, fetched 2026-09-22T19:20:25Z; licence: MIT (repository LICENSE)
 - `verify-core-npm`: https://registry.npmjs.org/@typedstandards/verify-core/-/verify-core-0.10.0.tgz
-  sha256 pending; licence: MIT (package.json license field)
+  sha256 `cb37b7491a5e150c80e3075a35c7e0a23accfa15633604c03ba2d235962e1738`, 65418 bytes, HTTP 200, fetched 2026-09-22T19:20:25Z; licence: MIT (package.json license field)
 - `produce-core-npm`: https://registry.npmjs.org/@typedstandards/produce-core/-/produce-core-0.5.0.tgz
-  sha256 pending; licence: MIT (package.json license field)
+  sha256 `77f9414ee03f3054f09fff83786b4cabd41871acb9b137e506b5dcf6a207c143`, 30853 bytes, HTTP 200, fetched 2026-09-22T19:20:26Z; licence: MIT (package.json license field)
 - `civicaitools-website`: https://raw.githubusercontent.com/npstorey/civic-ai-tools-website/109eecb809a53bd36cc3468c79d243457570a49d/README.md
-  sha256 pending; licence: MIT (repository LICENSE)
+  sha256 `ba16dd52cf07fe369bf6359d22bfe36bae345614179fd14d5e814ac481cde89f`, 9092 bytes, HTTP 200, fetched 2026-09-22T19:20:26Z; licence: MIT (repository LICENSE)
 - `socrata-mcp-server`: https://raw.githubusercontent.com/npstorey/socrata-mcp-server/5b18c979b37465999d686785074973a340207555/README.md
-  sha256 pending; licence: MIT (repository LICENSE, two copyright lines)
+  sha256 `7e4a5242bf2d8f2439ef0963b9afb823fbfced25bcc7bad59375c5dca618ae02`, 7975 bytes, HTTP 200, fetched 2026-09-22T19:20:26Z; licence: MIT (repository LICENSE, two copyright lines)
 - `eval-run-example`: https://raw.githubusercontent.com/npstorey/typedstandards-eval-run-example/9031a94eebe0d800e52eab6fd4e01c7e788603a6/README.md
-  sha256 pending; licence: MIT for code, CC BY 4.0 for text (README)
+  sha256 `3e405213b53a67e9ebffa7e1f332b34ddbbd3c894d6b1c556c8ca25109930529`, 9271 bytes, HTTP 200, fetched 2026-09-22T19:20:27Z; licence: MIT for code, CC BY 4.0 for text (README)
