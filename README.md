@@ -50,12 +50,11 @@ under this identifier was signed by the same key. The key says nothing about who
 lists it, and `displayName` ("typedstandards-core-satellite-example (self-certifying example key)")
 names this example, not a person.
 
-A `did:key` has no rotation and no revocation (hub ADR-0030 §7). A compromised key can only be abandoned,
-and nothing in a record signed under it would say so. The seed was generated for this example only. It is
-held outside the repository, at mode 600, and has never been printed. Once the repository is public and a
-fresh clone verifies, the seed is deleted. After that, no further record can be signed under this
-identifier, and any later version of this example will carry a new key and a new identifier with no link
-to this one.
+The publisher keeps the signing key, so that a later revision of these records can be signed by the same
+key. A `did:key` cannot be rotated or revoked (hub ADR-0030 §7), so keeping the key is the only way to
+continue under this identifier. If the key were compromised, it could only be abandoned in favour of a new
+identifier with no link to this one, and nothing in a record already signed under it would say so. The key
+was generated for this example only. It is held outside the repository and has never been printed.
 
 ## What the SciOS schema would still need from the standard
 
