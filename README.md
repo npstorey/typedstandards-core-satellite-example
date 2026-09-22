@@ -119,7 +119,7 @@ Node 22 and npm. curl for re-fetching the sources.
 
     git clone https://github.com/npstorey/typedstandards-core-satellite-example
     cd typedstandards-core-satellite-example
-    npm ci                  # the two pinned packages, from the lockfile
+    npm ci                  # the pinned packages, from the lockfile
     node verify.mjs         # offline; exits 0 when every check passes
 
 Every line should match `docs/verify-output.txt`. Further checks:
@@ -154,8 +154,17 @@ Every line should match `docs/verify-output.txt`. Further checks:
     inline.
   - `build-log.json`: the build log.
 - **`verify.mjs`:** the one-command check.
+- **`site/generate.mjs`:** writes `docs/index.html` from `map.yaml`, `core.md` and `README.md`.
+  - It refuses unless `map.yaml` and `core.md` each match `contentHash.sha256` in their records.
+  - `npm run check:page` compares the committed page with a fresh generation, byte for byte.
+  - `npm run test:page` runs its tests. Its one YAML parser, `yaml`, is a devDependency pinned exactly.
+- **`.github/workflows/check.yml`:** on every push and pull request, `npm ci`, then `node verify.mjs`
+  compared with `docs/verify-output.txt`, `npm run check:page` and `npm run test:page`.
 - **`.env.sign.example`:** the `op://` reference to the signing key, for `op run`.
-- **`docs/`:** the verify output, the pin record, the G1 rulings and the findings.
+- **`docs/`:**
+  - `index.html`: the map and the records as a picture and tables. It is generated and committed, and
+    it is a view of the signed files, not a record.
+  - The verify output, the pin record, the G1 rulings and the findings.
 
 `data/` is git-ignored: the fetched third-party bytes are pinned by hash, never committed.
 
