@@ -17,6 +17,70 @@ The example follows `typedstandards-eval-run-example` (hub ADR-0028). It pins th
 `@typedstandards/produce-core` 0.5.0 and `@typedstandards/verify-core` 0.10.0 exactly. Those are the
 releases that carry `raw-bytes/v1` (hub ADR-0029) and the self-certifying `did:key` signer (hub ADR-0030).
 
+## How Typed Standards was used here
+
+**What was produced.** Two signed records: `package/core.bundle.json` for `core.md`, and
+`package/map.bundle.json` for `map.yaml`. Each record carries:
+
+- the file's exact bytes and their SHA-256, a 64-character fingerprint that changes if any byte changes;
+- the sources the fetch program used, each with its location, SHA-256, size, HTTP status, fetch time and
+  licence: 34 in the map record and 11 in the core record, 5 of them in both, out of the 40 recorded in
+  `corpus/manifest.json`;
+- the two programs that made the file, each named by the SHA-256 of its code;
+- two labels. The profile says a script wrote the file and can write it again. The capture method says
+  the packaging program read the finished file rather than watching the writer run. Nothing verifies
+  that label (`docs/verify-output.txt`, line 15);
+- the signer: a key that names itself, with no registry, account or person behind it.
+
+**How it was made.**
+
+1. `corpus/pin.mjs` fetched each source once and pinned it: it recorded the SHA-256 of what the location
+   served. Then it wrote `core.md` and `map.yaml` from the list in `corpus/sources.json` and those pins.
+2. `package/build.mjs` read the two finished files, then packaged and signed each one.
+
+The key was generated for this example, outside the repository. It is now held in the publisher's
+1Password vault, and signing runs only in the publisher's own terminal.
+
+**What you can check.** After cloning the repository, in a terminal:
+
+- Both records verify offline: `npm ci && node verify.mjs`. The output should match
+  `docs/verify-output.txt`, whose line 46 reads `network: global fetch calls 0; injected fetch calls 0`.
+- Each file is byte for byte what was signed: `shasum -a 256 core.md map.yaml` prints the SHA-256 that
+  each record states for its file, as `contentHash.sha256`.
+- Any pinned source can be fetched again and compared: `node corpus/pin.mjs --force` in a scratch clone,
+  then `git diff corpus/manifest.json`.
+- Both files can be written again from the pins, offline: `node corpus/pin.mjs`, then
+  `git diff --exit-code core.md map.yaml`.
+- The web page, `docs/index.html`, comes only from signed bytes: `npm run check:page` regenerates it and
+  compares, and the generator refuses a signed file whose SHA-256 differs from its record.
+
+**What it does not establish.** The table below marks five things as not covered: who holds the key, when
+the records existed, inclusion in a public transparency log, revocation of the key, and whether any
+statement in either file is correct. It marks four more as asserted: signed, but resting on the signer's
+word.
+
+**Why it was useful.**
+
+- The checks run offline on your own copy. They show that the files are what this key signed, whichever
+  server delivered them, but not who holds the key.
+- The source pins and the labels are inside the signed bytes, so changing any of them breaks check #1,
+  which recomputes the hash of the whole signed record.
+- A signed git commit also fixes bytes. A record is also self-contained, verifies offline against the
+  specification's numbered checks, and carries its source pins and labels inside its signed bytes.
+- Building this example ran into three gaps in the specification and its reference packages, all filed
+  (`docs/findings.md`): two filed before (typedstandards#91, #88) and one found here (typedstandards#96,
+  hub#230).
+
+**Terms used below.**
+
+- **ref:** a location, with the SHA-256 of what that location served.
+- **front matter:** the YAML block between the two `---` lines at the top of `core.md`.
+- **inline output:** the file's bytes, carried inside the record. `raw-bytes/v1` is the rule that they are
+  carried exactly as they are.
+- **envelope:** the whole signed record. The key signs its hash.
+- **did:key:** an identifier made from the public key itself, so no registry is needed.
+- **Ed25519ph:** the signature algorithm.
+
 ## What the records prove / what they do not
 
 This section describes the offline output of verify-core as `node verify.mjs` prints it
@@ -35,7 +99,7 @@ establishes it.
 | The key names itself consistently | Attested (#6, checked by `verify.mjs`) | `signature.kid`, `metadata.signingKeyId` and `signer.identifier` are one string. No verifier implements spec check #6 (typedstandards#88), so `verify.mjs` checks it directly. |
 | Who holds the key | Not covered | #5 reports `self_certified` with `verified: false`: no trust registry and no domain vouch for the key. `displayName` names the example, not a person. |
 | Capture method and producer profile | Asserted | #15 reports `ok`: `script-run` is a value the `scripted-recomputation` profile allows. No check establishes that one program wrote the files and a second one packaged them. The label is signed, so it cannot be changed without breaking #1. |
-| The 40 source digests | Asserted | Each record lists what `corpus/pin.mjs` fetched in `queries[].arguments`: location, SHA-256, bytes, HTTP status, fetch time and stated licence. These are signed assertions that no check recomputes. Every location is immutable, so anyone can re-fetch it and compare. An accidental second fetch, 38 seconds after the pin, got identical digests for all 40 (`docs/pin-record.md`). |
+| The source digests | Asserted | `corpus/manifest.json` pins 40 sources. The map record lists the 34 it uses and the core record the 11 it uses, 5 of them in both, in `queries[].arguments`: location, SHA-256, bytes, HTTP status, fetch time and stated licence. These are signed assertions that no check recomputes. Every location is immutable, so anyone can re-fetch it and compare. An accidental second fetch, 38 seconds after the pin, got identical digests for all 40 (`docs/pin-record.md`). |
 | `core.md` and `map.yaml` follow from the manifest | Asserted | `node corpus/pin.mjs` rewrites both files from `corpus/sources.json` and `corpus/manifest.json` without the network, and `git diff --exit-code` shows the same bytes. That reproduces the writer, but it is not a §9.2 check. |
 | The relations, the bases and the self-assessment | Asserted | They are the signer's reading of each project's own public text. No check evaluates them, and the published schema has no edge type for any of these relations. |
 | When the records existed | Not covered | Check #7 reads n/a because no RFC 3161 token was requested. External proofs are left out of this version (gate G1, D7), and `metadata.createdAt` is the signer's own claim. |
