@@ -1,0 +1,32 @@
+# On every push and pull request: the two records verify offline and verify.mjs prints exactly
+# docs/verify-output.txt; docs/index.html equals a fresh generation; the generator's tests pass.
+# Each action is pinned to a full commit SHA, measured with git ls-remote, with its tag in a comment.
+name: check
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          # Exact: the first line verify.mjs prints names the Node version, and docs/verify-output.txt
+          # was written on 22.23.1.
+          node-version: 22.23.1
+          package-manager-cache: false
+      - run: npm ci
+      - name: node verify.mjs, compared with docs/verify-output.txt
+        run: |
+          node verify.mjs > "$RUNNER_TEMP/verify-output.txt"
+          diff docs/verify-output.txt "$RUNNER_TEMP/verify-output.txt"
+      - run: npm run check:page
+      - run: npm run test:page
