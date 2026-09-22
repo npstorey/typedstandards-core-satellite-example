@@ -440,9 +440,9 @@ table.edges td:nth-child(1)::before,table.refs td:nth-child(1)::before{content:"
 table.edges td:nth-child(2)::before{content:"Name"}
 table.edges td:nth-child(3)::before{content:"Ring"}
 table.edges td:nth-child(4)::before{content:"Relation"}
-table.edges td:nth-child(5)::before{content:"Basis"}
 table.refs td:nth-child(2)::before{content:"Other end"}
-table.refs td:nth-child(3)::before{content:"Location and SHA-256"}
+table.refs td:nth-child(3)::before{content:"Basis"}
+table.refs td:nth-child(4)::before{content:"Location and SHA-256"}
 }
 `;
 
@@ -466,27 +466,29 @@ function blocks(bs) {
   }).join('\n');
 }
 
+// The visible table: the picture as text. An unpinned edge says so, with the reason, in its row.
 function edgeRows(edges) {
+  return edges.map((e) => [
+    String(e.n),
+    `${esc(e.name)}<small>${esc(e.publisher)}</small>${unpinned(e) ? `<small>${notPinnedText(e)}</small>` : ''}`,
+    esc(e.ring),
+    `${arrow(e)} ${esc(e.relation)}`,
+  ]);
+}
+
+// The collapsed table: each edge's basis, and the other end's id, location and SHA-256.
+function refRows(edges) {
   return edges.map((e) => {
     const intent = e.intent?.statedIn?.length
       ? `<small>Stated in: ${e.intent.statedIn.map((s) => `${link(s.url)} (${esc(s.date)})`).join('; ')}.</small>`
       : '';
     return [
       String(e.n),
-      `${esc(e.name)}<small>${esc(e.publisher)}</small>`,
-      esc(e.ring),
-      `${arrow(e)} ${esc(e.relation)}`,
-      `${esc(e.basis)}${unpinned(e) ? `<br>${notPinnedText(e)}` : ''}${intent}`,
+      `<code>${esc(e.far.id)}</code>`,
+      `${esc(e.basis)}${intent}`,
+      `${link(e.far.ref.location)}<br>${unpinned(e) ? '<span class="absent">not pinned</span>: sha256 null' : `<code>${esc(e.far.ref.sha256)}</code>`}`,
     ];
   });
-}
-
-function refRows(edges) {
-  return edges.map((e) => [
-    String(e.n),
-    `<code>${esc(e.far.id)}</code>`,
-    `${link(e.far.ref.location)}<br>${unpinned(e) ? '<span class="absent">not pinned</span>: sha256 null' : `<code>${esc(e.far.ref.sha256)}</code>`}`,
-  ]);
 }
 
 export function render(inputs) {
@@ -597,14 +599,14 @@ export function render(inputs) {
   // Every edge
   h.push('<section id="edges">');
   h.push(`<h2>Every edge (${edges.length})</h2>`);
-  h.push(`<p class="note">Every edge in <code>map.yaml</code>, in document order: the picture as text. ${ARROW_OUT} and ${ARROW_IN} as in the legend.</p>`);
-  h.push(table(['#', 'Name', 'Ring', 'Relation', 'Basis'], edgeRows(edges), { cls: 'edges', labels: false }));
-  h.push(`<details><summary>The other end of every edge: id, location and SHA-256 (${edges.length})</summary>`);
+  h.push(`<p class="note">Every edge in <code>map.yaml</code>, in document order: the picture as text. ${ARROW_OUT} and ${ARROW_IN} as in the legend. Each edge's basis is in the collapsed table below.</p>`);
+  h.push(table(['#', 'Name', 'Ring', 'Relation'], edgeRows(edges), { cls: 'edges', labels: false }));
+  h.push(`<details><summary>Every edge's basis, and the other end's id, location and SHA-256 (${edges.length})</summary>`);
   h.push(`<p class="note">${esc(header.refs)}</p>`);
   h.push(nearRefs.length === 1
     ? `<p class="note">${esc(header.subject)}'s own end carries the same ref on every edge: ${link(edges[0].near.ref.location)}, sha256 <code>${esc(edges[0].near.ref.sha256)}</code>.</p>`
     : `<p class="note">${esc(header.subject)}'s own end carries ${nearRefs.length} different refs; see <code>map.yaml</code>.</p>`);
-  h.push(table(['#', 'Other end', 'Location and SHA-256'], refRows(edges), { cls: 'refs', labels: false }));
+  h.push(table(['#', 'Other end', 'Basis', 'Location and SHA-256'], refRows(edges), { cls: 'refs', labels: false }));
   h.push('</details>');
   h.push('</section>');
 

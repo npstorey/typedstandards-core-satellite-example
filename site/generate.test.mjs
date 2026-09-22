@@ -330,7 +330,7 @@ test('README\'s "How Typed Standards was used here" appears whole, after core.md
   assert.deepEqual(onPage.slice(1), parts.map(plain));
 });
 
-test('Every edge: the five-column table and the collapsed refs table each hold every edge, in map order', () => {
+test('Every edge: the four-column table and the collapsed basis-and-refs table each hold every edge, in map order', () => {
   const edges = mapDocs().slice(1).map((d) => {
     const get = (re) => unquote(re.exec(d)[1]);
     const subject = get(/^subject:\n {2}id: (.*)$/m);
@@ -341,25 +341,31 @@ test('Every edge: the five-column table and the collapsed refs table each hold e
       publisher: get(/^ {2}publisher: (.*)$/m),
       ring: get(/^ {2}ring: (.*)$/m),
       relation: get(/^ {2}relation: (.*)$/m),
+      basis: get(/^ {2}basis: (.*)$/m),
       arrow: outward ? '→' : '←',
       id: unquote(/^ {2}id: (.*)$/m.exec(far)[1]),
       location: unquote(/^ {4}location: (.*)$/m.exec(far)[1]),
       sha: /^ {4}sha256: (.*)$/m.exec(far)[1],
     };
   });
-  const compact = pageRows(/<table class="stack edges">[\s\S]*?<\/table>/.exec(visible())[0]);
-  assert.equal(compact[0], '# | Name | Ring | Relation | Basis');
+  const compact = pageRows(/<table class="stack edges">[\s\S]*?<\/table>/.exec(visible())[0]).map((r) => r.split(' | '));
+  assert.deepEqual(compact[0], ['#', 'Name', 'Ring', 'Relation']);
   assert.equal(compact.length - 1, edges.length);
-  edges.forEach((e, i) => assert.ok(
-    compact[i + 1].startsWith(`${i + 1} | ${e.name}${e.publisher} | ${e.ring} | ${e.arrow} ${e.relation} | `), compact[i + 1]));
-  const details = /<details><summary>The other end of every edge: id, location and SHA-256 \((\d+)\)<\/summary>([\s\S]*?)<\/details>/.exec(page());
+  edges.forEach((e, i) => {
+    const [n, name, ring, relation, ...rest] = compact[i + 1];
+    assert.deepEqual([n, ring, relation, rest], [String(i + 1), e.ring, `${e.arrow} ${e.relation}`, []], name);
+    assert.ok(name.startsWith(`${e.name}${e.publisher}`), name);
+  });
+  const details = /<details><summary>Every edge's basis, and the other end's id, location and SHA-256 \((\d+)\)<\/summary>([\s\S]*?)<\/details>/.exec(page());
   assert.ok(details, 'one collapsed <details> with that title');
   assert.equal(Number(details[1]), edges.length);
   const refs = pageRows(details[2]);
-  assert.equal(refs[0], '# | Other end | Location and SHA-256');
+  assert.equal(refs[0], '# | Other end | Basis | Location and SHA-256');
   assert.equal(refs.length - 1, edges.length);
-  edges.forEach((e, i) => assert.equal(refs[i + 1],
-    `${i + 1} | ${e.id} | ${e.location}${e.sha === 'null' ? 'not pinned: sha256 null' : e.sha}`));
+  edges.forEach((e, i) => {
+    assert.ok(refs[i + 1].startsWith(`${i + 1} | ${e.id} | ${e.basis}`), refs[i + 1]);
+    assert.ok(refs[i + 1].endsWith(` | ${e.location}${e.sha === 'null' ? 'not pinned: sha256 null' : e.sha}`), refs[i + 1]);
+  });
 });
 
 test('the not-pinned edge keeps its reason in its visible row, outside every <details>', () => {
@@ -367,7 +373,7 @@ test('the not-pinned edge keeps its reason in its visible row, outside every <de
   for (const d of mapDocs().filter((x) => /sha256: null/.test(x))) {
     const name = unquote(/^ {2}name: (.*)$/m.exec(d)[1]);
     const reason = unquote(/^ {4}reason: (.*)$/m.exec(d)[1]);
-    assert.ok(compact.some((r) => r.includes(name) && r.endsWith(`not pinned: sha256 null. ${reason}`)), name);
+    assert.ok(compact.some((r) => r.includes(name) && r.includes(`not pinned: sha256 null. ${reason}`)), name);
   }
 });
 
