@@ -54,7 +54,21 @@ The publisher keeps the signing key, so that a later revision of these records c
 key. A `did:key` cannot be rotated or revoked (hub ADR-0030 §7), so keeping the key is the only way to
 continue under this identifier. If the key were compromised, it could only be abandoned in favour of a new
 identifier with no link to this one, and nothing in a record already signed under it would say so. The key
-was generated for this example only. It is held outside the repository and has never been printed.
+was generated for this example only. It is held in the publisher's 1Password vault, outside the repository,
+and has never been printed.
+
+Signing runs only in the publisher's own terminal:
+
+    cp .env.sign.example .env.sign
+    op run --env-file=.env.sign -- node package/build.mjs sign
+
+- **How the key reaches the program.** `op run` passes the key to that one process as `SIGNING_SEED_B64`.
+  No session that builds or checks this repository can read it.
+- **What `.env.sign.example` holds.** An `op://` reference, never a value. The vault name contains spaces,
+  so a shell command that uses the reference directly must quote it.
+- **What `sign` does now.** The records are already signed, so it writes nothing. It re-signs each committed
+  envelope hash with the supplied key and confirms that the result equals the committed signature.
+  Ed25519 signatures are deterministic, so only the signing key reproduces them.
 
 ## What the SciOS schema would still need from the standard
 
@@ -117,6 +131,8 @@ Every line should match `docs/verify-output.txt`. Further checks:
 3. **The envelopes.** Run `node package/build.mjs check`.
    - It rebuilds both envelopes, unsigned, from the build log and the files on disk, then compares
      them with the signed bundles.
+   - The records name `package/build.mjs` by the digest the build log recorded at signing. The check
+     uses that digest and says whether the file on disk has changed since.
 4. **The sources.** In a scratch clone, run `node corpus/pin.mjs --force`, then
    `git diff corpus/manifest.json`.
    - This re-fetches all 40 sources. At immutable locations, only `fetchedAt` and `pinnedAt` should
@@ -132,12 +148,13 @@ Every line should match `docs/verify-output.txt`. Further checks:
   - `pin.mjs`: program 1, which fetches once and writes both files.
   - `manifest.json`: written once by `pin.mjs`.
 - **`package/`:**
-  - `build.mjs`: program 2, which packages and signs.
+  - `build.mjs`: program 2, which packages and signs. The key comes from `SIGNING_SEED_B64`.
   - `signer.json`: the identifier and public key.
   - `core.bundle.json`, `map.bundle.json`: the two records, each a commitment view with its package
     inline.
   - `build-log.json`: the build log.
 - **`verify.mjs`:** the one-command check.
+- **`.env.sign.example`:** the `op://` reference to the signing key, for `op run`.
 - **`docs/`:** the verify output, the pin record, the G1 rulings and the findings.
 
 `data/` is git-ignored: the fetched third-party bytes are pinned by hash, never committed.

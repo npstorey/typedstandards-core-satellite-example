@@ -18,8 +18,16 @@ offline. The working contract is the owner's IMPL CORE-SATELLITE-EXAMPLE brief a
   registry. The one identifier string is `signingKeyId`, the envelope `kid` and `signer.identifier`.
   `displayName` names the example, not a person.
 - No external proofs in this version: no RFC 3161 token, no Rekor entry.
-- The seed lives at `~/.config/typedstandards-core-satellite-example/`, mode 600, outside the
-  repository. It is never printed.
+- The signing key lives in the owner's 1Password vault. No session can read it; never try.
+  - Signing runs only in the owner's own terminal:
+    `op run --env-file=.env.sign -- node package/build.mjs sign`.
+  - `op run` supplies the key to that process as `SIGNING_SEED_B64`.
+  - `.env.sign` is an ignored copy of `.env.sign.example`, which holds only the `op://` reference.
+  - The vault name contains spaces, so a shell command that uses the reference directly quotes it.
+  - A transitional on-disk copy may remain at `~/.config/typedstandards-core-satellite-example/`.
+    Removing it is the owner's step.
+- `sign` never re-signs existing records. When the bundles exist, it only checks that the supplied key
+  reproduces their signatures.
 
 ## Two programs
 

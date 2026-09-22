@@ -3,11 +3,20 @@
 //
 //   node package/build.mjs keygen    generate a fresh Ed25519 seed outside the repository (mode 600) and
 //                                    write package/signer.json with the did:key identifier derived from it
-//   node package/build.mjs assemble  read core.md and map.yaml from disk, build one record per file, sign
+//   node package/build.mjs sign      read core.md and map.yaml from disk, build one record per file, sign
 //                                    both, verify both offline, then write package/core.bundle.json,
-//                                    package/map.bundle.json and package/build-log.json
+//                                    package/map.bundle.json and package/build-log.json. When those exist
+//                                    already, write nothing: re-sign each committed envelope hash with the
+//                                    supplied key and confirm it reproduces the committed signature
+//                                    (Ed25519 is deterministic). `assemble` is the same stage's earlier name.
 //   node package/build.mjs check     rebuild both envelopes unsigned from the build log and the files on
 //                                    disk, and compare them with the signed bundles
+//
+// The signing key comes from the environment variable SIGNING_SEED_B64 (standard base64 of the 32-byte
+// seed) when it is set, and from the seed file outside the repository only when it is not. The owner's
+// key lives in 1Password, and signing runs in the owner's own terminal:
+//   op run --env-file=.env.sign -- node package/build.mjs sign
+// where .env.sign is a copy of .env.sign.example, which holds an op:// reference, never a value.
 //
 // This program runs after corpus/pin.mjs has written the two files, and reads their bytes from disk. That
 // is what makes the capture method `script-run` (hub ADR-0029 §2). Each record carries its file's exact
@@ -95,7 +104,30 @@ function keygen() {
   console.log(`wrote ${rel(SIGNER_FILE)}`);
 }
 
-function inputs() {
+// The signing key: SIGNING_SEED_B64 when it is set (even if empty, which is an error), else the seed file.
+// Neither the value nor any part of it is ever printed.
+function loadSeed() {
+  const b64 = process.env.SIGNING_SEED_B64;
+  if (b64 !== undefined) {
+    const text = b64.trim();
+    const bytes = Buffer.from(text, 'base64');
+    if (bytes.length !== 32 || bytes.toString('base64').replace(/=+$/, '') !== text.replace(/=+$/, '')) {
+      die('SIGNING_SEED_B64 is set, but it is not the standard base64 of a 32-byte seed');
+    }
+    return { seed: new Uint8Array(bytes), source: 'SIGNING_SEED_B64' };
+  }
+  if (fs.existsSync(SEED_PATH)) {
+    const seed = new Uint8Array(fs.readFileSync(SEED_PATH));
+    if (seed.length !== 32) die('the seed file outside the repository is not 32 bytes');
+    return { seed, source: 'the seed file outside the repository' };
+  }
+  die('no signing key: SIGNING_SEED_B64 is not set and there is no seed file. Run: op run --env-file=.env.sign -- node package/build.mjs sign');
+}
+
+// `logged` is the build log's inputs. When it is given, the builder is named by the digest the build log
+// recorded, because that is the program that signed the records; a later change to this file (for example,
+// how the key is supplied) does not change what was signed.
+function inputs(logged) {
   const pathsSha = (p) => ({ path: p, sha256: sha256File(path.join(ROOT, p)) });
   const manifest = readJson(path.join(ROOT, 'corpus', 'manifest.json'));
   const sources = readJson(path.join(ROOT, 'corpus', 'sources.json'));
@@ -109,7 +141,7 @@ function inputs() {
       sourcesJson: pathsSha('corpus/sources.json'),
       template: pathsSha('corpus/core.template.md'),
       manifestJson: pathsSha('corpus/manifest.json'),
-      builder: pathsSha('package/build.mjs'),
+      builder: logged?.builder ?? pathsSha('package/build.mjs'),
     },
   };
 }
@@ -231,13 +263,19 @@ async function verifyOffline(pkg, envelopeHash, signature) {
   }
 }
 
-async function assemble() {
-  for (const name of Object.keys(RECORDS)) if (fs.existsSync(path.join(PKG_DIR, `${name}.bundle.json`))) die(`package/${name}.bundle.json exists`);
-  if (fs.existsSync(BUILD_LOG)) die(`${rel(BUILD_LOG)} exists`);
+async function sign() {
   const signer = readJson(SIGNER_FILE);
-  const seed = new Uint8Array(fs.readFileSync(SEED_PATH));
-  if (seed.length !== 32) die('the seed is not 32 bytes');
-  if (deriveKeyDerivedIdentifierFromKey(seed) !== signer.identifier) die('the seed does not derive the identifier in package/signer.json');
+  const { seed, source } = loadSeed();
+  if (deriveKeyDerivedIdentifierFromKey(seed) !== signer.identifier) die(`the key from ${source} does not derive the identifier in ${rel(SIGNER_FILE)}`);
+  console.log(`the key from ${source} derives the identifier in ${rel(SIGNER_FILE)}, ${short(signer.identifier)}`);
+  const outputs = [...Object.keys(RECORDS).map((n) => path.join(PKG_DIR, `${n}.bundle.json`)), BUILD_LOG];
+  const present = outputs.filter((p) => fs.existsSync(p));
+  if (present.length === outputs.length) {
+    const ok = signingCheck(seed, signer);
+    seed.fill(0);
+    process.exit(ok ? 0 : 1);
+  }
+  if (present.length) die(`${present.map(rel).join(', ')} exist but not all outputs do; nothing written`);
   const inp = inputs();
   for (const m of inp.manifest.sources) {
     const file = path.join(ROOT, 'data', `${m.key}.bin`);
@@ -249,7 +287,7 @@ async function assemble() {
   const built = buildBoth(ids, signer, inp);
 
   const log = {
-    $comment: 'Written by package/build.mjs assemble. The ids and times below, with the files on disk, rebuild both envelopes (node package/build.mjs check).',
+    $comment: 'Written by package/build.mjs sign. The ids and times below, with the files on disk, rebuild both envelopes (node package/build.mjs check).',
     signer: signer.identifier,
     producerProfile: PRODUCER_PROFILE,
     captureMethod: CAPTURE_METHOD,
@@ -303,23 +341,59 @@ function versions() {
   return { produceCore: v('produce-core'), verifyCore: v('verify-core'), node: process.versions.node };
 }
 
-function check() {
+// Rebuild both envelopes unsigned from the build log and the files on disk. The builder is named by the
+// digest the build log recorded; every other input is read from disk and compared with the log.
+function rebuild() {
   const log = readJson(BUILD_LOG);
   const signer = readJson(SIGNER_FILE);
-  const built = buildBoth(log.records, signer, inputs());
+  const inp = inputs(log.inputs);
   let ok = true;
+  for (const [k, logged] of Object.entries(log.inputs)) {
+    if (k === 'builder') {
+      const now = sha256File(path.join(ROOT, logged.path));
+      console.log(`builder: the records name ${logged.path} at ${short(logged.sha256)} (from the build log); the file on disk ${now === logged.sha256 ? 'is that version' : 'has changed since signing'}`);
+      continue;
+    }
+    const same = inp.files[k].sha256 === logged.sha256;
+    ok &&= same;
+    if (!same) console.log(`input ${logged.path}: DIFFERS from the build log`);
+  }
+  if (ok) console.log('inputs: corpus/pin.mjs, corpus/sources.json, corpus/core.template.md and corpus/manifest.json match the build log');
+  const built = buildBoth(log.records, signer, inp);
+  const bundles = {};
   for (const name of Object.keys(RECORDS)) {
     const bundle = readJson(path.join(PKG_DIR, `${name}.bundle.json`));
+    bundles[name] = bundle;
     const same = built[name].envelopeHash === log.records[name].envelopeHash && bundle.packageHash === built[name].envelopeHash;
     const pkgSame = JSON.stringify(bundle.package) === JSON.stringify(built[name].pkg);
     ok &&= same && pkgSame;
     console.log(`${name}: rebuilt envelope hash ${same ? 'matches' : 'DIFFERS'}; bundle package ${pkgSame ? 'matches' : 'DIFFERS'}`);
   }
-  process.exit(ok ? 0 : 1);
+  return { ok, bundles };
+}
+
+function check() {
+  process.exit(rebuild().ok ? 0 : 1);
+}
+
+// With the records already signed: rebuild them, then sign each committed envelope hash with the supplied
+// key. Ed25519 signatures are deterministic, so the same key reproduces the committed signature exactly.
+function signingCheck(seed, signer) {
+  const { ok: rebuilt, bundles } = rebuild();
+  let ok = rebuilt;
+  for (const name of Object.keys(RECORDS)) {
+    const committed = bundles[name].signature;
+    const again = signEnvelopeHash(bundles[name].packageHash, seed, signer.identifier);
+    const same = again.signature === committed.signature && again.publicKey === committed.publicKey && again.kid === committed.kid;
+    ok &&= same;
+    console.log(`${name}: re-signing the committed envelope hash with this key reproduces the committed signature: ${same}`);
+  }
+  console.log(ok ? 'signing check passed; the records are already signed, so nothing was written' : 'signing check FAILED; nothing was written');
+  return ok;
 }
 
 const stage = process.argv[2];
 if (stage === 'keygen') keygen();
-else if (stage === 'assemble') await assemble();
+else if (stage === 'sign' || stage === 'assemble') await sign();
 else if (stage === 'check') check();
-else die('usage: node package/build.mjs keygen|assemble|check');
+else die('usage: node package/build.mjs keygen|sign|check');

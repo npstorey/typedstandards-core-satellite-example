@@ -4,10 +4,14 @@ data/
 # Dependencies: pinned exactly in package.json and package-lock.json.
 node_modules/
 
-# Signing seeds live outside the repository (~/.config/typedstandards-core-satellite-example/);
-# these are second guards in case a key path is ever pointed inside it.
+# The signing key lives in the owner's 1Password vault. These are second guards in case a key path is
+# ever pointed inside the repository.
 *.seed
 .keys/
+
+# The signing env file for `op run --env-file=.env.sign`. Only .env.sign.example (an op:// reference,
+# never a value) is tracked.
+.env.sign
 
 # OS
 .DS_Store
