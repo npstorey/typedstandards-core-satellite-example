@@ -57,6 +57,13 @@ const pageRows = (html) => [...html.matchAll(/<tr>([\s\S]*?)<\/tr>/g)]
 const mdRow = (line) => line.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(plain).join(' | ');
 const mapDocs = () => read('map.yaml').split(/^---$/m).slice(1);
 const page = () => read(PAGE);
+// The page as it first shows: every <details> removed, open or not.
+const visible = () => page().replace(/<details[\s\S]*?<\/details>/g, '');
+const section = (html, id) => {
+  const i = html.indexOf(`<section id="${id}"`);
+  return i < 0 ? '' : html.slice(i, html.indexOf('</section>', i));
+};
+const unquote = (v) => (v.startsWith('"') ? JSON.parse(v) : v);
 
 // Runs fn with every clock, locale, randomness and environment source replaced by a trap. Clock,
 // locale and randomness reads throw; environment reads are recorded and answer undefined.
@@ -196,7 +203,9 @@ test('C4 the page carries the SHA-256 of each committed input and the generated-
   const line = `generated from map.yaml @ ${d['map.yaml']}, core.md @ ${d['core.md']}, README.md @ ${d['README.md']}`;
   assert.ok(page().includes(`<!-- ${line} -->`));
   assert.ok(page().includes(`<code>${line}</code>`));
-  for (const i of INPUTS) assert.ok(pageRows(page()).some((r) => r.startsWith(`${i.file} | ${d[i.file]} | `)));
+  assert.ok(section(visible(), 'provenance').includes(`<code>${line}</code>`), 'the generated-from line is visible');
+  const signed = { 'map.yaml': 'Yes', 'core.md': 'Yes', 'README.md': 'No' };
+  for (const i of INPUTS) assert.ok(pageRows(page()).includes(`${i.file} | ${signed[i.file]} | ${d[i.file]}`), i.file);
 });
 
 // ---------- C5: honest absence ----------
@@ -205,12 +214,15 @@ test('C5 every front-matter absence marker in core.md appears on the page', () =
   const lines = read('core.md').split('\n');
   const close = lines.indexOf('---', 1);
   const found = [];
+  const at = [];
   lines.slice(1, close).forEach((l, i) => {
     const m = /^# ([a-z]+: \S+) +(NOT [A-Z]+.*)$/.exec(l);
-    if (m) found.push(`${i + 2} | ${m[1]} | ${m[2]}`);
+    if (m) { found.push(`${m[1]} | ${m[2]}`); at.push(String(i + 2)); }
   });
   assert.ok(found.length > 0);
-  for (const row of found) assert.ok(pageRows(page()).includes(row), row);
+  for (const row of found) assert.ok(pageRows(visible()).includes(row), row);
+  const lineList = at.length < 2 ? at[0] : `${at.slice(0, -1).join(', ')} and ${at[at.length - 1]}`;
+  assert.ok(text(section(visible(), 'core')).includes(`Comment lines ${lineList} of core.md.`), lineList);
 });
 
 test('C5 the Core responsibilities table appears whole, with every NOT DONE verdict', () => {
@@ -222,7 +234,7 @@ test('C5 the Core responsibilities table appears whole, with every NOT DONE verd
   }
   const notDone = rows.filter((r) => r.endsWith(' | NOT DONE'));
   assert.ok(notDone.length > 0);
-  for (const row of rows) assert.ok(pageRows(page()).includes(row), row);
+  for (const row of rows) assert.ok(pageRows(visible()).includes(row), row);
 });
 
 test('C5 the edge with a null sha256 is drawn, and listed as not pinned with its reason', () => {
@@ -232,7 +244,7 @@ test('C5 the edge with a null sha256 is drawn, and listed as not pinned with its
     const name = /^ {2}name: (.*)$/m.exec(d)[1];
     const reason = /^ {4}reason: (.*)$/m.exec(d)[1];
     assert.match(page(), new RegExp(`<g class="node unpinned"><title>\\d+\\. ${name.replace(/[()]/g, '\\$&')} `));
-    assert.ok(pageRows(page()).some((r) => r.includes(name) && r.includes(`not pinned: sha256 null. ${reason}`)), name);
+    assert.ok(pageRows(visible()).some((r) => r.includes(name) && r.includes(`not pinned: sha256 null. ${reason}`)), name);
   }
 });
 
@@ -243,7 +255,7 @@ test('C5 no orbits edge is drawn, and the page carries the map\'s own edgeTypes 
   assert.doesNotMatch(read('map.yaml'), /relation: orbits/);
   assert.doesNotMatch(page(), /rel-orbits/);
   const edgeTypes = /^ {2}edgeTypes: (.*)$/m.exec(docs[0])[1];
-  const quoted = /<blockquote>([\s\S]*?)<\/blockquote>/.exec(page());
+  const quoted = /<blockquote>([\s\S]*?)<\/blockquote>/.exec(visible());
   assert.equal(quoted && text(quoted[1]), edgeTypes);
 });
 
@@ -256,7 +268,7 @@ test('C5 the centre reads as one end of every edge and a self-assessed satellite
   assert.match(page(), /<text class="hub-name"[^>]*>typedstandards\.org<\/text>/);
   assert.match(page(), new RegExp(`<text class="hub-note"[^>]*>self-assessment: ${self}</text>`));
   assert.match(page(), new RegExp(`<text class="hub-note"[^>]*>subject of ${asSubject}, object of ${asObject}</text>`));
-  assert.ok(text(page()).includes(`is at the centre because it is one end of every edge: the subject of ${asSubject} and the object of ${asObject}. Its own record, core.md, assesses it as a ${self}`));
+  assert.ok(text(visible()).includes(`is at the centre because it is one end of every edge: the subject of ${asSubject} and the object of ${asObject}. Its own record, core.md, assesses it as a ${self}`));
 });
 
 test('C5 the README proof table appears whole, with its definitions', () => {
@@ -266,7 +278,7 @@ test('C5 the README proof table appears whole, with its definitions', () => {
   const section = lines.slice(start + 1, end);
   const rows = section.filter((l) => l.startsWith('|') && !/^\|[-| :]+\|$/.test(l)).map(mdRow);
   assert.ok(rows.length > 1);
-  for (const row of rows) assert.ok(pageRows(page()).includes(row), row);
+  for (const row of rows) assert.ok(pageRows(visible()).includes(row), row);
   const defs = [];
   for (const l of section) {
     const m = /^\*\*([^*]+)\*\* ?(.*)$/.exec(l);
@@ -275,7 +287,7 @@ test('C5 the README proof table appears whole, with its definitions', () => {
     else if (!l.trim() && defs.length) break;
   }
   assert.ok(defs.length > 0);
-  const onPage = [...page().matchAll(/<dt>([\s\S]*?)<\/dt><dd>([\s\S]*?)<\/dd>/g)].map((m) => [text(m[1]), text(m[2])]);
+  const onPage = [...visible().matchAll(/<dt>([\s\S]*?)<\/dt><dd>([\s\S]*?)<\/dd>/g)].map((m) => [text(m[1]), text(m[2])]);
   assert.deepEqual(onPage, defs.map(([t, d]) => [plain(t), plain(d)]));
 });
 
@@ -286,7 +298,86 @@ test('C5 the dropped entry appears with its reason', () => {
   const seeds = [...block.matchAll(/^ {6}seed: (.*)$/gm)].map((m) => m[1]);
   const reasons = [...block.matchAll(/^ {6}reason: (.*)$/gm)].map((m) => (m[1].startsWith('"') ? JSON.parse(m[1]) : m[1]));
   assert.ok(names.length > 0);
-  names.forEach((n, i) => assert.ok(pageRows(page()).includes(`${n} | ${seeds[i]} | ${reasons[i]}`), n));
+  names.forEach((n, i) => assert.ok(pageRows(visible()).includes(`${n} | ${seeds[i]} | ${reasons[i]}`), n));
+});
+
+// ---------- the G1b form ----------
+
+test('the sections come in the order set at G1b', () => {
+  assert.deepEqual([...page().matchAll(/<section id="([\w-]+)"/g)].map((m) => m[1]),
+    ['how', 'map', 'absent', 'core', 'edges', 'proof', 'provenance']);
+});
+
+test('README\'s "How Typed Standards was used here" appears whole, after core.md\'s own description', () => {
+  const lines = read('README.md').split('\n');
+  const start = lines.indexOf('## How Typed Standards was used here');
+  assert.ok(start >= 0);
+  const end = lines.findIndex((l, i) => i > start && l.startsWith('## '));
+  // Each paragraph and each list item, in order, as plain text.
+  const parts = [];
+  let open = false;
+  for (const l of lines.slice(start + 1, end)) {
+    if (!l.trim()) { open = false; continue; }
+    if (/^(- |\d+\. )/.test(l)) { parts.push(l.replace(/^(- |\d+\. )/, '')); open = true; }
+    else if (open) parts[parts.length - 1] += ` ${l.trim()}`;
+    else { parts.push(l.trim()); open = true; }
+  }
+  assert.ok(parts.length > 10);
+  const onPage = [...section(visible(), 'how').matchAll(/<(p|li)>([\s\S]*?)<\/\1>/g)].map((m) => text(m[2]));
+  const description = /^description: (.*)$/m.exec(read('core.md'))[1];
+  const mission = /^mission: (.*)$/m.exec(read('core.md'))[1];
+  assert.equal(onPage[0], `Typed Standards, in its own record (core.md): ${description} Its mission: ${mission}`);
+  assert.deepEqual(onPage.slice(1), parts.map(plain));
+});
+
+test('Every edge: the five-column table and the collapsed refs table each hold every edge, in map order', () => {
+  const edges = mapDocs().slice(1).map((d) => {
+    const get = (re) => unquote(re.exec(d)[1]);
+    const subject = get(/^subject:\n {2}id: (.*)$/m);
+    const outward = subject === 'typedstandards.org';
+    const far = d.slice(d.indexOf(outward ? '\nobject:' : '\nsubject:') + 1);
+    return {
+      name: get(/^ {2}name: (.*)$/m),
+      publisher: get(/^ {2}publisher: (.*)$/m),
+      ring: get(/^ {2}ring: (.*)$/m),
+      relation: get(/^ {2}relation: (.*)$/m),
+      arrow: outward ? '→' : '←',
+      id: unquote(/^ {2}id: (.*)$/m.exec(far)[1]),
+      location: unquote(/^ {4}location: (.*)$/m.exec(far)[1]),
+      sha: /^ {4}sha256: (.*)$/m.exec(far)[1],
+    };
+  });
+  const compact = pageRows(/<table class="stack edges">[\s\S]*?<\/table>/.exec(visible())[0]);
+  assert.equal(compact[0], '# | Name | Ring | Relation | Basis');
+  assert.equal(compact.length - 1, edges.length);
+  edges.forEach((e, i) => assert.ok(
+    compact[i + 1].startsWith(`${i + 1} | ${e.name}${e.publisher} | ${e.ring} | ${e.arrow} ${e.relation} | `), compact[i + 1]));
+  const details = /<details><summary>The other end of every edge: id, location and SHA-256 \((\d+)\)<\/summary>([\s\S]*?)<\/details>/.exec(page());
+  assert.ok(details, 'one collapsed <details> with that title');
+  assert.equal(Number(details[1]), edges.length);
+  const refs = pageRows(details[2]);
+  assert.equal(refs[0], '# | Other end | Location and SHA-256');
+  assert.equal(refs.length - 1, edges.length);
+  edges.forEach((e, i) => assert.equal(refs[i + 1],
+    `${i + 1} | ${e.id} | ${e.location}${e.sha === 'null' ? 'not pinned: sha256 null' : e.sha}`));
+});
+
+test('the not-pinned edge keeps its reason in its visible row, outside every <details>', () => {
+  const compact = pageRows(/<table class="stack edges">[\s\S]*?<\/table>/.exec(visible())[0]);
+  for (const d of mapDocs().filter((x) => /sha256: null/.test(x))) {
+    const name = unquote(/^ {2}name: (.*)$/m.exec(d)[1]);
+    const reason = unquote(/^ {4}reason: (.*)$/m.exec(d)[1]);
+    assert.ok(compact.some((r) => r.includes(name) && r.endsWith(`not pinned: sha256 null. ${reason}`)), name);
+  }
+});
+
+test('table cells wrap at word boundaries; links and code in cells, and cells at phone width, break anywhere', () => {
+  const css = /<style>([\s\S]*?)<\/style>/.exec(page())[1];
+  assert.match(css, /\nth,td\{[^}]*overflow-wrap:normal[^}]*\}/);
+  assert.match(css, /\ntd a,td code\{overflow-wrap:anywhere\}/);
+  assert.match(css, /table\.edges td:nth-child\(3\),table\.edges td:nth-child\(4\)\{white-space:nowrap\}/);
+  const phone = css.slice(css.indexOf('@media (max-width:44rem)'));
+  assert.match(phone, /table\.stack td\{[^}]*overflow-wrap:anywhere[^}]*\}/);
 });
 
 // ---------- C6: self-contained; escaping ----------
