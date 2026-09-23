@@ -3,7 +3,8 @@
 One worked example: the SciOS "core and satellite" model applied to the domain Typed Standards works
 in, with the example's two published content files signed as Typed Standards records that verify
 offline. The working contract is the owner's IMPL CORE-SATELLITE-EXAMPLE brief and its gate rulings
-(G1, G2). It wins over anything here.
+(G1, G2), and for the web page the IMPL CORE-SAT-PAGES brief and its rulings (G1, G1b, G2). They win
+over anything here.
 
 ## Fixed
 
@@ -38,6 +39,18 @@ offline. The working contract is the owner's IMPL CORE-SATELLITE-EXAMPLE brief a
 2. `package/build.mjs`, run afterwards, reads those two files from disk and packages them. That is
    what makes the capture method `script-run` (hub ADR-0029 §2).
 
+## The web page
+
+- `site/generate.mjs` writes `docs/index.html` from exactly three inputs: `map.yaml`, `core.md` and
+  `README.md`. It refuses unless the two signed files match their records' `contentHash.sha256`. The
+  page is committed, is a view of the signed files, and is never a record.
+- `README.md` is an input. Every README edit is followed by `node site/generate.mjs`; otherwise
+  `npm run check:page`, and CI with it, fails.
+- Every honest-absence item stays visible on the page, never inside a `<details>`, and
+  `npm run test:page` checks it.
+- GitHub Pages serves `docs/` from `main` at https://core-satellite.typedstandards.org/ (`docs/CNAME`,
+  `docs/.nojekyll`). Pages settings are the owner's.
+
 ## Refs
 
 A ref is a file at a 40-character commit SHA, a dated W3C TR URL, an rfc-editor.org text URL, or a
@@ -49,6 +62,9 @@ must answer HTTP 200 with a non-empty body, and no two sources may share a diges
 
 - Node 22 via fnm: `eval "$(fnm env --shell zsh)" && fnm use 22`. Network I/O is curl, so the
   sandbox proxy applies and each response keeps a header dump.
+- CI (`.github/workflows/check.yml`) pins Node 22.23.1 exactly, because the first line `verify.mjs`
+  prints names the Node version and must equal `docs/verify-output.txt`. Changing the pin means
+  regenerating that file on the new version.
 
 ## Working rules
 
@@ -59,5 +75,5 @@ must answer HTTP 200 with a non-empty body, and no two sources may share a diges
 - Do not change the typedstandards or hub repositories.
 - Code is MIT (`LICENSE`). Text is CC BY 4.0 (`LICENSE-CC-BY-4.0.txt`). Third-party bytes keep the
   licence their source states, or "not stated", and are never committed.
-- Commit to `main`, signed. Push only after the owner creates the remote at G2. The global pre-push
-  guard is never bypassed.
+- Commit to `main`, signed. Push only on the owner's word. The global pre-push guard is never
+  bypassed by a session. When it blocks, list and classify every match for the owner and stop.
