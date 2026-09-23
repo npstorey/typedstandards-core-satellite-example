@@ -1,49 +1,21 @@
 verify-core 0.11.0 (pinned 0.11.0), produce-core 0.6.0 (pinned 0.6.0), node 22.23.1
 
-core  package/core.bundle.json -> core.md
-  #1 envelope integrity    ok    verified; recomputed a9623ef408e4…0a93 equals packageHash
-  #2 signature             ok    valid (Ed25519ph)
-  #3 canonicalization      ok    ok raw-bytes/v1
-  #4 content hash          ok    ok, sha256 matched, from the inline output
-  file on disk             ok    core.md equals the signed output byte for byte: true; its SHA-256 c85c650af7c4…ce3b equals contentHash.sha256: true
-  #5 key trust             ok    self_certified, verified false; no registry vouches for the key
-  #6 kid consistency       ok    ok: signature.kid equals metadata.signingKeyId (did:key:z6Mk…RxDH)
-  kid = signer.identifier  ok    signature.kid equals signer.identifier: true; the example's own rule, which #6 does not compare
-  #7 RFC 3161 timestamp    n/a   no token; none is requested in this version
-  #8 Rekor inclusion       n/a   no entry; none is submitted in this version
-  #9 BlobRef               n/a   no BlobRef fields; output is inline
-  #10 lifecycle            ok    active, source none
-  #11 captureMethod        ok    script-run (a signed label; nothing verifies the run it names)
-  #12 type                 ok    ok content/analysis/v1
-  #13 node id              ok    nodeId equals the bundle's packageHash
-  #14 signer identity      ok    key_derived_match; the identifier is derived from the signing key (bindingTier pseudonymous)
-  #15 captureMethod vocab  ok    ok: 'script-run' under 'scripted-recomputation/core-satellite-example'
-  #16 content profile      ok    contentProfile_absent (read as "default")
-  bundle view              ok    the view's signer, content hash, rule, type, profile and capture method equal the package's: true; no trust registry named or carried: true
+Each served record, from docs/bundles/<name>.bundle.json. ok means every one of these holds; a failing line names what does not:
+  #1 verified, the recomputed hash equals packageHash · #2 valid (Ed25519ph) · #3 ok, raw-bytes/v1 · #4 ok, sha256 matched from the inline output
+  the file on disk equals the signed output byte for byte · #5 self_certified, verified false · #6 ok · kid equals signer.identifier
+  #7 no RFC 3161 token · #8 no Rekor entry · #9 no BlobRef · #10 read from the carried withdrawals, and equal to docs/records.json's status
+  #11 script-run (a signed label; nothing verifies the run it names) · #12 ok, content/analysis/v1 · #13 nodeId equals packageHash
+  #14 key_derived_match · #15 ok · #16 contentProfile_absent (read as "default")
+  the view's signer, content hash, rule, type, profile and capture method equal the package's; it names the host's trustRegistryUrl and carries the served registry
 
-map  package/map.bundle.json -> map.yaml
-  #1 envelope integrity    ok    verified; recomputed 7f1c14cd3491…2911 equals packageHash
-  #2 signature             ok    valid (Ed25519ph)
-  #3 canonicalization      ok    ok raw-bytes/v1
-  #4 content hash          ok    ok, sha256 matched, from the inline output
-  file on disk             ok    map.yaml equals the signed output byte for byte: true; its SHA-256 38945eb4cb3a…155c equals contentHash.sha256: true
-  #5 key trust             ok    self_certified, verified false; no registry vouches for the key
-  #6 kid consistency       ok    ok: signature.kid equals metadata.signingKeyId (did:key:z6Mk…RxDH)
-  kid = signer.identifier  ok    signature.kid equals signer.identifier: true; the example's own rule, which #6 does not compare
-  #7 RFC 3161 timestamp    n/a   no token; none is requested in this version
-  #8 Rekor inclusion       n/a   no entry; none is submitted in this version
-  #9 BlobRef               n/a   no BlobRef fields; output is inline
-  #10 lifecycle            ok    active, source none
-  #11 captureMethod        ok    script-run (a signed label; nothing verifies the run it names)
-  #12 type                 ok    ok content/analysis/v1
-  #13 node id              ok    nodeId equals the bundle's packageHash
-  #14 signer identity      ok    key_derived_match; the identifier is derived from the signing key (bindingTier pseudonymous)
-  #15 captureMethod vocab  ok    ok: 'script-run' under 'scripted-recomputation/core-satellite-example'
-  #16 content profile      ok    contentProfile_absent (read as "default")
-  bundle view              ok    the view's signer, content hash, rule, type, profile and capture method equal the package's: true; no trust registry named or carried: true
+  ok    active     core.md
+  ok    active     map.yaml
 
-both records
-  one key                  ok    both signatures carry one public key and one identifier, did:key:z6Mk…RxDH
+all records
+  ok    2 served; 1 current record and version 1; #10 active 2, withdrawn 0
+  ok    35 record files with no bundle yet
+  ok    all 2 signatures carry one public key and one identifier, did:key:z6Mk…RxDH, the key package/signer.json names
+  ok    docs/.well-known/typed-publisher.json lists exactly that key, active; no registry is supplied offline, so #5 reads self_certified
 
 network: global fetch calls 0; injected fetch calls 0
 result: all checks passed

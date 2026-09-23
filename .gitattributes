@@ -1,9 +1,18 @@
-# The two published content files are signed byte for byte (raw-bytes/v1). No line-ending conversion
-# may touch them on checkout, or `shasum -a 256` would stop matching contentHash.sha256.
+# The published content files are signed byte for byte (raw-bytes/v1). No line-ending conversion may
+# touch them on checkout, or `shasum -a 256` would stop matching contentHash.sha256.
 core.md -text
 map.yaml -text
+map/** -text
 
 # docs/index.html is compared byte for byte with a fresh generation (`npm run check:page`), and
-# README.md is one of the three inputs whose SHA-256 the page embeds. Neither may be converted either.
+# README.md is one of the page's inputs, whose SHA-256 the page lists. Neither may be converted either.
 docs/index.html -text
 README.md -text
+
+# What the host serves is compared byte for byte: each served bundle with its package/ copy, and
+# docs/records.json and docs/host-policy.yaml are page inputs whose SHA-256 the page lists.
+package/**/*.bundle.json -text
+docs/bundles/** -text
+docs/records.json -text
+docs/host-policy.yaml -text
+docs/.well-known/** -text

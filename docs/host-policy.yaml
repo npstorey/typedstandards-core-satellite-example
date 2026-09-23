@@ -1,0 +1,22 @@
+# docs/host-policy.yaml: what https://core-satellite.typedstandards.org/ displays of the records it serves
+# (docs/records.json). This is the host's own rule. It is not signed and not a Typed Standards record, and
+# no check verifies it; site/generate.mjs applies it to every record docs/records.json lists.
+host: https://core-satellite.typedstandards.org/
+# Only records signed by this key and of this type are displayed.
+signer: did:key:z6Mkw9jqif2wccYESfNW78Sv2YC2UG1zuN5a5gP1HNL3RxDH
+type: content/analysis/v1
+# Each record is displayed by the first rule its status and role match.
+#   current:   drawn in the map or shown in its section, with a link to typedstandards.org's verifier.
+#   version 1: listed as version 1 of the map, with a verifier link; drawn only as below.
+#   withdrawn: not drawn; listed under Withdrawn with its date, reason and verifier link.
+display:
+  - { status: active, roles: [core, map-header, edge], as: current }
+  - { status: active, roles: [map-v1], as: version 1 }
+  - { status: withdrawn, roles: [core, map-v1, map-header, edge], as: withdrawn }
+# The map is drawn from the current map-header record and the current edge records. While no map-header
+# record is current, it is drawn from the version-1 record instead.
+map:
+  from: [map-header, edge]
+  otherwise: map-v1
+# A served record that no rule matches stops the generator.
+unmatched: refuse
