@@ -15,8 +15,8 @@
     "test:page": "node --test site/generate.test.mjs"
   },
   "dependencies": {
-    "@typedstandards/produce-core": "0.5.0",
-    "@typedstandards/verify-core": "0.10.0"
+    "@typedstandards/produce-core": "0.6.0",
+    "@typedstandards/verify-core": "0.11.0"
   },
   "devDependencies": {
     "yaml": "2.9.1"

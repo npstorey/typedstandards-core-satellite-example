@@ -1,4 +1,4 @@
-verify-core 0.10.0 (pinned 0.10.0), produce-core 0.5.0 (pinned 0.5.0), node 22.23.1
+verify-core 0.11.0 (pinned 0.11.0), produce-core 0.6.0 (pinned 0.6.0), node 22.23.1
 
 core  package/core.bundle.json -> core.md
   #1 envelope integrity    ok    verified; recomputed a9623ef408e4…0a93 equals packageHash
@@ -7,7 +7,8 @@ core  package/core.bundle.json -> core.md
   #4 content hash          ok    ok, sha256 matched, from the inline output
   file on disk             ok    core.md equals the signed output byte for byte: true; its SHA-256 c85c650af7c4…ce3b equals contentHash.sha256: true
   #5 key trust             ok    self_certified, verified false; no registry vouches for the key
-  #6 kid consistency       ok    signature.kid = metadata.signingKeyId = signer.identifier: true (did:key:z6Mk…RxDH); checked here, as no verifier implements #6 (typedstandards#88)
+  #6 kid consistency       ok    ok: signature.kid equals metadata.signingKeyId (did:key:z6Mk…RxDH)
+  kid = signer.identifier  ok    signature.kid equals signer.identifier: true; the example's own rule, which #6 does not compare
   #7 RFC 3161 timestamp    n/a   no token; none is requested in this version
   #8 Rekor inclusion       n/a   no entry; none is submitted in this version
   #9 BlobRef               n/a   no BlobRef fields; output is inline
@@ -27,7 +28,8 @@ map  package/map.bundle.json -> map.yaml
   #4 content hash          ok    ok, sha256 matched, from the inline output
   file on disk             ok    map.yaml equals the signed output byte for byte: true; its SHA-256 38945eb4cb3a…155c equals contentHash.sha256: true
   #5 key trust             ok    self_certified, verified false; no registry vouches for the key
-  #6 kid consistency       ok    signature.kid = metadata.signingKeyId = signer.identifier: true (did:key:z6Mk…RxDH); checked here, as no verifier implements #6 (typedstandards#88)
+  #6 kid consistency       ok    ok: signature.kid equals metadata.signingKeyId (did:key:z6Mk…RxDH)
+  kid = signer.identifier  ok    signature.kid equals signer.identifier: true; the example's own rule, which #6 does not compare
   #7 RFC 3161 timestamp    n/a   no token; none is requested in this version
   #8 Rekor inclusion       n/a   no entry; none is submitted in this version
   #9 BlobRef               n/a   no BlobRef fields; output is inline

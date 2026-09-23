@@ -9,9 +9,10 @@
 //
 // Each record carries its file's exact UTF-8 bytes inline under raw-bytes/v1, so check #4 needs no fetch,
 // and this program also compares the file on disk with the signed output byte for byte. Check #6
-// (signature kid = metadata.signingKeyId) is implemented in no verifier (typedstandards#88), so it is
-// checked here directly, together with signer.identifier. Identifiers and digests print abbreviated;
-// the full values are in the bundles. Exits non-zero on any failure.
+// (signature kid = metadata.signingKeyId) is verify-core's since 0.11.0 (typedstandards#88). #6 does not
+// compare signer.identifier, so the example's own rule that the kid is also signer.identifier (hub
+// ADR-0030 §5) is a line of its own. Identifiers and digests print abbreviated; the full values are in
+// the bundles. Exits non-zero on any failure.
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -76,9 +77,12 @@ for (const rec of RECORDS) {
   line('#5 key trust', r.keyTrust?.status === 'self_certified' && r.keyTrust?.verified === false,
     `${r.keyTrust?.status}, verified ${r.keyTrust?.verified}; no registry vouches for the key`);
   const kid = b.signature.kid;
-  const kidOk = typeof kid === 'string' && kid === pkg.metadata.signingKeyId && pkg.metadata.signingKeyId === pkg.signer.identifier;
-  line('#6 kid consistency', kidOk,
-    `signature.kid = metadata.signingKeyId = signer.identifier: ${kidOk} (${short(kid)}); checked here, as no verifier implements #6 (typedstandards#88)`);
+  const k6 = r.signingKeyIdConsistency;
+  line('#6 kid consistency', k6?.status === 'ok', k6?.status === 'ok'
+    ? `ok: signature.kid equals metadata.signingKeyId (${short(kid)})`
+    : `${k6?.status}: signature.kid ${short(kid)}, metadata.signingKeyId ${short(pkg.metadata?.signingKeyId)}`);
+  const idOk = typeof kid === 'string' && kid === pkg.signer?.identifier;
+  line('kid = signer.identifier', idOk, `signature.kid equals signer.identifier: ${idOk}; the example's own rule, which #6 does not compare`);
   line('#7 RFC 3161 timestamp', r.rfc3161 === null && !r.hasTimestamp && !('rfc3161Timestamp' in b) ? null : false,
     'no token; none is requested in this version');
   line('#8 Rekor inclusion', r.rekorInclusion === null && !r.hasRekor && !('rekorEntryId' in b) ? null : false,

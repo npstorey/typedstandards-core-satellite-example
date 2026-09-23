@@ -8,13 +8,14 @@ over anything here.
 
 ## Fixed
 
-- Packages: `@typedstandards/produce-core` 0.5.0 and `@typedstandards/verify-core` 0.10.0, pinned
-  exactly. Never modify them. A gap in either is a finding for the owner, not a patch.
+- Packages: `@typedstandards/produce-core` 0.6.0 and `@typedstandards/verify-core` 0.11.0, pinned
+  exactly (the two version-1 records were built with 0.5.0 and 0.10.0). Never modify them. A gap in
+  either is a finding for the owner, not a patch.
 - Records: exactly two, one per published content file (`core.md`, `map.yaml`). Each carries its
   file's exact UTF-8 bytes inline as `output` under `raw-bytes/v1`. Nothing else is a record.
 - Labels: `producerProfile: scripted-recomputation/<subtype>`, `captureMethod: script-run`,
-  `metadata.contentProfile` absent. `RAW_BYTES_CANONICALIZATION` is imported from verify-core
-  (produce-core 0.5.0 does not re-export it, typedstandards#91); the URI is never written by hand.
+  `metadata.contentProfile` absent. `RAW_BYTES_CANONICALIZATION` is imported from produce-core, which
+  re-exports it since 0.6.0 (typedstandards#91); the URI is never written by hand.
 - Signer: a `did:key` derived from a fresh Ed25519 seed, `bindingTier: pseudonymous`, no trust
   registry. The one identifier string is `signingKeyId`, the envelope `kid` and `signer.identifier`.
   `displayName` names the example, not a person.

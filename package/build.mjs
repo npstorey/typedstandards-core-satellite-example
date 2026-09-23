@@ -38,10 +38,11 @@ import {
   DEFAULT_CONTENT_TYPE,
   deriveKeyDerivedIdentifierFromKey,
   derivePublicKeySpki,
+  RAW_BYTES_CANONICALIZATION,
   sha256Hex,
   signEnvelopeHash,
 } from '@typedstandards/produce-core';
-import { RAW_BYTES_CANONICALIZATION, verifyRecord } from '@typedstandards/verify-core';
+import { verifyRecord } from '@typedstandards/verify-core';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PKG_DIR = path.join(ROOT, 'package');

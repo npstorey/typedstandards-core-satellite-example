@@ -15,8 +15,9 @@ from them shows the map and the records as a picture and tables: https://core-sa
   both with no network access: `node verify.mjs`.
 
 The example follows `typedstandards-eval-run-example` (hub ADR-0028). It pins the published releases
-`@typedstandards/produce-core` 0.5.0 and `@typedstandards/verify-core` 0.10.0 exactly. Those are the
-releases that carry `raw-bytes/v1` (hub ADR-0029) and the self-certifying `did:key` signer (hub ADR-0030).
+`@typedstandards/produce-core` 0.6.0 and `@typedstandards/verify-core` 0.11.0 exactly. They carry
+`raw-bytes/v1` (hub ADR-0029), the self-certifying `did:key` signer (hub ADR-0030) and check #6
+(typedstandards#88). The two records were built with 0.5.0 and 0.10.0 (`package/build-log.json`).
 
 ## How Typed Standards was used here
 
@@ -30,7 +31,7 @@ releases that carry `raw-bytes/v1` (hub ADR-0029) and the self-certifying `did:k
 - the two programs that made the file, each named by the SHA-256 of its code;
 - two labels. The profile says a script wrote the file and can write it again. The capture method says
   the packaging program read the finished file rather than watching the writer run. Nothing verifies
-  that label (`docs/verify-output.txt`, line 15);
+  that label (`docs/verify-output.txt`, line 16);
 - the signer: a key that names itself, with no registry, account or person behind it.
 
 **How it was made.**
@@ -45,7 +46,7 @@ The key was generated for this example, outside the repository. It is now held i
 **What you can check.** After cloning the repository, in a terminal:
 
 - Both records verify offline: `npm ci && node verify.mjs`. The output should match
-  `docs/verify-output.txt`, whose line 46 reads `network: global fetch calls 0; injected fetch calls 0`.
+  `docs/verify-output.txt`, whose line 48 reads `network: global fetch calls 0; injected fetch calls 0`.
 - Each file is byte for byte what was signed: `shasum -a 256 core.md map.yaml` prints the SHA-256 that
   each record states for its file, as `contentHash.sha256`.
 - Any pinned source can be fetched again and compared: `node corpus/pin.mjs --force` in a scratch clone,
@@ -70,7 +71,7 @@ word.
   specification's numbered checks, and carries its source pins and labels inside its signed bytes.
 - Building this example ran into three gaps in the specification and its reference packages, all filed
   (`docs/findings.md`): two filed before (typedstandards#91, #88) and one found here (typedstandards#96,
-  hub#230).
+  hub#230). The releases pinned now carry the three package fixes (their `CHANGELOG.md` files).
 
 **Terms used below.**
 
@@ -97,7 +98,7 @@ establishes it.
 | The bytes of `core.md` and `map.yaml` | Attested (#3, #4, #1) | Each record carries its file's exact UTF-8 bytes inline, under `raw-bytes/v1` (#3 `ok`). #4 recomputes `contentHash.sha256` from those bytes (`ok`), and #1 recomputes the envelope hash (`verified`). The digest is the file's ordinary SHA-256, so `shasum -a 256` checks it without any Typed Standards code, and `verify.mjs` compares each file on disk with its signed output byte for byte. |
 | The signature over each record | Attested (#2) | Ed25519ph over the envelope-hash hex string. Valid for both records. |
 | One key signed both records | Attested (#14, #2) | #14 reports `key_derived_match` for each record: the `did:key` identifier is derived from the public key in that record's signature. `verify.mjs` then confirms that both signatures carry the same key and identifier. |
-| The key names itself consistently | Attested (#6, checked by `verify.mjs`) | `signature.kid`, `metadata.signingKeyId` and `signer.identifier` are one string. No verifier implements spec check #6 (typedstandards#88), so `verify.mjs` checks it directly. |
+| The key names itself consistently | Attested (#6) | #6 reports `ok`: `signature.kid` equals `metadata.signingKeyId`. #6 does not compare `signer.identifier`, so `verify.mjs` also confirms that it is the same string, as hub ADR-0030 §5 says it should be. |
 | Who holds the key | Not covered | #5 reports `self_certified` with `verified: false`: no trust registry and no domain vouch for the key. `displayName` names the example, not a person. |
 | Capture method and producer profile | Asserted | #15 reports `ok`: `script-run` is a value the `scripted-recomputation` profile allows. No check establishes that one program wrote the files and a second one packaged them. The label is signed, so it cannot be changed without breaking #1. |
 | The source digests | Asserted | `corpus/manifest.json` pins 40 sources. The map record lists the 34 it uses and the core record the 11 it uses, 5 of them in both, in `queries[].arguments`: location, SHA-256, bytes, HTTP status, fetch time and stated licence. These are signed assertions that no check recomputes. Every location is immutable, so anyone can re-fetch it and compare. An accidental second fetch, 38 seconds after the pin, got identical digests for all 40 (`docs/pin-record.md`). |
@@ -146,7 +147,8 @@ Signing runs only in the publisher's own terminal:
   and check #12 recognizes `endorses` and `corroborates`. But nothing operationalizes it (§8.12.4): no
   check enforces a sub-type's authorization rule or its payload. The specification also states the
   ratified table twice, and the two statements disagree on `attestation/revises/v1` (hub#230). verify-core
-  follows the shorter list (typedstandards#96).
+  0.10.0 followed the shorter list (typedstandards#96); 0.11.0 registers `attestation/revises/v1`, citing
+  specification v0.1.10 (its `CHANGELOG.md`).
 - **A hash check for every link.** The paper wants every link to carry a location and a content hash.
   `raw-bytes/v1` fingerprints one file per record, so here only `core.md` and `map.yaml` themselves are
   recomputed by a check. The 40 links they cite are signed assertions. A rule over a set of files is not
