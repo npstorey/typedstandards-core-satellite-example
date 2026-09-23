@@ -2,7 +2,7 @@
   "name": "typedstandards-core-satellite-example",
   "version": "0.0.0",
   "private": true,
-  "description": "The SciOS core-and-satellite model applied to the Typed Standards domain, its two published content files signed as Typed Standards records that verify offline.",
+  "description": "The SciOS core-and-satellite model applied to the Typed Standards domain: its published content files signed as Typed Standards records, one per edge of the map, that verify offline.",
   "license": "MIT",
   "type": "module",
   "engines": {
@@ -10,8 +10,10 @@
   },
   "scripts": {
     "verify": "node verify.mjs",
+    "check": "node package/build.mjs check",
     "page": "node site/generate.mjs",
     "check:page": "node site/generate.mjs --check",
+    "test": "node --test site/generate.test.mjs corpus/pin.test.mjs package/build.test.mjs",
     "test:page": "node --test site/generate.test.mjs"
   },
   "dependencies": {
