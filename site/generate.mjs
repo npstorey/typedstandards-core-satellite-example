@@ -1,19 +1,23 @@
 #!/usr/bin/env node
-// Generate docs/index.html, a view of this example's two signed files:
+// Generate docs/index.html, a view of the records this host serves:
 //   node site/generate.mjs [--root <dir>]            write <root>/docs/index.html
 //   node site/generate.mjs --check [--root <dir>]    regenerate in memory, compare byte for byte
 //
-// The page is a pure function of three inputs, read as bytes: map.yaml and core.md, the two files
-// signed as records, and README.md, which is not signed and is an input only for the sections named
-// in README_SECTIONS. render() reads no clock, environment, locale or network. Everything is in
-// document order; nothing is sorted. The one parser is `yaml`, pinned exactly in package.json.
-// core.md keeps four of its absences as comment lines in its front matter, which a YAML parser
-// discards, so those are read from the text.
+// The page is a pure function of its inputs, read as bytes: every signed file docs/records.json lists,
+// in its order; README.md, which is not signed and is an input only for the sections named in
+// README_SECTIONS; docs/records.json, what the host serves and each record's status; and
+// docs/host-policy.yaml, the host's rule for what the page displays. Neither of the last two is signed.
+// render() reads no clock, environment, locale or network. Everything is in document or record order;
+// nothing is sorted. The one parser is `yaml`, pinned exactly in package.json. core.md keeps four of its
+// absences as comment lines in its front matter, which a YAML parser discards, so those are read from the
+// text.
 //
-// Before writing or checking, the generator refuses unless sha256(map.yaml) and sha256(core.md) each
-// equal contentHash.sha256 in that file's signed record (package/map.bundle.json,
-// package/core.bundle.json). The bundles gate the run; no byte of them reaches the page. This is not
-// signature verification: `npm run verify` is the check of the records.
+// Before writing or checking, the generator refuses unless each signed file's SHA-256 equals
+// contentHash.sha256 in its record's served bundle (docs/bundles/<name>.bundle.json). The bundles gate
+// the run; no byte of them reaches the page, and whatever the page shows per record comes from
+// docs/records.json. This is not signature verification: `npm run verify` is the check of the records.
+// It also refuses a record docs/host-policy.yaml does not display, and a page that would carry one of the
+// FORBIDDEN phrases.
 //
 // Exit codes: 0 written, or --check found no difference; 1 --check found a difference; 2 refused.
 import crypto from 'node:crypto';
@@ -22,16 +26,18 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import YAML from 'yaml';
 
-export const INPUTS = [
-  { key: 'map', file: 'map.yaml', bundle: 'package/map.bundle.json' },
-  { key: 'core', file: 'core.md', bundle: 'package/core.bundle.json' },
-  { key: 'readme', file: 'README.md', bundle: null },
-];
 export const PAGE = 'docs/index.html';
+export const RECORDS = 'docs/records.json';
+export const POLICY = 'docs/host-policy.yaml';
+export const README = 'README.md';
 const REPOSITORY = 'github.com/npstorey/typedstandards-core-satellite-example';
 const GENERATOR = 'site/generate.mjs';
+const VERIFIER = 'https://typedstandards.org/verify?url=';
 export const README_SECTIONS = ['## How Typed Standards was used here', '## What the records prove / what they do not'];
 const CORE_TABLE_HEADING = '# Core responsibilities';
+// Wording the page never uses: no party confirms or vouches for these records, nothing here is checked
+// live, and a correction is a withdrawal plus a new record.
+export const FORBIDDEN = ['confirmed by', 'vouched for by typedstandards.org', 'verified live', 'superseded'];
 
 // A code span naming one of these files becomes a link. Files in docs/ sit beside the page; the
 // others are linked on GitHub. The page reads none of them.
@@ -39,7 +45,10 @@ const LINKED = new Map([
   ['docs/verify-output.txt', 'verify-output.txt'],
   ['docs/findings.md', 'findings.md'],
   ['docs/pin-record.md', 'pin-record.md'],
-  ...['package/core.bundle.json', 'package/map.bundle.json', 'corpus/manifest.json']
+  ['docs/records.json', 'records.json'],
+  ['docs/host-policy.yaml', 'host-policy.yaml'],
+  ['docs/.well-known/typed-publisher.json', '.well-known/typed-publisher.json'],
+  ...['package/core.bundle.json', 'package/map.bundle.json', 'package/build-log.json', 'corpus/manifest.json']
     .map((p) => [p, `https://${REPOSITORY}/blob/main/${p}`]),
 ]);
 
@@ -56,21 +65,40 @@ const ARROW_IN = '←';
 
 export const sha256 = (buf) => crypto.createHash('sha256').update(buf).digest('hex');
 
+// The inputs, in the order the page lists and hashes them: every signed file docs/records.json lists,
+// in its order, then README.md, docs/records.json and docs/host-policy.yaml. `bundle` is a signed file's
+// served bundle, which gates the run.
+export function inputFiles(root) {
+  const listed = JSON.parse(fs.readFileSync(path.join(root, RECORDS), 'utf8')).records;
+  return [
+    ...listed.map((r) => ({ file: r.file, bundle: `docs/${r.bundle}` })),
+    { file: README, bundle: null },
+    { file: RECORDS, bundle: null },
+    { file: POLICY, bundle: null },
+  ];
+}
+
 export function readInputs(root) {
-  return Object.fromEntries(INPUTS.map((i) => [i.key, fs.readFileSync(path.join(root, i.file))]));
+  return inputFiles(root).map((i) => ({ ...i, bytes: fs.readFileSync(path.join(root, i.file)) }));
 }
 
 // Returns one message per signed input whose bytes differ from its record's contentHash.sha256.
 export function refusals(root, inputs) {
   const out = [];
-  for (const i of INPUTS.filter((x) => x.bundle)) {
-    const signed = JSON.parse(fs.readFileSync(path.join(root, i.bundle), 'utf8')).package?.contentHash?.sha256;
-    const actual = sha256(inputs[i.key]);
-    if (actual !== signed) {
-      out.push(`${i.file}: sha256 ${actual} differs from contentHash.sha256 ${signed} in ${i.bundle}`);
-    }
+  for (const i of inputs.filter((x) => x.bundle)) {
+    const at = path.join(root, i.bundle);
+    const signed = fs.existsSync(at) ? JSON.parse(fs.readFileSync(at, 'utf8')).package?.contentHash?.sha256 : undefined;
+    const actual = sha256(i.bytes);
+    if (actual !== signed) out.push(`${i.file}: sha256 ${actual} differs from contentHash.sha256 ${signed} in ${i.bundle}`);
   }
   return out;
+}
+
+// The shasum-style listing of the inputs, and its SHA-256: `shasum -a 256` over the files in this order
+// prints the listing.
+export function listing(inputs) {
+  const text = inputs.map((i) => `${sha256(i.bytes)}  ${i.file}\n`).join('');
+  return { text, digest: sha256(Buffer.from(text)) };
 }
 
 // ---------- text helpers ----------
@@ -210,17 +238,23 @@ function parseCore(text) {
   };
 }
 
-// ---------- map.yaml ----------
+// ---------- the map: map/header.yaml and map/edges/, or version 1's map.yaml ----------
 
-function parseMap(text) {
+function yamlDocs(text, file) {
   const docs = YAML.parseAllDocuments(text);
   for (const d of docs) {
     const problems = [...d.errors, ...d.warnings];
-    if (problems.length) throw new Error(`map.yaml: ${problems[0].message}`);
+    if (problems.length) throw new Error(`${file}: ${problems[0].message}`);
   }
-  // The header as Maps keeps document order for every key, numeric ring keys included.
-  const hdr = docs[0].toJS({ mapAsMap: true }).get('x-typedstandards');
+  return docs;
+}
+
+// The header's x-typedstandards block, read as Maps so that document order holds for every key, numeric
+// ring keys included.
+function parseHeader(doc, file) {
+  const hdr = doc.toJS({ mapAsMap: true }).get('x-typedstandards');
   const header = {
+    file,
     title: hdr.get('map'),
     subject: hdr.get('subject'),
     edgeTypes: hdr.get('edgeTypes'),
@@ -230,34 +264,64 @@ function parseMap(text) {
     dropped: (hdr.get('dropped') ?? []).map((d) => ({ name: d.get('name'), seed: d.get('seed'), reason: d.get('reason') })),
   };
   for (const r of header.relations) {
-    if (!RELATION_STYLE[r.name]) throw new Error(`map.yaml: relation "${r.name}" has no style in ${GENERATOR}`);
+    if (!RELATION_STYLE[r.name]) throw new Error(`${file}: relation "${r.name}" has no style in ${GENERATOR}`);
   }
-  const edges = docs.slice(1).map((d, i) => {
-    const e = d.toJS();
-    const x = e['x-typedstandards'];
-    const outward = e.subject.id === header.subject;
-    if (!outward && e.object.id !== header.subject) {
-      throw new Error(`map.yaml: edge ${e.id} has ${header.subject} at neither end`);
-    }
-    if (!header.relations.some((r) => r.name === x.relation)) throw new Error(`map.yaml: edge ${e.id}: undefined relation ${x.relation}`);
-    if (!header.rings.some((r) => r.ring === x.ring)) throw new Error(`map.yaml: edge ${e.id}: undefined ring ${x.ring}`);
-    return {
-      n: i + 1,
-      id: e.id,
-      outward,
-      far: outward ? e.object : e.subject,
-      near: outward ? e.subject : e.object,
-      relation: x.relation,
-      basis: x.basis,
-      ring: x.ring,
-      name: x.name,
-      publisher: x.publisher,
-      pin: x.pin ?? {},
-      intent: x.intent,
-    };
-  });
-  return { header, edges };
+  return header;
 }
+
+// One edge. `record` is the docs/records.json entry whose signed file carries it.
+function parseEdge(e, n, header, record, file) {
+  const x = e['x-typedstandards'];
+  const outward = e.subject.id === header.subject;
+  if (!outward && e.object.id !== header.subject) throw new Error(`${file}: edge ${e.id} has ${header.subject} at neither end`);
+  if (!header.relations.some((r) => r.name === x.relation)) throw new Error(`${file}: edge ${e.id}: undefined relation ${x.relation}`);
+  if (!header.rings.some((r) => r.ring === x.ring)) throw new Error(`${file}: edge ${e.id}: undefined ring ${x.ring}`);
+  return {
+    n,
+    id: e.id,
+    outward,
+    far: outward ? e.object : e.subject,
+    near: outward ? e.subject : e.object,
+    relation: x.relation,
+    basis: x.basis,
+    ring: x.ring,
+    name: x.name,
+    publisher: x.publisher,
+    pin: x.pin ?? {},
+    intent: x.intent,
+    record,
+  };
+}
+
+// The map as the policy says to draw it: from the current map-header record and the current edge
+// records, or, while no map-header record is current, from the version-1 record's map.yaml.
+function parseMap(shown, text, policy) {
+  const header = shown.find((r) => r.as === 'current' && r.role === 'map-header');
+  if (header) {
+    const h = parseHeader(yamlDocs(text(header.file), header.file)[0], header.file);
+    const edges = shown.filter((r) => r.as === 'current' && r.role !== 'map-header' && policy.map.from.includes(r.role))
+      .map((r, i) => parseEdge(yamlDocs(text(r.file), r.file)[0].toJS(), i + 1, h, r, r.file));
+    return { header: h, edges, from: 'records' };
+  }
+  const v1 = shown.find((r) => r.role === policy.map.otherwise && r.as !== 'withdrawn');
+  if (!v1) throw new Error(`${POLICY}: no current map-header record and no ${policy.map.otherwise} record to draw the map from`);
+  const docs = yamlDocs(text(v1.file), v1.file);
+  const h = parseHeader(docs[0], v1.file);
+  return { header: h, edges: docs.slice(1).map((d, i) => parseEdge(d.toJS(), i + 1, h, v1, v1.file)), from: 'version 1' };
+}
+
+// Each served record with the policy's `as`, or an error naming the first record no rule displays.
+function applyPolicy(policy, records) {
+  return records.map((r) => {
+    const rule = r.signer === policy.signer && r.type === policy.type
+      ? policy.display.find((d) => d.status === r.status && d.roles.includes(r.role))
+      : undefined;
+    if (!rule) throw new PolicyRefusal(`${POLICY}: no rule displays ${r.name} (${r.role}, ${r.status}, signer ${r.signer}, type ${r.type}); unmatched: ${policy.unmatched}`);
+    return { ...r, as: rule.as };
+  });
+}
+
+export class PolicyRefusal extends Error {}
 
 const unpinned = (e) => e.far.ref?.sha256 === null;
 const arrow = (e) => (e.outward ? ARROW_OUT : ARROW_IN);
@@ -420,6 +484,8 @@ td a,td code{overflow-wrap:anywhere}
 th{font-weight:600;border-top:2px solid var(--rule);background:var(--panel)}
 td small{display:block;color:var(--muted);font-size:.85em}
 table.edges td:nth-child(1),table.edges td:nth-child(3),table.edges td:nth-child(4){white-space:nowrap}
+table.edges td:nth-child(5){white-space:nowrap}
+pre.listing{margin:.5rem 0;padding:.6rem;background:var(--code);border-radius:3px;font-size:.78rem;line-height:1.45;overflow-x:auto;white-space:pre}
 details{margin:.5rem 0 1.5rem}
 summary{cursor:pointer;font-weight:600}
 dl{margin:.5rem 0 1rem}
@@ -440,6 +506,7 @@ table.edges td:nth-child(1)::before,table.refs td:nth-child(1)::before{content:"
 table.edges td:nth-child(2)::before{content:"Name"}
 table.edges td:nth-child(3)::before{content:"Ring"}
 table.edges td:nth-child(4)::before{content:"Relation"}
+table.edges td:nth-child(5)::before{content:"Record"}
 table.refs td:nth-child(2)::before{content:"Other end"}
 table.refs td:nth-child(3)::before{content:"Basis"}
 table.refs td:nth-child(4)::before{content:"Location and SHA-256"}
@@ -466,13 +533,15 @@ function blocks(bs) {
   }).join('\n');
 }
 
-// The visible table: the picture as text. An unpinned edge says so, with the reason, in its row.
-function edgeRows(edges) {
+// The visible table: the picture as text. An unpinned edge says so, with the reason, in its row. The last
+// cell links to typedstandards.org's verifier for the record that carries the edge.
+function edgeRows(edges, verify) {
   return edges.map((e) => [
     String(e.n),
     `${esc(e.name)}<small>${esc(e.publisher)}</small>${unpinned(e) ? `<small>${notPinnedText(e)}</small>` : ''}`,
     esc(e.ring),
     `${arrow(e)} ${esc(e.relation)}`,
+    verify(e.record),
   ]);
 }
 
@@ -491,14 +560,41 @@ function refRows(edges) {
   });
 }
 
+// What one step added, from the roles of its records.
+function stepText(records) {
+  const parts = [];
+  for (const [role, file] of [['core', 'core.md'], ['map-v1', 'map.yaml'], ['map-header', 'map/header.yaml']]) {
+    if (records.some((r) => r.role === role)) parts.push(`<code>${file}</code>`);
+  }
+  const edges = records.filter((r) => r.role === 'edge').length;
+  if (edges) parts.push(count(edges, 'edge', 'edges'));
+  return `${andList(parts)} (${count(records.length, 'record', 'records')})`;
+}
+
+// A withdrawn or listed record's own name: an edge's name from its file, else the file.
+function recordLabel(r, text) {
+  if (r.role !== 'edge') return `<code>${esc(r.file)}</code>`;
+  const e = yamlDocs(text(r.file), r.file)[0].toJS();
+  return `${esc(e['x-typedstandards'].name)} <small><code>${esc(r.file)}</code></small>`;
+}
+
 export function render(inputs) {
-  const text = Object.fromEntries(INPUTS.map((i) => [i.key, decode(inputs[i.key], i.file)]));
-  const digest = Object.fromEntries(INPUTS.map((i) => [i.key, sha256(inputs[i.key])]));
-  const map = parseMap(text.map);
-  const core = parseCore(text.core);
-  const [how, proof] = parseReadme(text.readme);
+  const bytes = new Map(inputs.map((i) => [i.file, i.bytes]));
+  const text = (f) => decode(bytes.get(f), f);
+  const { text: inputListing, digest } = listing(inputs);
+  const generatedFrom = `generated from ${inputs.length} inputs @ ${digest}`;
+  const served = JSON.parse(text(RECORDS));
+  const policy = YAML.parse(text(POLICY));
+  const shown = applyPolicy(policy, served.records);
+  const verifyHref = (r) => `${VERIFIER}${served.host}${r.bundle}`;
+  const verify = (r) => `<a href="${esc(verifyHref(r))}">verify</a>`;
+  const coreRecord = shown.find((r) => r.role === 'core' && r.as === 'current');
+  if (!coreRecord) throw new PolicyRefusal(`${POLICY}: no current core record to show`);
+  const core = parseCore(text(coreRecord.file));
+  const map = parseMap(shown, text, policy);
+  const [how, proof] = parseReadme(text(README));
   const { header, edges } = map;
-  const generatedFrom = `generated from map.yaml @ ${digest.map}, core.md @ ${digest.core}, README.md @ ${digest.readme}`;
+  const signedCount = inputs.filter((i) => i.bundle).length;
   const nOut = edges.filter((e) => e.outward).length;
   const notPinned = edges.filter(unpinned);
   const nearRefs = [...new Set(edges.map((e) => `${e.near.id} ${e.near.ref?.location} ${e.near.ref?.sha256}`))];
@@ -506,6 +602,17 @@ export function render(inputs) {
   const notDone = core.table.rows.filter((r) => r[verdictCol] === 'NOT DONE').length;
   const firstOut = edges.find((e) => e.outward);
   const firstIn = edges.find((e) => !e.outward);
+  const steps = [];
+  for (const r of served.records) {
+    if (!steps.length || steps[steps.length - 1].step !== r.step) steps.push({ step: r.step, records: [] });
+    steps[steps.length - 1].records.push(r);
+  }
+  const newest = steps[steps.length - 1];
+  const stepDate = (s) => s.records[0].createdAt.slice(0, 10);
+  const current = shown.filter((r) => r.as === 'current');
+  const versionOne = shown.filter((r) => r.as === 'version 1');
+  const withdrawn = shown.filter((r) => r.as === 'withdrawn');
+  const recordCount = `${count(current.length, 'current record', 'current records')}${versionOne.length ? ' and version 1' : ''}${withdrawn.length ? `, and ${withdrawn.length} withdrawn` : ''}`;
 
   const h = [];
   h.push('<!doctype html>');
@@ -526,19 +633,14 @@ export function render(inputs) {
   h.push('<body>');
   h.push('<main>');
 
-  // Header
+  // Opening: what the map is, how many records, the newest change, and how to check them.
   h.push('<header>');
   h.push(`<h1>${esc(header.title)}</h1>`);
-  h.push('<p class="subtitle">typedstandards-core-satellite-example: the SciOS core-and-satellite model applied to Typed Standards, published as two signed records, <code>map.yaml</code> and <code>core.md</code>.</p>');
-  h.push(`<p>The map places ${edges.length} public projects in ${word(header.rings.length)} rings by their technical relation to Typed Standards, and the core record measures Typed Standards against the model's list of core responsibilities and assesses it as a ${esc(core.selfAssessment)}. This page is generated from those two signed files and the repository's README, and is not signed itself.</p>`);
+  h.push('<p class="subtitle">typedstandards-core-satellite-example: the SciOS core-and-satellite model applied to Typed Standards.</p>');
+  h.push(`<p>The map places ${edges.length} public projects in ${word(header.rings.length)} rings by their technical relation to Typed Standards, and the core record, <code>core.md</code>, assesses Typed Standards as a ${esc(core.selfAssessment)}. They are published here as ${recordCount}, each a signed Typed Standards record. This page is a view of them and is not signed itself.</p>`);
+  h.push(`<p><strong>Newest change:</strong> version ${esc(newest.step)}, ${esc(stepDate(newest))}: ${stepText(newest.records)}. <a href="#records">The records</a> lists every version.</p>`);
+  h.push('<p><strong>Check it yourself:</strong> each record links to typedstandards.org\'s verifier, and <code>npm ci &amp;&amp; node verify.mjs</code> checks every record offline in a clone of the repository.</p>');
   h.push('</header>');
-
-  // How Typed Standards was used here
-  h.push('<section id="how">');
-  h.push(`<h2>${inline(how.heading)}</h2>`);
-  h.push(`<p><strong>${esc(core.name)}</strong>, in its own record (<code>core.md</code>): ${esc(core.description)} Its mission: ${esc(core.mission)}</p>`);
-  h.push(blocks(how.blocks));
-  h.push('</section>');
 
   // The map
   h.push('<section id="map">');
@@ -566,25 +668,32 @@ export function render(inputs) {
   h.push('</ul>');
   h.push('</section>');
 
+  // How Typed Standards was used here
+  h.push('<section id="how">');
+  h.push(`<h2>${inline(how.heading)}</h2>`);
+  h.push(`<p><strong>${esc(core.name)}</strong>, in its own record (<code>core.md</code>): ${esc(core.description)} Its mission: ${esc(core.mission)}</p>`);
+  h.push(blocks(how.blocks));
+  h.push('</section>');
+
   // What the map leaves out
   h.push('<section id="absent">');
   h.push('<h2>What the map leaves out</h2>');
   h.push('<h3>No orbits edge</h3>');
   h.push(`<blockquote>${esc(header.edgeTypes)}</blockquote>`);
-  h.push('<p class="note"><code>map.yaml</code>, <code>x-typedstandards.edgeTypes</code></p>');
+  h.push(`<p class="note"><code>${esc(header.file)}</code>, <code>x-typedstandards.edgeTypes</code></p>`);
   h.push(`<h3>Not pinned (${notPinned.length})</h3>`);
   h.push(notPinned.length
     ? `<ul>${notPinned.map((e) => `<li>${e.n}. ${esc(e.name)} (${link(e.far.ref.location)}): sha256 null. ${esc(e.pin.reason ?? 'No reason given.')}</li>`).join('')}</ul>`
     : '<p>None.</p>');
   h.push(`<h3>Dropped (${header.dropped.length})</h3>`);
-  h.push('<p class="note">Considered for the map and left out, with the reason <code>map.yaml</code> gives.</p>');
+  h.push(`<p class="note">Considered for the map and left out, with the reason <code>${esc(header.file)}</code> gives.</p>`);
   h.push(table(['Name', 'Seed', 'Reason'], header.dropped.map((d) => [esc(d.name), esc(d.seed), esc(d.reason)])));
   h.push('</section>');
 
   // core.md
   h.push('<section id="core">');
   h.push('<h2>The core record: <code>core.md</code></h2>');
-  h.push(`<p><code>selfAssessment: ${esc(core.selfAssessment)}</code>, <code>typeDeclared: ${esc(core.typeDeclared)}</code>.</p>`);
+  h.push(`<p><code>selfAssessment: ${esc(core.selfAssessment)}</code>, <code>typeDeclared: ${esc(core.typeDeclared)}</code>. Its record: ${verify(coreRecord)}.</p>`);
   h.push(`<details><summary>The record's basis for its self-assessment (${core.selfAssessmentBasis.length})</summary><ul>${core.selfAssessmentBasis.map((b) => `<li>${esc(b)}</li>`).join('')}</ul></details>`);
   h.push(`<h3>Absence markers in the front matter (${core.markers.length})</h3>`);
   h.push(`<p class="note">Comment lines ${andList(core.markers.map((m) => String(m.line)))} of <code>core.md</code>. A YAML parser discards comments, so the generator reads them from the text.</p>`);
@@ -599,15 +708,34 @@ export function render(inputs) {
   // Every edge
   h.push('<section id="edges">');
   h.push(`<h2>Every edge (${edges.length})</h2>`);
-  h.push(`<p class="note">Every edge in <code>map.yaml</code>, in document order: the picture as text. ${ARROW_OUT} and ${ARROW_IN} as in the legend. Each edge's basis is in the collapsed table below.</p>`);
-  h.push(table(['#', 'Name', 'Ring', 'Relation'], edgeRows(edges), { cls: 'edges', labels: false }));
+  h.push(map.from === 'records'
+    ? `<p class="note">Every current edge record, in the order it was signed: the picture as text. ${ARROW_OUT} and ${ARROW_IN} as in the legend. Each row links to typedstandards.org's verifier for that edge's own record. Each edge's basis is in the collapsed table below.</p>`
+    : `<p class="note">Every edge in <code>map.yaml</code>, version 1, in document order: the picture as text. ${ARROW_OUT} and ${ARROW_IN} as in the legend. Each row links to typedstandards.org's verifier for version 1's record, which carries every edge. Each edge's basis is in the collapsed table below.</p>`);
+  h.push(table(['#', 'Name', 'Ring', 'Relation', 'Record'], edgeRows(edges, verify), { cls: 'edges', labels: false }));
   h.push(`<details><summary>Every edge's basis, and the other end's id, location and SHA-256 (${edges.length})</summary>`);
   h.push(`<p class="note">${esc(header.refs)}</p>`);
   h.push(nearRefs.length === 1
     ? `<p class="note">${esc(header.subject)}'s own end carries the same ref on every edge: ${link(edges[0].near.ref.location)}, sha256 <code>${esc(edges[0].near.ref.sha256)}</code>.</p>`
-    : `<p class="note">${esc(header.subject)}'s own end carries ${nearRefs.length} different refs; see <code>map.yaml</code>.</p>`);
+    : `<p class="note">${esc(header.subject)}'s own end carries ${nearRefs.length} different refs; see the edge files.</p>`);
   h.push(table(['#', 'Other end', 'Basis', 'Location and SHA-256'], refRows(edges), { cls: 'refs', labels: false }));
   h.push('</details>');
+  h.push('</section>');
+
+  // The records
+  h.push('<section id="records">');
+  h.push('<h2>The records</h2>');
+  h.push(`<p>This host serves ${count(served.records.length, 'signed record', 'signed records')}: ${recordCount}. Each version below is one signing step, and no record is ever re-signed.</p>`);
+  h.push(`<ol class="versions">${steps.map((s) => `<li>Version ${esc(s.step)}, ${esc(stepDate(s))}: ${stepText(s.records)}.</li>`).join('')}</ol>`);
+  const listed = shown.filter((r) => r.role !== 'edge' || r.as === 'withdrawn');
+  h.push(table(['Record', 'Shown as', 'Status', 'Check'], listed.map((r) => [recordLabel(r, text), esc(r.as), esc(r.status), verify(r)])));
+  h.push(`<p class="note">Each edge record is linked in its row of <a href="#edges">Every edge</a>. A correction is a withdrawal plus a new record.</p>`);
+  h.push(`<h3>Withdrawn (${withdrawn.length})</h3>`);
+  h.push(withdrawn.length
+    ? `<ul>${withdrawn.map((r) => `<li>${recordLabel(r, text)}, withdrawn ${esc(r.withdrawn?.at ?? '')}: ${esc(r.withdrawn?.reason ?? '')} ${verify(r)}</li>`).join('')}</ul>`
+    : '<p>None.</p>');
+  h.push('<h3>Whose rules these are</h3>');
+  h.push('<p>What this page shows, and how, follows <a href="host-policy.yaml"><code>docs/host-policy.yaml</code></a>: the host\'s own display rule. It is not a Typed Standards record, and no Typed Standards check covers it.</p>');
+  h.push(`<p>The key's registry, <a href=".well-known/typed-publisher.json"><code>docs/.well-known/typed-publisher.json</code></a>, is the example publisher's own statement that the key is active. It is not an endorsement by the Typed Standards specification or by typedstandards.org, although this host is a subdomain of typedstandards.org. Every record's view names it as <code>trustRegistryUrl</code>, which is not part of what the key signed.</p>`);
   h.push('</section>');
 
   // What the records prove / what they do not
@@ -621,14 +749,10 @@ export function render(inputs) {
   h.push('<section id="provenance">');
   h.push('<h2>Provenance</h2>');
   h.push(`<p><code>${esc(generatedFrom)}</code></p>`);
-  h.push(`<p>Generated by <code>${GENERATOR}</code> in <a href="https://${REPOSITORY}">${esc(REPOSITORY)}</a>, with one YAML parser, <code>yaml</code>, pinned exactly. The page carries no generation time: it is a function of the three inputs alone.</p>`);
-  h.push('<details><summary>The three inputs</summary>');
-  h.push(table(['Input', 'Signed record', 'SHA-256'], [
-    ['<code>map.yaml</code>', 'Yes', `<code>${digest.map}</code>`],
-    ['<code>core.md</code>', 'Yes', `<code>${digest.core}</code>`],
-    ['<code>README.md</code>', 'No', `<code>${digest.readme}</code>`],
-  ]));
-  h.push('<p class="note">Yes: the file\'s bytes are the inline output of its record in <code>package/</code>, and its SHA-256 is that record\'s <code>contentHash.sha256</code>. The generator refuses to write this page otherwise. <code>README.md</code> is an input because the sections above that come from it are in neither signed file.</p>');
+  h.push(`<p>Generated by <code>${GENERATOR}</code> in <a href="https://${REPOSITORY}">${esc(REPOSITORY)}</a>, with one YAML parser, <code>yaml</code>, pinned exactly. The page carries no generation time: it is a function of its inputs alone.</p>`);
+  h.push(`<details><summary>The ${inputs.length} inputs</summary>`);
+  h.push(`<p class="note">The digest above is the SHA-256 of this listing, which <code>shasum -a 256</code> prints for the files in this order. The first ${signedCount} are signed: each file's bytes are the inline output of its record, and its SHA-256 is that record's <code>contentHash.sha256</code>; the generator refuses to write this page otherwise. The last three are not signed. <code>README.md</code> is an input because the sections above that come from it are in no signed file.</p>`);
+  h.push(`<pre class="listing">${esc(inputListing)}</pre>`);
   h.push('</details>');
   h.push('</section>');
 
@@ -656,14 +780,23 @@ function main(argv) {
   const check = argv.includes('--check');
   const r = argv.indexOf('--root');
   const root = r >= 0 ? path.resolve(argv[r + 1]) : path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+  const refuse = (messages) => {
+    for (const m of messages) console.error(`refused: ${m}`);
+    console.error(`${PAGE} was not ${check ? 'checked' : 'written'}: the page is a view of signed bytes only, displayed as ${POLICY} says.`);
+    return 2;
+  };
   const inputs = readInputs(root);
   const refused = refusals(root, inputs);
-  if (refused.length) {
-    for (const m of refused) console.error(`refused: ${m}`);
-    console.error(`${PAGE} was not ${check ? 'checked' : 'written'}: the page is a view of signed bytes only.`);
-    return 2;
+  if (refused.length) return refuse(refused);
+  let page;
+  try {
+    page = render(inputs);
+  } catch (e) {
+    if (e instanceof PolicyRefusal) return refuse([e.message]);
+    throw e;
   }
-  const page = render(inputs);
+  const forbidden = FORBIDDEN.filter((p) => page.toLowerCase().includes(p));
+  if (forbidden.length) return refuse(forbidden.map((p) => `the page would say "${p}"`));
   const target = path.join(root, PAGE);
   if (!check) {
     fs.writeFileSync(target, page);
@@ -683,6 +816,6 @@ function main(argv) {
   return 1;
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (process.argv[1] && fs.realpathSync(process.argv[1]) === fs.realpathSync(fileURLToPath(import.meta.url))) {
   process.exitCode = main(process.argv.slice(2));
 }
