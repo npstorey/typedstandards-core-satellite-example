@@ -1,0 +1,27 @@
+# One edge of the map whose header is map/header.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/workflow-run-crate
+createdAt: "2026-09-22"
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+object:
+  id: github.com/ResearchObject/workflow-run-crate
+  ref:
+    location: https://raw.githubusercontent.com/ResearchObject/workflow-run-crate/3c5b530c3d2784169e461d3273855a6b3a57246e/docs/profiles/0.6/workflow_run_crate/index.md
+    sha256: 204a5af0f2823899503fe150d53feccb2a04b2f5f9988d9f605d2b4d269cb597
+x-typedstandards:
+  relation: adjacent
+  basis: RO-Crate profiles for recording tool and workflow executions. The specification names WRROC with RO-Crate as the direction for a multi-file package. Nothing is built.
+  ring: 2
+  name: Workflow Run RO-Crate 0.6
+  publisher: Workflow Run RO-Crate working group
+  pin:
+    fetchedAt: "2026-09-22T19:20:30Z"
+    bytes: 17132
+    httpStatus: 200
+    basis: tag 0.6.0, the latest release (2026-09-07)
+    licence: Apache-2.0 (the document's License header)
+  curation: { seed: moved, reason: "Moved from Ring 1 and split from RO-Crate, for the same reasons." }

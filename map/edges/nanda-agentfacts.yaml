@@ -1,0 +1,27 @@
+# One edge of the map whose header is map/header.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/nanda-agentfacts
+createdAt: "2026-09-22"
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+object:
+  id: github.com/projnanda/agentfacts-format
+  ref:
+    location: https://raw.githubusercontent.com/projnanda/agentfacts-format/89e938c08a7166341201568055c0a3b6852d26e4/agentfacts_schema.json
+    sha256: 34495d046d6c579209296c8a4ffcd32b7ff2624733d63eda6ada8df8dbef1745
+x-typedstandards:
+  relation: adjacent
+  basis: A JSON Schema for agent metadata (identity, endpoints, capabilities, evaluations, certification), used for discovery and routing. It defines no record of how an output was produced.
+  ring: 2
+  name: Project NANDA AgentFacts
+  publisher: Project NANDA
+  pin:
+    fetchedAt: "2026-09-22T19:20:29Z"
+    bytes: 7583
+    httpStatus: 200
+    basis: main HEAD on 2026-09-22, a single commit of 2025-06-17 (the repository has no tags)
+    licence: MIT, as one line of README.md states (the repository has no LICENSE file)
+  curation: { seed: kept }

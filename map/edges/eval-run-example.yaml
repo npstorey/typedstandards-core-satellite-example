@@ -1,0 +1,27 @@
+# One edge of the map whose header is map/header.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/eval-run-example
+createdAt: "2026-09-22"
+subject:
+  id: github.com/npstorey/typedstandards-eval-run-example
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/typedstandards-eval-run-example/9031a94eebe0d800e52eab6fd4e01c7e788603a6/README.md
+    sha256: 3e405213b53a67e9ebffa7e1f332b34ddbbd3c894d6b1c556c8ca25109930529
+object:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+x-typedstandards:
+  relation: builds-on
+  basis: Turns one public AI benchmark evaluation run into two signed record packages that verify offline with one command (hub ADR-0028).
+  ring: 3
+  name: typedstandards-eval-run-example
+  publisher: Typed Standards
+  pin:
+    fetchedAt: "2026-09-22T19:20:27Z"
+    bytes: 9271
+    httpStatus: 200
+    basis: npstorey/typedstandards-eval-run-example main HEAD 9031a94 on 2026-09-22
+    licence: MIT for code, CC BY 4.0 for text (README)
+  curation: { seed: kept }

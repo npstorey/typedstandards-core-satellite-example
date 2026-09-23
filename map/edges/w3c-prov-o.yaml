@@ -1,0 +1,27 @@
+# One edge of the map whose header is map/header.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/w3c-prov-o
+createdAt: "2026-09-22"
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+object:
+  id: w3.org/TR/prov-o
+  ref:
+    location: https://www.w3.org/TR/2013/REC-prov-o-20130430/
+    sha256: 6b96671ab84faf12ce3f041aca12c3f93a6df2ed242348810743179a68e69555
+x-typedstandards:
+  relation: builds-on
+  basis: "Every record's provenance graph is PROV-O JSON-LD, and the envelope does not redefine derivation, attribution or generation (specification §5.5, §8.1.4)."
+  ring: 1
+  name: W3C PROV-O
+  publisher: W3C
+  pin:
+    fetchedAt: "2026-09-22T19:20:27Z"
+    bytes: 464179
+    httpStatus: 200
+    basis: W3C Recommendation, 30 April 2013
+    licence: W3C document use rules, as the document's copyright line states
+  curation: { seed: kept }

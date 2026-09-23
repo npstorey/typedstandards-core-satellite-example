@@ -1,0 +1,27 @@
+# One edge of the map whose header is map/header.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/nanopublications
+createdAt: "2026-09-22"
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+object:
+  id: github.com/Nanopublication/Guidelines
+  ref:
+    location: https://raw.githubusercontent.com/Nanopublication/Guidelines/8388dd90795b264f4b01c64d0f7218babcae4871/index.html
+    sha256: f3ee522113a4372604d61ff2cae25ee307cedbcc5ab1094a3e86c5ebff56dbbb
+x-typedstandards:
+  relation: adjacent
+  basis: "Nanopublications are RDF named graphs that pair an atomic assertion with its provenance and publication information. Typed Standards is envelope-first JSON with capture-method labels, and consuming one as the other is not built (specification §5.5)."
+  ring: 2
+  name: Nanopublication Guidelines
+  publisher: Nanopublication community
+  pin:
+    fetchedAt: "2026-09-22T19:20:29Z"
+    bytes: 18495
+    httpStatus: 200
+    basis: master HEAD on 2026-09-22 (the only tag dates from 2013)
+    licence: Creative Commons ShareAlike Attribution 3.0, as the document states (the repository has no LICENSE file)
+  curation: { seed: kept }

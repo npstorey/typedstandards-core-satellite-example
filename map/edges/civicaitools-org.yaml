@@ -1,0 +1,29 @@
+# One edge of the map whose header is map/header.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/civicaitools-org
+createdAt: "2026-09-22"
+subject:
+  id: civicaitools.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools-website/109eecb809a53bd36cc3468c79d243457570a49d/README.md
+    sha256: ba16dd52cf07fe369bf6359d22bfe36bae345614179fd14d5e814ac481cde89f
+object:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+x-typedstandards:
+  relation: builds-on
+  basis: The reference publishing application. It answers questions over civic open data through MCP servers and packages each published analysis as a signed record package.
+  ring: 3
+  name: civicaitools.org
+  publisher: Civic AI Tools
+  pin:
+    fetchedAt: "2026-09-22T19:20:26Z"
+    bytes: 9092
+    httpStatus: 200
+    basis: npstorey/civic-ai-tools-website main HEAD 109eecb on 2026-09-22
+    licence: MIT (repository LICENSE)
+  curation:
+    seed: kept
+    reason: Listed with socrata-mcp-server in the seed, and split from it because the two relate to the specification differently.

@@ -1,0 +1,27 @@
+# One edge of the map whose header is map/header.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/humane-intelligence-red-teaming
+createdAt: "2026-09-22"
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+object:
+  id: github.com/humane-intelligence/hi-oss-ai-red-teaming
+  ref:
+    location: https://raw.githubusercontent.com/humane-intelligence/hi-oss-ai-red-teaming/046a45d5a37339133c4b3f527276bbf9fb2b61bc/README.md
+    sha256: 0b0343ea53fce2f3655b9bde927340c2852c95f1efbca9d9298d54f525ccffde
+x-typedstandards:
+  relation: adjacent
+  basis: A platform for human red-teaming evaluations of AI systems that keeps reviewable records (conversation capture, reviewer verdicts, an append-only audit trail). None is signed, and its public text states no intent to produce signed evaluation records, so no evaluator relation is asserted.
+  ring: 3
+  name: hi-oss-ai-red-teaming
+  publisher: Humane Intelligence
+  pin:
+    fetchedAt: "2026-09-22T19:20:31Z"
+    bytes: 6470
+    httpStatus: 200
+    basis: tag v0.1.0, the latest release (2026-09-10)
+    licence: Apache-2.0 (repository LICENSE)
+  curation: { seed: kept }

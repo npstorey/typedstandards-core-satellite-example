@@ -1,0 +1,25 @@
+# One edge of the map whose header is map/header.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/mila-mozilla-foundation-layer
+createdAt: "2026-09-22"
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+object:
+  id: mila.quebec/en/news/mila-and-mozilla-announce-new-initiative-to-build-trustworthy-open-source-ai-for-everyone
+  ref:
+    location: https://mila.quebec/en/news/mila-and-mozilla-announce-new-initiative-to-build-trustworthy-open-source-ai-for-everyone
+    sha256: null
+x-typedstandards:
+  relation: adjacent
+  basis: An announced open standard of interface contracts, with a self-hosted reference implementation for running AI systems. Nothing is published yet, and the announcement says nothing about provenance or signing.
+  ring: 3
+  name: Open-source AI foundation layer (Mila and Mozilla initiative)
+  publisher: Mila and Mozilla
+  pin:
+    sha256: null
+    reason: Only announcement pages exist, from Mila and from Mozilla, both dated 2026-09-17. No repository, specification or release is published, and an announcement page is not immutable.
+    licence: not stated
+  curation: { seed: kept }

@@ -1,0 +1,29 @@
+# One edge of the map whose header is map/header.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/w3c-dcat-3
+createdAt: "2026-09-22"
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+object:
+  id: w3.org/TR/vocab-dcat-3
+  ref:
+    location: https://www.w3.org/TR/2024/REC-vocab-dcat-3-20240822/
+    sha256: 068b43f7814525ea784b7d565ada8de2b4538f5377517c4f0ec9b162a34dedfb
+x-typedstandards:
+  relation: complements
+  basis: "DCAT describes datasets and catalogs for discovery. A record's data-source references may cite DCAT-described datasets (specification §5.5)."
+  ring: 2
+  name: W3C DCAT 3
+  publisher: W3C
+  pin:
+    fetchedAt: "2026-09-22T19:20:30Z"
+    bytes: 664822
+    httpStatus: 200
+    basis: W3C Recommendation, 22 August 2024
+    licence: W3C Software and Document License, as the document's copyright line states
+  curation:
+    seed: moved
+    reason: "Moved from Ring 1. The specification calls DCAT a different layer (§5.5), so the relation is complements, not builds-on."

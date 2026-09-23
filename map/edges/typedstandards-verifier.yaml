@@ -1,0 +1,27 @@
+# One edge of the map whose header is map/header.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/typedstandards-verifier
+createdAt: "2026-09-22"
+subject:
+  id: typedstandards.org/verify
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/typedstandards/b0bf0a447ba35991ca2a211fa71983e1ba9ac78e/README.md
+    sha256: c0a1894c4089a615d685b420d632f50b9edfadd963a58fda9c7b9e025a086f9c
+object:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+x-typedstandards:
+  relation: builds-on
+  basis: The site's client-side verifier runs verify-core's checks on a record package in the browser.
+  ring: 3
+  name: typedstandards.org verifier
+  publisher: Typed Standards
+  pin:
+    fetchedAt: "2026-09-22T19:20:25Z"
+    bytes: 7358
+    httpStatus: 200
+    basis: npstorey/typedstandards main HEAD b0bf0a4 on 2026-09-22
+    licence: MIT (repository LICENSE)
+  curation: { seed: kept }

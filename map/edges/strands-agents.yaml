@@ -1,0 +1,27 @@
+# One edge of the map whose header is map/header.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/strands-agents
+createdAt: "2026-09-22"
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+object:
+  id: github.com/strands-agents/harness-sdk
+  ref:
+    location: https://raw.githubusercontent.com/strands-agents/harness-sdk/45c2ffd3333cdb67c1dd9f4f208639ce3b89aa19/strands-py/README.md
+    sha256: a5f8050bf77d175f9208e80d163e0f5ca337a50332fec05523e202c43f2742c3
+x-typedstandards:
+  relation: adjacent
+  basis: "An agent SDK that runs the model and tool calls a producer records in queries[] and trace. Its README states nothing about provenance or signing."
+  ring: 3
+  name: Strands Agents (Python SDK)
+  publisher: Strands Agents
+  pin:
+    fetchedAt: "2026-09-22T19:20:31Z"
+    bytes: 12531
+    httpStatus: 200
+    basis: tag python/v1.56.0, the latest Python SDK release (2026-09-15)
+    licence: Apache-2.0 (LICENSE.APACHE)
+  curation: { seed: kept }

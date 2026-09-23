@@ -1,0 +1,27 @@
+# One edge of the map whose header is map/header.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/ietf-scitt
+createdAt: "2026-09-22"
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+object:
+  id: rfc-editor.org/rfc/rfc9943
+  ref:
+    location: https://www.rfc-editor.org/rfc/rfc9943.txt
+    sha256: 204aea020731e1306e8ffe0aaae5c9559a7a8edf24bd089ae79d6a6d6c7676f1
+x-typedstandards:
+  relation: complements
+  basis: An architecture for transparency services that register signed statements of any payload type and return receipts. That is the transparency layer Typed Standards fills with Sigstore Rekor today.
+  ring: 2
+  name: IETF SCITT architecture (RFC 9943)
+  publisher: IETF
+  pin:
+    fetchedAt: "2026-09-22T19:20:29Z"
+    bytes: 76117
+    httpStatus: 200
+    basis: RFC 9943, June 2026 (Proposed Standard), the SCITT architecture
+    licence: IETF Trust Legal Provisions (BCP 78), as the document states
+  curation: { seed: kept, reason: RFC 9943 confirmed at rfc-editor.org as the SCITT architecture (June 2026). }

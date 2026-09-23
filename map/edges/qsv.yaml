@@ -1,0 +1,40 @@
+# One edge of the map whose header is map/header.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/qsv
+createdAt: "2026-09-22"
+subject:
+  id: github.com/dathere/qsv
+  ref:
+    location: https://raw.githubusercontent.com/dathere/qsv/7c43b6bc77b22556220328eef22f29b9fac6d24b/README.md
+    sha256: 1541ba978efb0231096072c945df32e282dda499fb6a919bee13a987c3efb639
+object:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+x-typedstandards:
+  relation: could-emit
+  basis: An open issue on the project's own tracker, titled with the intent, and a plan comment posted from the maintainer account describe emitting JCS envelopes and Ed25519ph signatures for the Data Schematic output. The issue is open and labelled revisit-later.
+  ring: 3
+  name: qsv
+  publisher: datHere
+  intent:
+    readAt: "2026-09-22"
+    state: "open; labels include revisit-later, added 2026-09-13"
+    statedIn:
+      - url: https://github.com/dathere/qsv/issues/4448
+        date: "2026-08-20"
+        quote: "Data Schematic: Replace Provenance free-text info with TypedStandards cryptographic signature"
+      - url: "https://github.com/dathere/qsv/issues/4448#issuecomment-5440060941"
+        date: "2026-08-27"
+        quote: "Phase 2 (signing) — Ed25519ph via --sign-key; signature envelope embedded in the HTML + sidecar"
+      - url: "https://github.com/dathere/qsv/issues/4448#issuecomment-5649582321"
+        date: "2026-09-13"
+        quote: Revisit once TypedStandards supports something like Decentralized Identifiers
+  pin:
+    fetchedAt: "2026-09-22T19:20:30Z"
+    bytes: 81584
+    httpStatus: 200
+    basis: tag 23.0.1, the latest release (2026-09-13)
+    licence: MIT (COPYING and Cargo.toml at the tag)
+  curation: { seed: kept, reason: The one Ring 3 intent stated on the project's own public record. }

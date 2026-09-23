@@ -1,0 +1,27 @@
+# One edge of the map whose header is map/header.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/did-key
+createdAt: "2026-09-22"
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+object:
+  id: github.com/w3c-ccg/did-key-spec
+  ref:
+    location: https://raw.githubusercontent.com/w3c-ccg/did-key-spec/2cc490c38c5aacf58497a87fc0cf8794668bf716/index.html
+    sha256: e014a146acb0dcdafbdfee01226061d778da3ee72e8a048a7d53754c79675764
+x-typedstandards:
+  relation: builds-on
+  basis: "A self-certifying signer's identifier is a did:key in base58btc form, derived from the signing key (specification §8.5.1, hub ADR-0030). This example's two records use one."
+  ring: 1
+  name: The did:key Method v0.9
+  publisher: W3C Credentials Community Group
+  pin:
+    fetchedAt: "2026-09-22T19:20:28Z"
+    bytes: 49713
+    httpStatus: 200
+    basis: "main HEAD on 2026-09-22 (the repository has no tags); the document states v0.9, a Community Group draft"
+    licence: W3C Software and Document License (LICENSE.md)
+  curation: { seed: kept }

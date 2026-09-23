@@ -1,0 +1,29 @@
+# One edge of the map whose header is map/header.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/ro-crate
+createdAt: "2026-09-22"
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+object:
+  id: github.com/ResearchObject/ro-crate
+  ref:
+    location: https://raw.githubusercontent.com/ResearchObject/ro-crate/22fbd7e098ccd2839c80967e363a2201528a2efe/docs/_specification/1.3/structure.md
+    sha256: e63fe86d1a098d01ab9ea71af4f0f8742ab9fbcd29fe8afc7b55837c0e5d96e9
+x-typedstandards:
+  relation: adjacent
+  basis: A JSON-LD packaging format for research data. The specification names an RO-Crate compatibility profile as the direction for a multi-file package (open question Q1). Nothing is built.
+  ring: 2
+  name: RO-Crate 1.3
+  publisher: researchobject.org community
+  pin:
+    fetchedAt: "2026-09-22T19:20:30Z"
+    bytes: 18282
+    httpStatus: 200
+    basis: "tag 1.3.0, release of 2026-06-22; the file that defines RO-Crate packages"
+    licence: Apache-2.0 (repository LICENSE)
+  curation:
+    seed: moved
+    reason: Moved from Ring 1, where it was listed with WRROC. It is a direction under an open question, not something the specification builds on. Split from WRROC because the two are separate specifications.

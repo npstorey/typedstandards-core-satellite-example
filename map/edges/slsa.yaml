@@ -1,0 +1,27 @@
+# One edge of the map whose header is map/header.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/slsa
+createdAt: "2026-09-22"
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+object:
+  id: github.com/slsa-framework/slsa
+  ref:
+    location: https://raw.githubusercontent.com/slsa-framework/slsa/19e4e2f005f871270c4f555fc47afecfb37f3efe/docs/spec/v1.2/build-provenance.md
+    sha256: 182ab5cf823c374874136371466ba43f99f0a9ba87a8046757d26a2ed74854a0
+x-typedstandards:
+  relation: adjacent
+  basis: "Build provenance for software artifacts, carried as an in-toto predicate. Typed Standards covers analytical artifacts instead (specification §5.5)."
+  ring: 2
+  name: SLSA Build Provenance v1.2
+  publisher: SLSA project
+  pin:
+    fetchedAt: "2026-09-22T19:20:29Z"
+    bytes: 25746
+    httpStatus: 200
+    basis: tag v1.2, the latest tag (the repository has no releases)
+    licence: Community Specification License 1.0 (LICENSE.md)
+  curation: { seed: kept }

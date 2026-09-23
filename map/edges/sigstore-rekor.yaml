@@ -1,0 +1,27 @@
+# One edge of the map whose header is map/header.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/sigstore-rekor
+createdAt: "2026-09-22"
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+object:
+  id: github.com/sigstore/rekor
+  ref:
+    location: https://raw.githubusercontent.com/sigstore/rekor/a36bd716fd0d81c314092718f37b53dc26b2af38/pkg/types/hashedrekord/v0.0.1/hashedrekord_v0_0_1_schema.json
+    sha256: b8ecdc597ddb7e3289ae41e28fc3983ea25f248f531314a68dcc2361f3edada4
+x-typedstandards:
+  relation: builds-on
+  basis: "Records submit hashedrekord entries, and verify-core checks Merkle inclusion against a pinned Rekor log key (specification §8.3.2, §9.2 check #8). This example's records carry no Rekor entry."
+  ring: 1
+  name: Sigstore Rekor (hashedrekord)
+  publisher: Sigstore
+  pin:
+    fetchedAt: "2026-09-22T19:20:27Z"
+    bytes: 2373
+    httpStatus: 200
+    basis: tag v1.5.4, the latest release (2026-08-20)
+    licence: Apache-2.0 (repository LICENSE)
+  curation: { seed: kept }

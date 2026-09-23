@@ -1,0 +1,27 @@
+# One edge of the map whose header is map/header.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/atproto-lexicon
+createdAt: "2026-09-22"
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+object:
+  id: atproto.com/specs/lexicon
+  ref:
+    location: "https://raw.githubusercontent.com/bluesky-social/atproto-website/7a6cdd6c7b48d2aa8d93293827374e0c4fdbb305/src/app/%5Blocale%5D/specs/lexicon/en.mdx"
+    sha256: 3c893eb2eb94c50c12ad491d9b75f3965af49d8328be5140bea628126969be55
+x-typedstandards:
+  relation: adjacent
+  basis: A schema language for typed records in the AT Protocol. The SciOS paper names it as a model for its common schema. Neither depends on the other.
+  ring: 2
+  name: ATProto Lexicon
+  publisher: Bluesky Social PBC (AT Protocol)
+  pin:
+    fetchedAt: "2026-09-22T19:20:30Z"
+    bytes: 35613
+    httpStatus: 200
+    basis: "main HEAD on 2026-09-22 (the repository has no tags); the source of atproto.com/specs/lexicon"
+    licence: CC BY 4.0 for documentation text and specifications (README)
+  curation: { seed: kept }

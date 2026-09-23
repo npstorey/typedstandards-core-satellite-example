@@ -1,0 +1,29 @@
+# One edge of the map whose header is map/header.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/proof-of-control
+createdAt: "2026-09-22"
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+object:
+  id: github.com/LFDT-ProofOfControl/ov-poc-standard
+  ref:
+    location: https://raw.githubusercontent.com/LFDT-ProofOfControl/ov-poc-standard/22c7b625be459f5eee7dd8690afd080b5141b8c6/0.1/en/0x01-Frontispiece.md
+    sha256: 28323b575b63255c6636c62ef748fb694455f86d56fa81bf28b6fc31c20b3eb5
+x-typedstandards:
+  relation: complements
+  basis: "Specifies audit requirements and an evidence-token format (JWT and CWT) for an agent's runtime control: the data it touched, the authority it used, the tools it invoked. It points to SLSA and in-toto for artifact provenance and defines no record of how an analytical artifact was produced."
+  ring: 2
+  name: "Open Verification: the Proof-of-Control Standard for Agents"
+  publisher: Advanced AI Society (steward), in the LFDT-ProofOfControl GitHub organization
+  pin:
+    fetchedAt: "2026-09-22T19:20:29Z"
+    bytes: 3503
+    httpStatus: 200
+    basis: "master HEAD on 2026-09-22 (the repository has no tags); the document states v1.0, a working draft for public comment until 2026-10-30"
+    licence: Apache-2.0 (LICENSE.md, which changed from CC BY 4.0 in the commit of 2026-09-19)
+  curation:
+    seed: kept
+    reason: "The seed described a v0.1 working draft; the pinned document states v1.0, a working draft for public comment."

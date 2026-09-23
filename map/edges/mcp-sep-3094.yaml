@@ -1,0 +1,27 @@
+# One edge of the map whose header is map/header.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/mcp-sep-3094
+createdAt: "2026-09-22"
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+object:
+  id: github.com/modelcontextprotocol/modelcontextprotocol/pull/3094
+  ref:
+    location: https://raw.githubusercontent.com/modelcontextprotocol/modelcontextprotocol/109bbfe75d43c93a23ee17aa2b6dcdf05d21b338/seps/3094-granular-citations-and-fragment-addressing.md
+    sha256: ebc6d82df5d14ada988d90506029be251674a272184ef0f958d4ab54f0a80715
+x-typedstandards:
+  relation: complements
+  basis: Proposes that MCP tool results carry citations to source fragments. Its content-integrity section says the proposal 'punts on a decision to add integrity checks', which a signed record provides at another layer.
+  ring: 2
+  name: "MCP SEP-3094: Granular Citations Format (draft)"
+  publisher: Model Context Protocol project (open proposal)
+  pin:
+    fetchedAt: "2026-09-22T19:20:29Z"
+    bytes: 40062
+    httpStatus: 200
+    basis: "head commit of the open pull request #3094 (2026-09-04); the commit is on the proposer's fork and resolves through the base repository; the document states Status: Draft"
+    licence: "not stated in the file; the repository LICENSE assigns Apache-2.0 to specification contributions"
+  curation: { seed: kept }
