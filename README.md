@@ -17,8 +17,8 @@ picture and tables.
     can be added without re-signing the others.
 - **The records.** Each signed file is the inline output of one record under `raw-bytes/v1`, so
   `shasum -a 256 core.md` prints the record's `contentHash.sha256`. `docs/records.json` lists the records
-  the host serves. After `npm ci`, one command checks every one of them with no network access:
-  `node verify.mjs`.
+  the host serves: 36 current records and version 1. After `npm ci`, one command checks every one of them
+  with no network access: `node verify.mjs`.
 
 The example follows `typedstandards-eval-run-example` (hub ADR-0028). It pins the published releases
 `@typedstandards/produce-core` 0.6.0 and `@typedstandards/verify-core` 0.11.0 exactly. They carry

@@ -1,5 +1,5 @@
 {
-  "$comment": "Written by package/build.mjs assemble. The ids and times below, with the files on disk, rebuild both envelopes (node package/build.mjs check).",
+  "$comment": "Written by package/build.mjs sign. Version 1's two records (core, map) were built with the top-level versions and inputs; every later record names its own step, versions and inputs. The ids, times and digests below, with the files on disk, rebuild every envelope and every withdrawal (node package/build.mjs check).",
   "signer": "did:key:z6Mkw9jqif2wccYESfNW78Sv2YC2UG1zuN5a5gP1HNL3RxDH",
   "producerProfile": "scripted-recomputation/core-satellite-example",
   "captureMethod": "script-run",
@@ -45,6 +45,1126 @@
       "createdAt": "2026-09-22T19:25:30.536Z",
       "envelopeHash": "7f1c14cd34919dfe540f75c6de041133f17cfebd59e607596a8e610827cf2911",
       "bundle": "package/map.bundle.json"
+    },
+    "map/header": {
+      "file": "map/header.yaml",
+      "role": "map-header",
+      "step": 2,
+      "packageId": "530f59df-4871-4234-83ea-561cb7eb5982",
+      "createdAt": "2026-09-23T12:44:17.005Z",
+      "envelopeHash": "9736a500e4a945202b80d4e8645a16fa9719592702b998e46b27b0daba2876fd",
+      "bundle": "package/map/header.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/w3c-prov-o": {
+      "file": "map/edges/w3c-prov-o.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "ec85ba74-f087-4264-ad75-2d118723dfa5",
+      "createdAt": "2026-09-23T12:44:17.016Z",
+      "envelopeHash": "3167d2912199da262d600a4d0c8f6d53fb0650ff2f7eae28f2196a5d0b0fe30e",
+      "bundle": "package/map/edges/w3c-prov-o.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/in-toto-attestation": {
+      "file": "map/edges/in-toto-attestation.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "3e7e9109-4b98-466e-a635-262ac521c9c9",
+      "createdAt": "2026-09-23T12:44:17.018Z",
+      "envelopeHash": "9a89122cad07ca4bde999ae12368b1ad4463871228273d486c9d78bcf7b5d6e6",
+      "bundle": "package/map/edges/in-toto-attestation.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/sigstore-rekor": {
+      "file": "map/edges/sigstore-rekor.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "559af27a-483d-4573-93d3-4c44656195ad",
+      "createdAt": "2026-09-23T12:44:17.020Z",
+      "envelopeHash": "76ac329be1e443cfa23d8c1ad5fe984b69b0657e09c37b207b0b3d42644482ca",
+      "bundle": "package/map/edges/sigstore-rekor.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/rfc-3161": {
+      "file": "map/edges/rfc-3161.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "e42c0baa-b740-4f86-a488-b23e6811538e",
+      "createdAt": "2026-09-23T12:44:17.022Z",
+      "envelopeHash": "9a064095b691fec1a0942513a0f5d4f1395037ff1bfff77fc9103cc6fb1b32e2",
+      "bundle": "package/map/edges/rfc-3161.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/rfc-8785": {
+      "file": "map/edges/rfc-8785.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "9d1f4b39-5973-4430-9f66-be95bb509243",
+      "createdAt": "2026-09-23T12:44:17.023Z",
+      "envelopeHash": "1edcd62d04675c1a4b20973c0a6f105c24d26aed3590cfb9ca3051dcfa6bd2ea",
+      "bundle": "package/map/edges/rfc-8785.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/rfc-8032": {
+      "file": "map/edges/rfc-8032.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "6cb8c462-36e4-46bb-bc88-c6a171e7dadd",
+      "createdAt": "2026-09-23T12:44:17.025Z",
+      "envelopeHash": "7ade72677f97e161b34000aea2d2d53a8fc654383cdb9c131e4d38b9665d6e96",
+      "bundle": "package/map/edges/rfc-8032.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/did-key": {
+      "file": "map/edges/did-key.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "42ae2790-1b55-41a6-91f5-8017e77ce21e",
+      "createdAt": "2026-09-23T12:44:17.026Z",
+      "envelopeHash": "b6c5b3100494dccc52097c5f78724dd8fb4efb3f409d8cd2eb889282040e982c",
+      "bundle": "package/map/edges/did-key.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/discourse-graphs": {
+      "file": "map/edges/discourse-graphs.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "e9404f89-fc55-4e6e-91af-9c3ef27150b7",
+      "createdAt": "2026-09-23T12:44:17.028Z",
+      "envelopeHash": "9825fc6444eaef93eebf4c20dd63950da3c0cb5d10595fe5eb8c4083bb5c6547",
+      "bundle": "package/map/edges/discourse-graphs.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/c2pa": {
+      "file": "map/edges/c2pa.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "8747d16c-4b54-4925-ae58-55b739bcf212",
+      "createdAt": "2026-09-23T12:44:17.029Z",
+      "envelopeHash": "5646f9ae71881a88337a4acd4bf6130882cd55301a44e78ee59fbac8177d0098",
+      "bundle": "package/map/edges/c2pa.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/w3c-vc-2": {
+      "file": "map/edges/w3c-vc-2.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "1655b60f-b0c7-4d26-8c67-e3418c969418",
+      "createdAt": "2026-09-23T12:44:17.031Z",
+      "envelopeHash": "31458a33fe5f696bc604043f6e0f4ebe31a9d706e29c760812a6f7fd352a3428",
+      "bundle": "package/map/edges/w3c-vc-2.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/ietf-scitt": {
+      "file": "map/edges/ietf-scitt.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "ed5002be-bb4e-498e-8068-168825dcf021",
+      "createdAt": "2026-09-23T12:44:17.033Z",
+      "envelopeHash": "de76366213032b802af4dc3642dc82c20b9ec2e55391ba94692b1fb37bbdb9ce",
+      "bundle": "package/map/edges/ietf-scitt.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/slsa": {
+      "file": "map/edges/slsa.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "c7c5d63c-62b2-4573-aa8e-dbba4e4bf5c3",
+      "createdAt": "2026-09-23T12:44:17.034Z",
+      "envelopeHash": "be5fe8ca6fe0aa0d3476271d4e6ed1a15dcdedec933c670a1566bea292f277d6",
+      "bundle": "package/map/edges/slsa.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/nanopublications": {
+      "file": "map/edges/nanopublications.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "0909ee53-bb2e-4ef0-a693-f7ecbfb23934",
+      "createdAt": "2026-09-23T12:44:17.036Z",
+      "envelopeHash": "2387896720878bc91cfea139aeae778cc015abe5bf73f4e1eea4cd8b6a3572f6",
+      "bundle": "package/map/edges/nanopublications.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/proof-of-control": {
+      "file": "map/edges/proof-of-control.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "0fef31b7-1002-4bf3-97cc-3c5ce05b0d29",
+      "createdAt": "2026-09-23T12:44:17.038Z",
+      "envelopeHash": "67885d44f6923d2e7a7c0b76e81d49af8e9f562f3f1c64fa6cf879da96434bbc",
+      "bundle": "package/map/edges/proof-of-control.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/proof-of-insight": {
+      "file": "map/edges/proof-of-insight.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "ee339bd3-ae8c-4ca6-b036-a36c33d873dc",
+      "createdAt": "2026-09-23T12:44:17.039Z",
+      "envelopeHash": "146deb172cb8e6d1c7da96975a3a0e5bfdc2c44d2f94916c799d3fccac627218",
+      "bundle": "package/map/edges/proof-of-insight.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/nanda-agentfacts": {
+      "file": "map/edges/nanda-agentfacts.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "7329b1d1-2e2e-45a4-9fc1-9e484f4f17d0",
+      "createdAt": "2026-09-23T12:44:17.041Z",
+      "envelopeHash": "428bec9a3a6de0e0323e36fa803c1e00cbae3909f84a2144ddccae21fd968e97",
+      "bundle": "package/map/edges/nanda-agentfacts.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/mcp-sep-3094": {
+      "file": "map/edges/mcp-sep-3094.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "3bdd54a7-8ee4-4326-9c3d-edd5eafdd388",
+      "createdAt": "2026-09-23T12:44:17.042Z",
+      "envelopeHash": "5109df3930150eb1861c05dd324f2b2dd774861dba9b5080cbc71cb78b8cac8e",
+      "bundle": "package/map/edges/mcp-sep-3094.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/atproto-lexicon": {
+      "file": "map/edges/atproto-lexicon.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "77c10d05-2b5a-4e24-9b7b-1336484f7f24",
+      "createdAt": "2026-09-23T12:44:17.044Z",
+      "envelopeHash": "52f817328721f6a9b2433f835b9a37780e3683bc99cf24476c6b7a8b2cf8db7a",
+      "bundle": "package/map/edges/atproto-lexicon.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/google-okf": {
+      "file": "map/edges/google-okf.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "3a217349-58b8-49dd-bd52-2cd6de516a97",
+      "createdAt": "2026-09-23T12:44:17.045Z",
+      "envelopeHash": "76541f4b15d7d71d2ee1f62d4d34bcb73d9e04335548008d633f08090c92e51a",
+      "bundle": "package/map/edges/google-okf.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/w3c-dcat-3": {
+      "file": "map/edges/w3c-dcat-3.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "86283c55-4ca3-4658-9a93-de5dd997fb81",
+      "createdAt": "2026-09-23T12:44:17.047Z",
+      "envelopeHash": "3d544f60cf5b764addb2199fe46f2550ee00ee710bc4ce2a6203a007add494c3",
+      "bundle": "package/map/edges/w3c-dcat-3.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/ro-crate": {
+      "file": "map/edges/ro-crate.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "7476cfbb-ea79-486f-b3b4-2fc2d8b1a5e6",
+      "createdAt": "2026-09-23T12:44:17.048Z",
+      "envelopeHash": "0c89c80858497cfc2659ebaa389b3d5d6d30bc08690eab547767edf7c90ae725",
+      "bundle": "package/map/edges/ro-crate.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/workflow-run-crate": {
+      "file": "map/edges/workflow-run-crate.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "9358aa9f-55ac-4da5-97aa-cf6f321b4e2c",
+      "createdAt": "2026-09-23T12:44:17.050Z",
+      "envelopeHash": "9717d02579571bc3341d548a4411a416f25f37be4794f7b11adc25f24ee851b8",
+      "bundle": "package/map/edges/workflow-run-crate.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/mira-schema": {
+      "file": "map/edges/mira-schema.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "7fb71057-f484-4d8a-b604-7e77794e2174",
+      "createdAt": "2026-09-23T12:44:17.051Z",
+      "envelopeHash": "76ef42b5e2eba8ebda28f08b86bbd448238a64bed6c1bc58dfe24d3a43cbc019",
+      "bundle": "package/map/edges/mira-schema.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/civicaitools-org": {
+      "file": "map/edges/civicaitools-org.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "8a2b996e-77dc-46f8-be26-c183345e3cff",
+      "createdAt": "2026-09-23T12:44:17.053Z",
+      "envelopeHash": "2b6c31f47224a14872a2d6184b7b8cfddd0bc57b7bdd07886b4cb96aae981fd7",
+      "bundle": "package/map/edges/civicaitools-org.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/socrata-mcp-server": {
+      "file": "map/edges/socrata-mcp-server.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "3177f968-ddaa-4254-8dc8-7ab87557186d",
+      "createdAt": "2026-09-23T12:44:17.054Z",
+      "envelopeHash": "2b90437826a5c233a86b56bbb27a83512561ca51ff822a64161b8bb5b812df1f",
+      "bundle": "package/map/edges/socrata-mcp-server.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/typedstandards-verifier": {
+      "file": "map/edges/typedstandards-verifier.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "0e5ff551-4e58-43ea-9162-ef47e51a1c11",
+      "createdAt": "2026-09-23T12:44:17.055Z",
+      "envelopeHash": "5215573c4f9b05e89cfea8b223290797fa47f598ada5fab024491f379e59b6f0",
+      "bundle": "package/map/edges/typedstandards-verifier.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/eval-run-example": {
+      "file": "map/edges/eval-run-example.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "de68e7a3-8cee-484e-a74a-ad7ed86241b7",
+      "createdAt": "2026-09-23T12:44:17.057Z",
+      "envelopeHash": "8d5c079d807582a333799dcce8154559466b130c565bce4fd61bd8d5f1ea12d9",
+      "bundle": "package/map/edges/eval-run-example.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/qsv": {
+      "file": "map/edges/qsv.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "0cc993a7-69ac-4e9c-a500-cd0e5375c956",
+      "createdAt": "2026-09-23T12:44:17.058Z",
+      "envelopeHash": "7516613440e37bf084389daeea2467336c33a0a8b7f1496330cf67e880c425c0",
+      "bundle": "package/map/edges/qsv.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/verikan": {
+      "file": "map/edges/verikan.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "ea7ed278-d6a1-484a-aacd-e3585e3e6ce7",
+      "createdAt": "2026-09-23T12:44:17.060Z",
+      "envelopeHash": "fd93ba04ffd5506c3aeefb5e8e01165596aaed250564366b1e11ce2044ce5d48",
+      "bundle": "package/map/edges/verikan.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/okfn-ckan-mcp": {
+      "file": "map/edges/okfn-ckan-mcp.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "2893f5fb-993d-42e6-8c48-fe7735f26ba4",
+      "createdAt": "2026-09-23T12:44:17.061Z",
+      "envelopeHash": "f5b679997e1c75172ecb7f6846dba0bf0d1a3e59eda2a0c939330936c1e7a9b6",
+      "bundle": "package/map/edges/okfn-ckan-mcp.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/humane-intelligence-red-teaming": {
+      "file": "map/edges/humane-intelligence-red-teaming.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "508e04e6-5417-41e7-a472-5efee53d615d",
+      "createdAt": "2026-09-23T12:44:17.063Z",
+      "envelopeHash": "bec05fcfc02896d23e52e75e3356e132c5799704bcbcc69d8cda53564a17e31a",
+      "bundle": "package/map/edges/humane-intelligence-red-teaming.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/strands-agents": {
+      "file": "map/edges/strands-agents.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "d83ec8eb-ef6a-4956-9f67-a3743657534b",
+      "createdAt": "2026-09-23T12:44:17.064Z",
+      "envelopeHash": "745ed38b19b0f745fb8af49e07632534276a02f61c882e6d216fad35c811bca9",
+      "bundle": "package/map/edges/strands-agents.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/microsoft-agent-framework": {
+      "file": "map/edges/microsoft-agent-framework.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "4c7d33e4-e346-42d8-a7c3-787fdf535933",
+      "createdAt": "2026-09-23T12:44:17.065Z",
+      "envelopeHash": "3ab9a111d34b9c5d9f144f870571f247634daed0d4f9f4caaf77343832c84a70",
+      "bundle": "package/map/edges/microsoft-agent-framework.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
+    },
+    "map/edges/mila-mozilla-foundation-layer": {
+      "file": "map/edges/mila-mozilla-foundation-layer.yaml",
+      "role": "edge",
+      "step": 2,
+      "packageId": "a681d073-adaf-4ee0-9cf3-1481678c28d3",
+      "createdAt": "2026-09-23T12:44:17.067Z",
+      "envelopeHash": "22c3994b35da559cc1ae11e9df7d598f8c2aab3e170736da4064623fdad8bd2b",
+      "bundle": "package/map/edges/mila-mozilla-foundation-layer.bundle.json",
+      "versions": {
+        "produceCore": "0.6.0",
+        "verifyCore": "0.11.0",
+        "node": "24.18.0"
+      },
+      "inputs": {
+        "script": {
+          "path": "corpus/pin.mjs",
+          "sha256": "094d6fe92ed15262e5f53b2437988d73f410e81fd889aeb9e7266a1d358dd42e"
+        },
+        "sourcesJson": {
+          "path": "corpus/sources.json",
+          "sha256": "72337b854d073159d8d67c5ab16f2cc52c70e6d74649cb1d59b0d1378b20edbe"
+        },
+        "manifestJson": {
+          "path": "corpus/manifest.json",
+          "sha256": "2c23dafb122ed6dd7f1acb5f82296ccce65079417a29a898589aa9fcbba77980"
+        },
+        "builder": {
+          "path": "package/build.mjs",
+          "sha256": "ed15926462300ec6a3051d16b58797b058a6f01a9c746239022c655b877cf21c"
+        }
+      }
     }
   }
 }

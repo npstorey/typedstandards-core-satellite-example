@@ -10,11 +10,46 @@ Each served record, from docs/bundles/<name>.bundle.json. ok means every one of 
 
   ok    active     core.md
   ok    active     map.yaml
+  ok    active     map/header.yaml
+  ok    active     map/edges/w3c-prov-o.yaml
+  ok    active     map/edges/in-toto-attestation.yaml
+  ok    active     map/edges/sigstore-rekor.yaml
+  ok    active     map/edges/rfc-3161.yaml
+  ok    active     map/edges/rfc-8785.yaml
+  ok    active     map/edges/rfc-8032.yaml
+  ok    active     map/edges/did-key.yaml
+  ok    active     map/edges/discourse-graphs.yaml
+  ok    active     map/edges/c2pa.yaml
+  ok    active     map/edges/w3c-vc-2.yaml
+  ok    active     map/edges/ietf-scitt.yaml
+  ok    active     map/edges/slsa.yaml
+  ok    active     map/edges/nanopublications.yaml
+  ok    active     map/edges/proof-of-control.yaml
+  ok    active     map/edges/proof-of-insight.yaml
+  ok    active     map/edges/nanda-agentfacts.yaml
+  ok    active     map/edges/mcp-sep-3094.yaml
+  ok    active     map/edges/atproto-lexicon.yaml
+  ok    active     map/edges/google-okf.yaml
+  ok    active     map/edges/w3c-dcat-3.yaml
+  ok    active     map/edges/ro-crate.yaml
+  ok    active     map/edges/workflow-run-crate.yaml
+  ok    active     map/edges/mira-schema.yaml
+  ok    active     map/edges/civicaitools-org.yaml
+  ok    active     map/edges/socrata-mcp-server.yaml
+  ok    active     map/edges/typedstandards-verifier.yaml
+  ok    active     map/edges/eval-run-example.yaml
+  ok    active     map/edges/qsv.yaml
+  ok    active     map/edges/verikan.yaml
+  ok    active     map/edges/okfn-ckan-mcp.yaml
+  ok    active     map/edges/humane-intelligence-red-teaming.yaml
+  ok    active     map/edges/strands-agents.yaml
+  ok    active     map/edges/microsoft-agent-framework.yaml
+  ok    active     map/edges/mila-mozilla-foundation-layer.yaml
 
 all records
-  ok    2 served; 1 current record and version 1; #10 active 2, withdrawn 0
-  ok    35 record files with no bundle yet
-  ok    all 2 signatures carry one public key and one identifier, did:key:z6Mk…RxDH, the key package/signer.json names
+  ok    37 served; 36 current records and version 1; #10 active 37, withdrawn 0
+  ok    0 record files with no bundle yet
+  ok    all 37 signatures carry one public key and one identifier, did:key:z6Mk…RxDH, the key package/signer.json names
   ok    docs/.well-known/typed-publisher.json lists exactly that key, active; no registry is supplied offline, so #5 reads self_certified
 
 network: global fetch calls 0; injected fetch calls 0
