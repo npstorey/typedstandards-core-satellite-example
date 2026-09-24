@@ -4,9 +4,9 @@ One worked example: the SciOS "core and satellite" model applied to the domain T
 in, with the example's published content files signed as Typed Standards records that verify offline,
 one record per edge of the map, served by a host that displays them by a stated policy. The working
 contract is the owner's IMPL CORE-SATELLITE-EXAMPLE brief and its gate rulings (G1, G2), for the web page
-the IMPL CORE-SAT-PAGES brief and its rulings (G1, G1b, G2), and for the per-edge records, the host and the
-registry the IMPL CORE-SAT-HOST brief, the owner's memo rulings D1-D8 and the G0 rulings. They win over
-anything here.
+the IMPL CORE-SAT-PAGES brief and its rulings (G1, G1b, G2), for the per-edge records, the host and the
+registry the IMPL CORE-SAT-HOST brief, the owner's memo rulings D1-D8 and the G0 rulings, and for the page's
+presentation the IMPL CORE-SAT-FRAME brief and its rulings D1-D7 (2026-09-24). They win over anything here.
 
 ## Fixed
 
@@ -49,7 +49,8 @@ anything here.
     Removing it is the owner's step.
 - `sign` never re-signs a record. It first requires the supplied key to reproduce every committed
   signature and every signed file to equal its record, then signs every record file with no bundle as one
-  step. With none, it writes nothing.
+  step. With none, it writes nothing. It refuses, and writes nothing, while a file that restates a record
+  (`replaces`) would be signed before that record is withdrawn.
 - Each new record lands with its bundle, `docs/records.json` and the rebuilt page in one signed commit
   (D6). Phase 3's first batch was the one exception: its files were committed at G1, its bundles at G2.
 
@@ -92,7 +93,21 @@ anything here.
 - `README.md`, `docs/records.json` and `docs/host-policy.yaml` are inputs. Every edit to one is followed
   by `node site/generate.mjs`; otherwise `npm run check:page`, and CI with it, fails.
 - Every honest-absence item stays visible on the page, never inside a `<details>`, and `npm test`
-  checks it. Tests sign only with a throwaway key made in memory, on scratch copies.
+  checks it. The proof table folds only behind a visible summary that names every row, "Not covered" rows
+  included. Tests sign only with a throwaway key made in memory, on scratch copies.
+- The records table stays open: one row per record, anchored `#record-` plus its name with each `/` as `-`
+  (`#record-map-edges-qsv-2`), with its verifier link.
+- Signed timestamps are shown in US Eastern time with UTC beside them, by `eastern()`'s arithmetic under a
+  fixed zone rule, never the machine's zone; the generator names no `Date` or `Intl` (C1).
+- The typefaces are Space Grotesk and Noto Sans, subset under `docs/fonts/` beside their OFL licences. The
+  page loads nothing from any other host (`font-src 'self'`).
+- `docs/host-policy.yaml` also declares the ring captions and the ring-3 fill. The generator refuses a
+  caption a drawn edge breaks, and a fill whose cited ref is not the node's signed ref. A filled node's quoted
+  lines are verbatim from its pinned file, which `npm test` checks where `data/` is present.
+- The identity bar carries affiliation only: "A worked example from the Typed Standards project." Where the
+  page first points to typedstandards.org's verifier (the offline-check box), and in the footer, it says the
+  records carry this example's own key, whose registry host that site's host directory does not list, so
+  its verifier reads "Unknown publisher" and checks every signature anyway.
 - GitHub Pages serves `docs/` from `main` at https://core-satellite.typedstandards.org/ (`docs/CNAME`,
   `docs/.nojekyll`). Pages settings are the owner's.
 

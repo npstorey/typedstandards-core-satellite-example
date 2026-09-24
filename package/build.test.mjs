@@ -195,9 +195,11 @@ test('C6 a withdrawal reads withdrawn, records.json says so, and the policy list
   const html = read('docs/index.html', dir);
   const svg = html.slice(html.indexOf('<svg class="map"'), html.indexOf('</svg>'));
   assert.doesNotMatch(svg, /<title>\d+\. W3C PROV-O /, 'a withdrawn edge is not drawn');
-  const records = html.slice(html.indexOf('<section id="records"'), html.indexOf('</section>', html.indexOf('<section id="records"')));
-  assert.match(records, /<h3>Withdrawn \(16\)<\/h3>/);
-  assert.match(records, /<li>W3C PROV-O <small><code>map\/edges\/w3c-prov-o\.yaml<\/code><\/small>, withdrawn \S+: A test withdrawal\. <a href="https:\/\/typedstandards\.org\/verify\?url=https:\/\/core-satellite\.typedstandards\.org\/bundles\/map\/edges\/w3c-prov-o\.bundle\.json">verify<\/a><\/li>/);
+  const sectionOf = (id) => html.slice(html.indexOf(`<section id="${id}"`), html.indexOf('</section>', html.indexOf(`<section id="${id}"`)));
+  const mechanics = sectionOf('mechanics');
+  assert.match(mechanics, /<h3>Withdrawn \(16\)<\/h3>/);
+  assert.match(mechanics, /<li>W3C PROV-O <small><code>map\/edges\/w3c-prov-o\.yaml<\/code><\/small>, withdrawn \d{1,2} [A-Z][a-z]+ \d{4}, \d{2}:\d{2} ET \(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}Z\): A test withdrawal\. <a href="#record-map-edges-w3c-prov-o">Its row<\/a>\.<\/li>/);
+  assert.match(sectionOf('records'), /<tr id="record-map-edges-w3c-prov-o"><td data-label="Record">W3C PROV-O<small>W3C<\/small>.*<td data-label="Shown as">withdrawn<\/td><td data-label="Check"><a href="https:\/\/typedstandards\.org\/verify\?url=https:\/\/core-satellite\.typedstandards\.org\/bundles\/map\/edges\/w3c-prov-o\.bundle\.json">verify<\/a><\/td><\/tr>/);
   assert.match(html, /35 current records and version 1, and 16 withdrawn/);
   const again = run(BUILD, ['withdraw', 'map/edges/w3c-prov-o', '--reason', 'Again.'], dir, { env: signedBaseline().env });
   assert.equal(again.status, 1);

@@ -59,7 +59,8 @@ The key was generated for this example, outside the repository. It is now held i
 - each record's bundle at `bundles/<name>.bundle.json`, a byte-for-byte copy of
   `package/<name>.bundle.json`. The page links each record to typedstandards.org's verifier;
 - `records.json`, the records served and each one's status, and `host-policy.yaml`, the host's own rule for
-  what the page shows. Neither is signed;
+  what the page shows, including the figure's ring captions and which ring-3 nodes it draws filled. Neither
+  is signed;
 - `.well-known/typed-publisher.json`, a registry that lists the key as active. It is the example
   publisher's own statement, not an endorsement by the Typed Standards specification or by
   typedstandards.org, although this host is a subdomain of typedstandards.org.
@@ -300,7 +301,9 @@ Every line should match `docs/verify-output.txt`. Further checks:
 - **`docs/`:** what GitHub Pages serves at https://core-satellite.typedstandards.org/, byte for byte, with
   no Jekyll build (`CNAME`, `.nojekyll`).
   - `index.html`: the map and the records as a picture and tables. It is generated and committed, and
-    it is a view of the signed files, not a record.
+    it is a view of the signed files, not a record. It loads nothing from any other host.
+  - `fonts/`: the two typefaces typedstandards.org uses, Space Grotesk and Noto Sans, subset to the Latin
+    range, with the licence each states and how they were made (`fonts/README.md`).
   - `bundles/`, `records.json`, `host-policy.yaml`, `.well-known/typed-publisher.json`: the served records,
     their list, the host's display rule and the registry.
   - The verify output, the pin record, the G1 rulings and the findings.
@@ -311,6 +314,8 @@ Every line should match `docs/verify-output.txt`. Further checks:
 
 - **Code:** MIT (`LICENSE`).
 - **Text:** CC BY 4.0 (`LICENSE-CC-BY-4.0.txt`).
+- **Typefaces:** Space Grotesk and Noto Sans, SIL Open Font License 1.1: subset copies in `docs/fonts/`, each
+  beside its licence.
 - **Third-party documents:** each source keeps the licence it states, recorded per source in
   `corpus/manifest.json`. Two state none: okfn/mcp-server and the Mila and Mozilla announcement. No
   third-party document is committed.

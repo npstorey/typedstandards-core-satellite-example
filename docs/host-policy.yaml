@@ -21,3 +21,30 @@ map:
   otherwise: map-v1
 # A served record that no rule matches stops the generator.
 unmatched: refuse
+# The figure's caption for each ring. `header` takes the ring's definition from the signed map header. Each
+# other caption states a relation that every current edge in its ring must have, or the generator refuses:
+#   subject-builds-on: typedstandards.org is the subject of a builds-on edge;
+#   neither-depends:   the header defines the edge's relation as one in which neither depends on the other.
+rings:
+  - { ring: 1, caption: Typed Standards builds on these, holds: subject-builds-on }
+  - { ring: 2, caption: neither builds on the other, holds: neither-depends }
+  - { ring: 3, caption: header }
+# Ring 3's nodes are drawn filled or hollow. This is the host's reading of each project's pinned file, not a
+# signed statement. A node is filled when its pinned file shows the project publishing signed records, and the
+# page quotes the lines that show it. Each entry's location and sha256 must equal the ref the node's current
+# edge record gives, or the generator refuses. Every other node in the ring is hollow.
+fill:
+  ring: 3
+  filled: its pinned file shows it publishing signed records
+  hollow: no signed records shown in its pinned files
+  nodes:
+    - id: civicaitools.org
+      location: https://raw.githubusercontent.com/npstorey/civic-ai-tools-website/109eecb809a53bd36cc3468c79d243457570a49d/README.md
+      sha256: ba16dd52cf07fe369bf6359d22bfe36bae345614179fd14d5e814ac481cde89f
+      lines: "26"
+      quote: The published registry, and a detail page per analysis carrying its signature, timestamp, and provenance.
+    - id: github.com/npstorey/typedstandards-eval-run-example
+      location: https://raw.githubusercontent.com/npstorey/typedstandards-eval-run-example/9031a94eebe0d800e52eab6fd4e01c7e788603a6/README.md
+      sha256: 3e405213b53a67e9ebffa7e1f332b34ddbbd3c894d6b1c556c8ca25109930529
+      lines: "11-12"
+      quote: Each record carries its signature, an RFC 3161 timestamp, a Rekor transparency-log inclusion proof and the signing key's registry entry.
