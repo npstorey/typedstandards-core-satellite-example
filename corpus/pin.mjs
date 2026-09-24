@@ -3,7 +3,8 @@
 //
 //   node corpus/pin.mjs            fetch every source into data/ and write corpus/manifest.json, only
 //                                  if the manifest does not exist yet; then write core.md, the map's
-//                                  header map/header.yaml and one file per edge, map/edges/<key>.yaml
+//                                  headers (map/header.yaml and each later one sources.json lists) and
+//                                  one file per edge, map/edges/<key>.yaml
 //   node corpus/pin.mjs --force    refetch and overwrite corpus/manifest.json (never needed for a rerun)
 //   node corpus/pin.mjs --verify   re-hash the bytes in data/ against the manifest; no network, no writes
 //   node corpus/pin.mjs --draft    write the files with every digest shown as "pending"; no fetch and no
@@ -15,7 +16,14 @@
 //
 // map.yaml is version 1's map: one file, header and every edge, signed as one record. It is never
 // overwritten. When it exists, this program computes what the current inputs would write in that form
-// and says whether map.yaml still equals it; while the inputs are version 1's, it does.
+// from `map` and the edges that name no header, and says whether map.yaml still equals it. It does while the
+// manifest is version 1's: map.yaml's header names the manifest's SHA-256.
+//
+// A signed file is never rewritten, so a later header is a file of its own: `map` writes map/header.yaml,
+// and each entry of `headers` in sources.json writes its own file from its own full block. An edge that
+// names a `header` belongs to it and carries that header's name in its comment; an edge that names none
+// belongs to map/header.yaml. `replaces` names the edge or header an entry restates; that one stays as it
+// was signed, and is withdrawn by its own signed statement (package/build.mjs withdraw).
 //
 // The manifest is append-only. A later addition appends its sources and changes no existing entry and
 // not `pinnedAt`, because core.md's and the header's `createdAt` are pinnedAt's date. Each edge's
@@ -41,15 +49,16 @@ const MANIFEST = path.join(ROOT, 'corpus', 'manifest.json');
 const DATA = path.join(ROOT, 'data');
 const CORE_OUT = path.join(ROOT, 'core.md');
 const MAP_OUT = path.join(ROOT, 'map.yaml');
-const HEADER_OUT = path.join(ROOT, 'map', 'header.yaml');
+const MAP_DIR = path.join(ROOT, 'map');
 const EDGES_DIR = path.join(ROOT, 'map', 'edges');
+const FIRST_HEADER = 'map/header.yaml';
 const HEADER_COMMENT = [
   'map/header.yaml: the header of the map of Typed Standards\' technical relations to public projects.',
   'Each edge is one file in map/edges/. Written by corpus/pin.mjs; this file\'s exact bytes are the output of',
   'one signed Typed Standards record in package/.',
 ];
-const EDGE_COMMENT = [
-  'One edge of the map whose header is map/header.yaml. Written by corpus/pin.mjs; this file\'s exact bytes',
+const edgeComment = (header) => [
+  `One edge of the map whose header is ${header}. Written by corpus/pin.mjs; this file's exact bytes`,
   'are the output of one signed Typed Standards record in package/.',
 ];
 const EMPTY_SHA256 = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
@@ -209,8 +218,9 @@ function emit(value, indent = 0) {
   return lines.join('\n');
 }
 
-// A ref carries a location and a content hash together, as the model's published examples require of
-// every link. An unpinned source carries its location, a null hash and the reason.
+// A ref carries a location and a content hash together, the form some of the model's published examples
+// show (`ref: <location + content-hash>`); others show the hash alone. An unpinned source carries its
+// location, a null hash and the reason.
 function refFor(key, pins) {
   const pinnedSrc = pins.byKey.get(key);
   if (pinnedSrc) return { location: pinnedSrc.location, sha256: pinnedSrc.sha256 };
@@ -296,14 +306,15 @@ function edgeValue(e, spec, pins) {
   };
 }
 
-// The header as a mapping. `withManifestDigest` is version 1's form: map.yaml's header names the
-// manifest's SHA-256. map/header.yaml does not, so that a manifest grown by a later addition leaves it
-// unchanged; each record names its writer inputs' digests in its own signed queries.
-function headerValue(spec, pins, withManifestDigest) {
+// A header as a mapping, from `block`: `map` for map/header.yaml and map.yaml, or an entry of `headers`.
+// `withManifestDigest` is version 1's form: map.yaml's header names the manifest's SHA-256. The header
+// files do not, so that a manifest grown by a later addition leaves them unchanged; each record names its
+// writer inputs' digests in its own signed queries.
+function headerValue(block, spec, pins, withManifestDigest) {
   return {
     'x-typedstandards': {
-      map: spec.map.title,
-      domain: spec.map.domain,
+      map: block.title,
+      domain: block.domain,
       subject: spec.subject,
       createdAt: pins.date,
       writtenFrom: {
@@ -311,20 +322,47 @@ function headerValue(spec, pins, withManifestDigest) {
         manifest: 'corpus/manifest.json',
         ...(withManifestDigest ? { manifestSha256: pins.manifestSha256 } : {}),
       },
-      edgeTypes: spec.map.edgeTypes,
-      relations: spec.map.relations,
-      rings: spec.map.rings,
-      refs: spec.map.refs,
-      dropped: spec.map.dropped,
+      edgeTypes: block.edgeTypes,
+      relations: block.relations,
+      rings: block.rings,
+      refs: block.refs,
+      dropped: block.dropped,
     },
   };
 }
 
+// The map's headers, first to last: map/header.yaml from `map`, then each entry of `headers`, each from
+// its own block. A later header names the earlier one it replaces.
+function headersOf(spec) {
+  const list = [{ file: FIRST_HEADER, block: spec.map, comment: HEADER_COMMENT }];
+  for (const h of spec.headers ?? []) {
+    if (!/^map\/header-[a-z0-9]+(-[a-z0-9]+)*\.yaml$/.test(h.file)) die(`header ${h.file} is not map/header-<name>.yaml`);
+    if (list.some((x) => x.file === h.file)) die(`two headers share the file ${h.file}`);
+    if (!list.some((x) => x.file === h.replaces)) die(`${h.file} replaces ${h.replaces}, which is not an earlier header`);
+    if (!Array.isArray(h.comment) || !h.comment.length) die(`${h.file} has no comment`);
+    list.push({ file: h.file, block: h, comment: h.comment });
+  }
+  return list;
+}
+
+// Every edge belongs to a header that defines its relation and ring, and replaces only an earlier edge.
+function checkEdges(spec, headers) {
+  spec.edges.forEach((e, i) => {
+    const h = headers.find((x) => x.file === (e.header ?? FIRST_HEADER));
+    if (!h) die(`edge ${e.key} names the header ${e.header}, which corpus/sources.json does not list`);
+    if (!Object.hasOwn(h.block.relations, e.relation)) die(`edge ${e.key}: ${h.file} does not define the relation ${e.relation}`);
+    if (!Object.hasOwn(h.block.rings, String(e.ring))) die(`edge ${e.key}: ${h.file} does not define ring ${e.ring}`);
+    if (e.replaces !== undefined && !spec.edges.slice(0, i).some((x) => x.key === e.replaces)) die(`edge ${e.key} replaces ${e.replaces}, which is not an earlier edge`);
+  });
+}
+
 const comment = (lines) => `# ${lines.join('\n# ')}`;
 
-// Version 1's map.yaml, as the current inputs would write it: the comment, the header, every edge.
+// Version 1's map.yaml, as the current inputs would write it: the comment, the first header, and every
+// edge that names no later header.
 function mapYaml(spec, pins) {
-  const out = [comment(spec.map.comment), `---\n${emit(headerValue(spec, pins, true))}`, ...spec.edges.map((e) => `---\n${emit(edgeValue(e, spec, pins))}`)];
+  const edges = spec.edges.filter((e) => !e.header);
+  const out = [comment(spec.map.comment), `---\n${emit(headerValue(spec.map, spec, pins, true))}`, ...edges.map((e) => `---\n${emit(edgeValue(e, spec, pins))}`)];
   return `${out.join('\n')}\n`;
 }
 
@@ -338,22 +376,28 @@ function writeMapYaml(spec, pins) {
   return fs.readFileSync(MAP_OUT, 'utf8') === text ? 'unchanged' : 'differs';
 }
 
-// The split: map/header.yaml and one file per edge in map/edges/. A file there that names no edge in
-// corpus/sources.json stops the program; no signed file is ever removed.
+// The split: every header and one file per edge in map/edges/. A file in map/ or map/edges/ that names no
+// header or edge in corpus/sources.json stops the program; no signed file is ever removed.
 function writeSplit(spec, pins) {
+  const headers = headersOf(spec);
+  checkEdges(spec, headers);
   fs.mkdirSync(EDGES_DIR, { recursive: true });
-  fs.writeFileSync(HEADER_OUT, `${comment(HEADER_COMMENT)}\n${emit(headerValue(spec, pins, false))}\n`);
+  for (const h of headers) {
+    fs.writeFileSync(path.join(ROOT, h.file), `${comment(h.comment)}\n${emit(headerValue(h.block, spec, pins, false))}\n`);
+  }
   const written = new Set();
   for (const e of spec.edges) {
     if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(e.key)) die(`edge key ${e.key} is not lowercase letters, digits and hyphens`);
     const file = `${e.key}.yaml`;
     if (written.has(file)) die(`two edges share the key ${e.key}`);
-    fs.writeFileSync(path.join(EDGES_DIR, file), `${comment(EDGE_COMMENT)}\n${emit(edgeValue(e, spec, pins))}\n`);
+    fs.writeFileSync(path.join(EDGES_DIR, file), `${comment(edgeComment(e.header ?? FIRST_HEADER))}\n${emit(edgeValue(e, spec, pins))}\n`);
     written.add(file);
   }
   const stray = fs.readdirSync(EDGES_DIR).filter((f) => !f.startsWith('.') && !written.has(f));
   if (stray.length) die(`map/edges/ holds ${stray.join(', ')}, which corpus/sources.json does not list as an edge`);
-  return written.size;
+  const strayHeaders = fs.readdirSync(MAP_DIR).filter((f) => !f.startsWith('.') && f !== 'edges' && !headers.some((h) => h.file === `map/${f}`));
+  if (strayHeaders.length) die(`map/ holds ${strayHeaders.join(', ')}, which corpus/sources.json does not list as a header`);
+  return { edges: written.size, headers: headers.map((h) => h.file) };
 }
 
 // ---------------------------------------------------------------------------------------------------
@@ -368,9 +412,9 @@ if (!draft) {
 }
 const pins = pinsFrom(draft ? null : readJson(MANIFEST), spec.sources, draft);
 writeCore(spec, pins);
-const edges = writeSplit(spec, pins);
+const split = writeSplit(spec, pins);
 const mapState = writeMapYaml(spec, pins);
-console.log(`wrote core.md (${fs.statSync(CORE_OUT).size} bytes), map/header.yaml and ${edges} edge files in map/edges/${draft ? ' as drafts' : ''}`);
+console.log(`wrote core.md (${fs.statSync(CORE_OUT).size} bytes), ${split.headers.join(', ')} and ${split.edges} edge files in map/edges/${draft ? ' as drafts' : ''}`);
 console.log({
   written: 'wrote map.yaml, version 1\'s map',
   unchanged: 'map.yaml, version 1\'s map: not rewritten, and the current inputs write it byte for byte',

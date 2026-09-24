@@ -40,7 +40,11 @@
       "role": "map-header",
       "edgeId": null,
       "step": 2,
-      "status": "active"
+      "status": "withdrawn",
+      "withdrawn": {
+        "at": "2026-09-24T01:52:28.996Z",
+        "reason": "Restated as map/header-2.yaml, whose relations and ring 3 describe only what a project's pinned bytes show. This header defined could-emit, and described adjacent and ring 3 in terms of intent."
+      }
     },
     {
       "name": "map/edges/w3c-prov-o",
@@ -79,7 +83,11 @@
       "role": "edge",
       "edgeId": "typedstandards.org/map/sigstore-rekor",
       "step": 2,
-      "status": "active"
+      "status": "withdrawn",
+      "withdrawn": {
+        "at": "2026-09-24T01:52:29.234Z",
+        "reason": "Its basis said records submit hashedrekord entries; the pinned specification says a package SHOULD carry a Rekor inclusion proof (§8.3.2). Restated as map/edges/sigstore-rekor-2.yaml."
+      }
     },
     {
       "name": "map/edges/rfc-3161",
@@ -92,7 +100,11 @@
       "role": "edge",
       "edgeId": "typedstandards.org/map/rfc-3161",
       "step": 2,
-      "status": "active"
+      "status": "withdrawn",
+      "withdrawn": {
+        "at": "2026-09-24T01:52:29.348Z",
+        "reason": "Its basis said records carry RFC 3161 timestamp tokens; the pinned specification says a package SHOULD carry one (§8.3.2). Restated as map/edges/rfc-3161-2.yaml."
+      }
     },
     {
       "name": "map/edges/rfc-8785",
@@ -118,7 +130,11 @@
       "role": "edge",
       "edgeId": "typedstandards.org/map/rfc-8032",
       "step": 2,
-      "status": "active"
+      "status": "withdrawn",
+      "withdrawn": {
+        "at": "2026-09-24T01:52:29.465Z",
+        "reason": "Its curation note counted this example's records as two; it was signed as one of 37. Restated as map/edges/rfc-8032-2.yaml."
+      }
     },
     {
       "name": "map/edges/did-key",
@@ -131,7 +147,11 @@
       "role": "edge",
       "edgeId": "typedstandards.org/map/did-key",
       "step": 2,
-      "status": "active"
+      "status": "withdrawn",
+      "withdrawn": {
+        "at": "2026-09-24T01:52:29.579Z",
+        "reason": "Its basis counted this example's records as two; it was signed as one of 37. Restated as map/edges/did-key-2.yaml."
+      }
     },
     {
       "name": "map/edges/discourse-graphs",
@@ -144,7 +164,11 @@
       "role": "edge",
       "edgeId": "typedstandards.org/map/discourse-graphs",
       "step": 2,
-      "status": "active"
+      "status": "withdrawn",
+      "withdrawn": {
+        "at": "2026-09-24T01:52:29.698Z",
+        "reason": "The pinned specification lists Discourse Graphs as an informative reference (§14.2) and reserves the pattern's content types by name only (§7.4), so builds-on is not shown. Restated as complements, map/edges/discourse-graphs-2.yaml."
+      }
     },
     {
       "name": "map/edges/c2pa",
@@ -209,7 +233,11 @@
       "role": "edge",
       "edgeId": "typedstandards.org/map/nanopublications",
       "step": 2,
-      "status": "active"
+      "status": "withdrawn",
+      "withdrawn": {
+        "at": "2026-09-24T01:52:29.817Z",
+        "reason": "Its basis called the assertion atomic, which the pinned guidelines do not, and said consuming one as the other is not built, where the pinned specification calls consuming Typed Standards claims as nanopublications \"a plausible bridge but requires a separate effort\". Restated as map/edges/nanopublications-2.yaml."
+      }
     },
     {
       "name": "map/edges/proof-of-control",
@@ -222,7 +250,11 @@
       "role": "edge",
       "edgeId": "typedstandards.org/map/proof-of-control",
       "step": 2,
-      "status": "active"
+      "status": "withdrawn",
+      "withdrawn": {
+        "at": "2026-09-24T01:52:29.937Z",
+        "reason": "The pinned frontispiece shows neither the evidence-token format nor the pointer to SLSA and in-toto that its basis names. Restated from the frontispiece as adjacent, map/edges/proof-of-control-2.yaml."
+      }
     },
     {
       "name": "map/edges/proof-of-insight",
@@ -248,7 +280,11 @@
       "role": "edge",
       "edgeId": "typedstandards.org/map/nanda-agentfacts",
       "step": 2,
-      "status": "active"
+      "status": "withdrawn",
+      "withdrawn": {
+        "at": "2026-09-24T01:52:30.060Z",
+        "reason": "Its basis said the schema is used for discovery and routing; the pinned schema has routing fields but does not mention discovery. Restated as map/edges/nanda-agentfacts-2.yaml."
+      }
     },
     {
       "name": "map/edges/mcp-sep-3094",
@@ -274,7 +310,11 @@
       "role": "edge",
       "edgeId": "typedstandards.org/map/atproto-lexicon",
       "step": 2,
-      "status": "active"
+      "status": "withdrawn",
+      "withdrawn": {
+        "at": "2026-09-24T01:52:30.183Z",
+        "reason": "Its basis said the SciOS paper names Lexicon as a model for its schema; the paper likens its schema to one. Restated as map/edges/atproto-lexicon-2.yaml."
+      }
     },
     {
       "name": "map/edges/google-okf",
@@ -287,7 +327,11 @@
       "role": "edge",
       "edgeId": "typedstandards.org/map/google-okf",
       "step": 2,
-      "status": "active"
+      "status": "withdrawn",
+      "withdrawn": {
+        "at": "2026-09-24T01:52:30.306Z",
+        "reason": "Its basis said the SciOS paper names OKF as a model, where the paper likens its schema to it, and that a raw-bytes/v1 record can sign any such file, where the pinned specification admits raw-bytes/v1 only for program-computed content. Restated as map/edges/google-okf-2.yaml."
+      }
     },
     {
       "name": "map/edges/w3c-dcat-3",
@@ -339,7 +383,11 @@
       "role": "edge",
       "edgeId": "typedstandards.org/map/mira-schema",
       "step": 2,
-      "status": "active"
+      "status": "withdrawn",
+      "withdrawn": {
+        "at": "2026-09-24T01:52:30.428Z",
+        "reason": "Its name and basis called the schema a draft and LinkML; the pinned file says neither. Restated as map/edges/mira-schema-2.yaml."
+      }
     },
     {
       "name": "map/edges/civicaitools-org",
@@ -404,7 +452,11 @@
       "role": "edge",
       "edgeId": "typedstandards.org/map/qsv",
       "step": 2,
-      "status": "active"
+      "status": "withdrawn",
+      "withdrawn": {
+        "at": "2026-09-24T01:52:29.118Z",
+        "reason": "Its could-emit relation rested on an issue thread that is not pinned. Restated from the pinned README as map/edges/qsv-2.yaml."
+      }
     },
     {
       "name": "map/edges/verikan",
@@ -417,7 +469,11 @@
       "role": "edge",
       "edgeId": "typedstandards.org/map/verikan",
       "step": 2,
-      "status": "active"
+      "status": "withdrawn",
+      "withdrawn": {
+        "at": "2026-09-24T01:52:30.551Z",
+        "reason": "Its basis named a specification revision that the pinned README does not. Restated as map/edges/verikan-2.yaml."
+      }
     },
     {
       "name": "map/edges/okfn-ckan-mcp",
@@ -430,7 +486,11 @@
       "role": "edge",
       "edgeId": "typedstandards.org/map/okfn-ckan-mcp",
       "step": 2,
-      "status": "active"
+      "status": "withdrawn",
+      "withdrawn": {
+        "at": "2026-09-24T01:52:30.677Z",
+        "reason": "Its name and basis said CKAN; the pinned README does not. Restated as map/edges/okfn-mcp-server.yaml."
+      }
     },
     {
       "name": "map/edges/humane-intelligence-red-teaming",
@@ -482,6 +542,201 @@
       "role": "edge",
       "edgeId": "typedstandards.org/map/mila-mozilla-foundation-layer",
       "step": 2,
+      "status": "active"
+    },
+    {
+      "name": "map/header-2",
+      "file": "map/header-2.yaml",
+      "bundle": "bundles/map/header-2.bundle.json",
+      "packageHash": "a30ad67384d1485853573ed24ed6fc70fd126af665cf85e77a0b46347f7d16af",
+      "createdAt": "2026-09-24T01:52:31.397Z",
+      "type": "content/analysis/v1",
+      "signer": "did:key:z6Mkw9jqif2wccYESfNW78Sv2YC2UG1zuN5a5gP1HNL3RxDH",
+      "role": "map-header",
+      "edgeId": null,
+      "step": 3,
+      "status": "active"
+    },
+    {
+      "name": "map/edges/sigstore-rekor-2",
+      "file": "map/edges/sigstore-rekor-2.yaml",
+      "bundle": "bundles/map/edges/sigstore-rekor-2.bundle.json",
+      "packageHash": "edd3f873d76e2e71ca8b9412ccc3f03b3e8b4934cc06f5c75b7e942f01a89f8e",
+      "createdAt": "2026-09-24T01:52:31.400Z",
+      "type": "content/analysis/v1",
+      "signer": "did:key:z6Mkw9jqif2wccYESfNW78Sv2YC2UG1zuN5a5gP1HNL3RxDH",
+      "role": "edge",
+      "edgeId": "typedstandards.org/map/sigstore-rekor-2",
+      "step": 3,
+      "status": "active"
+    },
+    {
+      "name": "map/edges/rfc-3161-2",
+      "file": "map/edges/rfc-3161-2.yaml",
+      "bundle": "bundles/map/edges/rfc-3161-2.bundle.json",
+      "packageHash": "f7a8ac7257b7ac2f38feda9c8f7c0284f14d8bb5de8001c2fdcac3bd3e219a00",
+      "createdAt": "2026-09-24T01:52:31.401Z",
+      "type": "content/analysis/v1",
+      "signer": "did:key:z6Mkw9jqif2wccYESfNW78Sv2YC2UG1zuN5a5gP1HNL3RxDH",
+      "role": "edge",
+      "edgeId": "typedstandards.org/map/rfc-3161-2",
+      "step": 3,
+      "status": "active"
+    },
+    {
+      "name": "map/edges/rfc-8032-2",
+      "file": "map/edges/rfc-8032-2.yaml",
+      "bundle": "bundles/map/edges/rfc-8032-2.bundle.json",
+      "packageHash": "29b5ba00bd2678c79a30760dda985e37be582319da6142aafae254e628f7a8d2",
+      "createdAt": "2026-09-24T01:52:31.403Z",
+      "type": "content/analysis/v1",
+      "signer": "did:key:z6Mkw9jqif2wccYESfNW78Sv2YC2UG1zuN5a5gP1HNL3RxDH",
+      "role": "edge",
+      "edgeId": "typedstandards.org/map/rfc-8032-2",
+      "step": 3,
+      "status": "active"
+    },
+    {
+      "name": "map/edges/did-key-2",
+      "file": "map/edges/did-key-2.yaml",
+      "bundle": "bundles/map/edges/did-key-2.bundle.json",
+      "packageHash": "967da9fce339be6a1472c004c2d2e19e441345ea017879e08c2db195d9abf0f7",
+      "createdAt": "2026-09-24T01:52:31.404Z",
+      "type": "content/analysis/v1",
+      "signer": "did:key:z6Mkw9jqif2wccYESfNW78Sv2YC2UG1zuN5a5gP1HNL3RxDH",
+      "role": "edge",
+      "edgeId": "typedstandards.org/map/did-key-2",
+      "step": 3,
+      "status": "active"
+    },
+    {
+      "name": "map/edges/discourse-graphs-2",
+      "file": "map/edges/discourse-graphs-2.yaml",
+      "bundle": "bundles/map/edges/discourse-graphs-2.bundle.json",
+      "packageHash": "32e2126fa11ef9434b9db8b4e36347b5f0c3f7f5dc4728262352eb664028d22c",
+      "createdAt": "2026-09-24T01:52:31.405Z",
+      "type": "content/analysis/v1",
+      "signer": "did:key:z6Mkw9jqif2wccYESfNW78Sv2YC2UG1zuN5a5gP1HNL3RxDH",
+      "role": "edge",
+      "edgeId": "typedstandards.org/map/discourse-graphs-2",
+      "step": 3,
+      "status": "active"
+    },
+    {
+      "name": "map/edges/nanopublications-2",
+      "file": "map/edges/nanopublications-2.yaml",
+      "bundle": "bundles/map/edges/nanopublications-2.bundle.json",
+      "packageHash": "355e597eec401a66aa6fa5f7087a591cefabb58f30beef78054ab86f4733c39d",
+      "createdAt": "2026-09-24T01:52:31.407Z",
+      "type": "content/analysis/v1",
+      "signer": "did:key:z6Mkw9jqif2wccYESfNW78Sv2YC2UG1zuN5a5gP1HNL3RxDH",
+      "role": "edge",
+      "edgeId": "typedstandards.org/map/nanopublications-2",
+      "step": 3,
+      "status": "active"
+    },
+    {
+      "name": "map/edges/proof-of-control-2",
+      "file": "map/edges/proof-of-control-2.yaml",
+      "bundle": "bundles/map/edges/proof-of-control-2.bundle.json",
+      "packageHash": "5fa2c0af422fdd3e78538a765f9e3e616573df0e1871e4ee6d0535ce8fa358c8",
+      "createdAt": "2026-09-24T01:52:31.408Z",
+      "type": "content/analysis/v1",
+      "signer": "did:key:z6Mkw9jqif2wccYESfNW78Sv2YC2UG1zuN5a5gP1HNL3RxDH",
+      "role": "edge",
+      "edgeId": "typedstandards.org/map/proof-of-control-2",
+      "step": 3,
+      "status": "active"
+    },
+    {
+      "name": "map/edges/nanda-agentfacts-2",
+      "file": "map/edges/nanda-agentfacts-2.yaml",
+      "bundle": "bundles/map/edges/nanda-agentfacts-2.bundle.json",
+      "packageHash": "e63c2c090ce4e94677eed483d21252c635b799b983984b78504f9bb42bcca50e",
+      "createdAt": "2026-09-24T01:52:31.410Z",
+      "type": "content/analysis/v1",
+      "signer": "did:key:z6Mkw9jqif2wccYESfNW78Sv2YC2UG1zuN5a5gP1HNL3RxDH",
+      "role": "edge",
+      "edgeId": "typedstandards.org/map/nanda-agentfacts-2",
+      "step": 3,
+      "status": "active"
+    },
+    {
+      "name": "map/edges/atproto-lexicon-2",
+      "file": "map/edges/atproto-lexicon-2.yaml",
+      "bundle": "bundles/map/edges/atproto-lexicon-2.bundle.json",
+      "packageHash": "ae9302945cba77cd3fbe682d558d60446064a976136098f0913c37907e1b400a",
+      "createdAt": "2026-09-24T01:52:31.411Z",
+      "type": "content/analysis/v1",
+      "signer": "did:key:z6Mkw9jqif2wccYESfNW78Sv2YC2UG1zuN5a5gP1HNL3RxDH",
+      "role": "edge",
+      "edgeId": "typedstandards.org/map/atproto-lexicon-2",
+      "step": 3,
+      "status": "active"
+    },
+    {
+      "name": "map/edges/google-okf-2",
+      "file": "map/edges/google-okf-2.yaml",
+      "bundle": "bundles/map/edges/google-okf-2.bundle.json",
+      "packageHash": "3b0d211ddfeb4950fe74345da4a05b79719b28b28b65a0bd39ed8b9dd78d7b4d",
+      "createdAt": "2026-09-24T01:52:31.412Z",
+      "type": "content/analysis/v1",
+      "signer": "did:key:z6Mkw9jqif2wccYESfNW78Sv2YC2UG1zuN5a5gP1HNL3RxDH",
+      "role": "edge",
+      "edgeId": "typedstandards.org/map/google-okf-2",
+      "step": 3,
+      "status": "active"
+    },
+    {
+      "name": "map/edges/mira-schema-2",
+      "file": "map/edges/mira-schema-2.yaml",
+      "bundle": "bundles/map/edges/mira-schema-2.bundle.json",
+      "packageHash": "1983f90991ea2e64423c5ca7166ae06190701487726e7cc1f91118781032f37b",
+      "createdAt": "2026-09-24T01:52:31.414Z",
+      "type": "content/analysis/v1",
+      "signer": "did:key:z6Mkw9jqif2wccYESfNW78Sv2YC2UG1zuN5a5gP1HNL3RxDH",
+      "role": "edge",
+      "edgeId": "typedstandards.org/map/mira-schema-2",
+      "step": 3,
+      "status": "active"
+    },
+    {
+      "name": "map/edges/qsv-2",
+      "file": "map/edges/qsv-2.yaml",
+      "bundle": "bundles/map/edges/qsv-2.bundle.json",
+      "packageHash": "df171a53a17fb8c2faf8ab5e6adb8fc5870bb9d77290e26ce81cd0175c04c7ee",
+      "createdAt": "2026-09-24T01:52:31.415Z",
+      "type": "content/analysis/v1",
+      "signer": "did:key:z6Mkw9jqif2wccYESfNW78Sv2YC2UG1zuN5a5gP1HNL3RxDH",
+      "role": "edge",
+      "edgeId": "typedstandards.org/map/qsv-2",
+      "step": 3,
+      "status": "active"
+    },
+    {
+      "name": "map/edges/verikan-2",
+      "file": "map/edges/verikan-2.yaml",
+      "bundle": "bundles/map/edges/verikan-2.bundle.json",
+      "packageHash": "ce505860778fc7be463c00f65e25830569f1e0a1bd1213cc07667f70222e3340",
+      "createdAt": "2026-09-24T01:52:31.417Z",
+      "type": "content/analysis/v1",
+      "signer": "did:key:z6Mkw9jqif2wccYESfNW78Sv2YC2UG1zuN5a5gP1HNL3RxDH",
+      "role": "edge",
+      "edgeId": "typedstandards.org/map/verikan-2",
+      "step": 3,
+      "status": "active"
+    },
+    {
+      "name": "map/edges/okfn-mcp-server",
+      "file": "map/edges/okfn-mcp-server.yaml",
+      "bundle": "bundles/map/edges/okfn-mcp-server.bundle.json",
+      "packageHash": "35b1e393e8bd60c99407cb19b8ecf49fb774c8375ef754434c8c38cbc184dd98",
+      "createdAt": "2026-09-24T01:52:31.418Z",
+      "type": "content/analysis/v1",
+      "signer": "did:key:z6Mkw9jqif2wccYESfNW78Sv2YC2UG1zuN5a5gP1HNL3RxDH",
+      "role": "edge",
+      "edgeId": "typedstandards.org/map/okfn-mcp-server",
+      "step": 3,
       "status": "active"
     }
   ]

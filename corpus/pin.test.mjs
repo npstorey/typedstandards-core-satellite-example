@@ -32,9 +32,9 @@ test('C2 core.md and map.yaml are the bytes version 1 signed', () => {
   for (const [f, digest] of Object.entries(V1_FILES)) assert.equal(sha256(fs.readFileSync(path.join(ROOT, f))), digest, f);
 });
 
-test('C2 each edge file parses to the same value as its document in map.yaml, and the ids are the same set', () => {
+test('C2 each first-header edge file parses to the same value as its document in map.yaml, and the ids are the same set', () => {
   const [header, ...docs] = YAML.parseAllDocuments(read('map.yaml')).map((d) => d.toJS());
-  const files = fs.readdirSync(path.join(ROOT, 'map', 'edges'));
+  const files = readJson('corpus/sources.json').edges.filter((e) => !e.header).map((e) => `${e.key}.yaml`);
   assert.equal(files.length, docs.length);
   assert.deepEqual(new Set(files.map((f) => YAML.parse(read(`map/edges/${f}`)).id)), new Set(docs.map((d) => d.id)));
   for (const d of docs) {
@@ -57,19 +57,68 @@ test('D2 the writer never overwrites map.yaml', (t) => {
   assert.ok(fs.readFileSync(file).equals(changed));
 });
 
-test('D3 an added edge writes one new file and leaves every existing file byte-identical, core.md and map/header.yaml included', (t) => {
+test('D3 an added edge writes one new file and leaves every existing file byte-identical, core.md and both headers included', (t) => {
   const dir = scratch(t);
   const before = written(dir);
   const { file } = addEdge(dir);
   const r = run(PIN, [], dir);
   assert.equal(r.status, 0, r.stderr);
+  // map.yaml's header names the manifest's SHA-256, and an addition grows the manifest.
   assert.match(r.stdout, /map\.yaml, version 1's map: not rewritten, and it differs/);
   const after = written(dir);
   assert.deepEqual([...after.keys()].filter((f) => !before.has(f)), [file]);
   for (const [f, bytes] of before) assert.ok(after.get(f).equals(bytes), f);
-  const edge = YAML.parse(fs.readFileSync(path.join(dir, file), 'utf8'));
+  const text = fs.readFileSync(path.join(dir, file), 'utf8');
+  assert.ok(text.startsWith('# One edge of the map whose header is map/header-2.yaml.'), 'the added edge names the newest header');
+  const edge = YAML.parse(text);
   assert.equal(edge.createdAt, '2026-10-01', 'the added edge carries its own fetch date');
   assert.equal(edge.object.ref.sha256, sha256('example-added'));
+});
+
+test('the second header differs from the first only in its comment, its relations and ring 3, and drops every forward-looking phrase', () => {
+  const first = YAML.parse(read('map/header.yaml'))['x-typedstandards'];
+  const second = YAML.parse(read('map/header-2.yaml'))['x-typedstandards'];
+  const { relations: r1, rings: g1, ...rest1 } = first;
+  const { relations: r2, rings: g2, ...rest2 } = second;
+  assert.deepEqual(rest2, rest1);
+  assert.deepEqual(Object.keys(r2), ['builds-on', 'complements', 'writes-recordable-output', 'adjacent']);
+  assert.equal(r2['builds-on'], r1['builds-on']);
+  assert.equal(r2.complements, r1.complements);
+  assert.equal(r2.adjacent, 'A related problem space. Neither depends on the other.');
+  assert.deepEqual([g2[1], g2[2]], [g1[1], g1[2]]);
+  assert.equal(g2[3], 'Implementations, tools and agent runtimes.');
+  assert.doesNotMatch(read('map/header-2.yaml'), /could-emit|intent|emitter/i);
+});
+
+test('each restated edge keeps the ends of the edge it replaces, and belongs to the second header', () => {
+  const edges = readJson('corpus/sources.json').edges;
+  const restated = edges.filter((e) => e.replaces);
+  assert.equal(restated.length, 14);
+  for (const e of restated) {
+    const was = edges.find((x) => x.key === e.replaces);
+    assert.deepEqual([e.subject, e.object], [was.subject, was.object], e.key);
+    assert.equal(e.header, 'map/header-2.yaml', e.key);
+    const a = YAML.parse(read(`map/edges/${e.key}.yaml`));
+    const b = YAML.parse(read(`map/edges/${was.key}.yaml`));
+    assert.deepEqual([a.subject, a.object, a.createdAt], [b.subject, b.object, b.createdAt], e.key);
+    assert.ok(read(`map/edges/${e.key}.yaml`).startsWith('# One edge of the map whose header is map/header-2.yaml.'), e.key);
+  }
+});
+
+test('the writer stops on an edge whose header does not define its relation, and on a stray header file', (t) => {
+  const a = scratch(t);
+  const file = path.join(a, 'corpus', 'sources.json');
+  const sources = JSON.parse(fs.readFileSync(file, 'utf8'));
+  sources.edges.find((e) => e.key === 'qsv-2').relation = 'could-emit';
+  fs.writeFileSync(file, `${JSON.stringify(sources, null, 2)}\n`);
+  const r = run(PIN, [], a);
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /edge qsv-2: map\/header-2\.yaml does not define the relation could-emit/);
+  const b = scratch(t);
+  fs.writeFileSync(path.join(b, 'map', 'header-3.yaml'), 'x: 1\n');
+  const s = run(PIN, [], b);
+  assert.equal(s.status, 1);
+  assert.match(s.stderr, /map\/ holds header-3\.yaml, which corpus\/sources\.json does not list as a header/);
 });
 
 test('the writer stops on a file in map/edges/ that names no edge', (t) => {

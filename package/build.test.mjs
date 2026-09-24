@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { test } from 'node:test';
-import { ROOT, addEdge, flipByte, read, readJson, run, scratch, sha256, signedBaseline, signedCopy, snapshot, throwawayKey, useKey } from '../test/scratch.mjs';
+import { ROOT, addEdge, flipByte, read, readJson, run, scratch, sha256, signedBaseline, signedCopy, signedThroughVersion2, snapshot, throwawayKey, useKey } from '../test/scratch.mjs';
 
 const BUILD = 'package/build.mjs';
 const VERIFY = 'verify.mjs';
@@ -87,17 +87,19 @@ test('C7 offline, #5 stays self_certified for every served record, and verify.mj
 
 // ---------- a batch signed with a throwaway key ----------
 
-test('C3/C5 the batch signs the 35 new record files as one step after version 1, and every record verifies offline under one key', () => {
+test('C3/C5 the replay signs version 1, the 35 files of version 2, then the 15 later files after 15 withdrawals, and every record verifies offline under one key', () => {
   const { dir } = signedBaseline();
   const log = readJson('package/build-log.json', dir);
   const steps = Object.values(log.records).map((e) => e.step ?? 1);
   assert.equal(steps.filter((s) => s === 1).length, 2);
   assert.equal(steps.filter((s) => s === 2).length, 35);
+  assert.equal(steps.filter((s) => s === 3).length, 15);
+  assert.equal((log.withdrawals ?? []).length, 15);
   const r = run(VERIFY, [], dir);
   assert.equal(r.status, 0, r.stdout);
-  assert.match(r.stdout, /37 served; 36 current records and version 1; #10 active 37, withdrawn 0/);
+  assert.match(r.stdout, /52 served; 36 current records and version 1; #10 active 37, withdrawn 15/);
   assert.match(r.stdout, /0 record files with no bundle yet/);
-  assert.match(r.stdout, /all 37 signatures carry one public key and one identifier/);
+  assert.match(r.stdout, /all 52 signatures carry one public key and one identifier/);
   assert.match(r.stdout, /^network: global fetch calls 0; injected fetch calls 0$/m);
   for (const rec of readJson('docs/records.json', dir).records) {
     const b = readJson(`docs/${rec.bundle}`, dir);
@@ -112,7 +114,7 @@ test('C5 a second run signs nothing and writes nothing', (t) => {
   const before = snapshot(dir);
   const r = run(BUILD, ['sign'], dir, { env: signedBaseline().env });
   assert.equal(r.status, 0, r.stderr);
-  assert.match(r.stdout, /signing check: the key reproduces all 37 committed signatures/);
+  assert.match(r.stdout, /signing check: the key reproduces all 67 committed signatures/);
   assert.match(r.stdout, /nothing to sign: every record file has a bundle, so nothing was written/);
   assert.deepEqual(snapshot(dir), before);
 });
@@ -153,30 +155,30 @@ test('D3 a later addition is one more step: exactly one record is signed, and ev
   assert.equal(run('corpus/pin.mjs', [], dir).status, 0);
   const r = run(BUILD, ['sign'], dir, { env: signedBaseline().env });
   assert.equal(r.status, 0, r.stderr);
-  assert.match(r.stdout, /step 3: signed 1 record;/);
+  assert.match(r.stdout, /step 4: signed 1 record;/);
   const after = snapshot(dir);
   const bundles = (m) => [...m].filter(([f]) => f.endsWith('.bundle.json'));
   for (const [f, bytes] of bundles(before)) assert.ok(after.get(f).equals(bytes), f);
-  for (const f of ['core.md', 'map.yaml', 'map/header.yaml', ...fs.readdirSync(path.join(dir, 'map', 'edges')).map((e) => `map/edges/${e}`).filter((e) => e !== file)]) {
+  for (const f of ['core.md', 'map.yaml', 'map/header.yaml', 'map/header-2.yaml', ...fs.readdirSync(path.join(dir, 'map', 'edges')).map((e) => `map/edges/${e}`).filter((e) => e !== file)]) {
     assert.ok(after.get(f).equals(before.get(f)), f);
   }
   const log = readJson('package/build-log.json', dir);
-  assert.equal(log.records['map/edges/example-added'].step, 3);
+  assert.equal(log.records['map/edges/example-added'].step, 4);
   assert.equal(run(BUILD, ['check'], dir).status, 0);
   assert.equal(run('site/generate.mjs', [], dir).status, 0);
   const v = run(VERIFY, [], dir);
   assert.equal(v.status, 0, v.stdout);
-  assert.match(v.stdout, /38 served; 37 current records and version 1/);
+  assert.match(v.stdout, /53 served; 37 current records and version 1/);
 });
 
 // ---------- withdrawal ----------
 
 test('C6 a withdrawal reads withdrawn, records.json says so, and the policy lists it without drawing it', (t) => {
   const dir = signedCopy(t);
-  const w = run(BUILD, ['withdraw', 'map/edges/qsv', '--reason', 'A test withdrawal.'], dir, { env: signedBaseline().env });
+  const w = run(BUILD, ['withdraw', 'map/edges/w3c-prov-o', '--reason', 'A test withdrawal.'], dir, { env: signedBaseline().env });
   assert.equal(w.status, 0, w.stderr);
-  assert.match(w.stdout, /map\/edges\/qsv: withdrawn by attestation .*; verifyLifecycleChain reads withdrawn/);
-  const rec = readJson('docs/records.json', dir).records.find((r) => r.name === 'map/edges/qsv');
+  assert.match(w.stdout, /map\/edges\/w3c-prov-o: withdrawn by attestation .*; verifyLifecycleChain reads withdrawn/);
+  const rec = readJson('docs/records.json', dir).records.find((r) => r.name === 'map/edges/w3c-prov-o');
   assert.equal(rec.status, 'withdrawn');
   assert.equal(rec.withdrawn.reason, 'A test withdrawal.');
   const b = readJson(`docs/${rec.bundle}`, dir);
@@ -185,28 +187,29 @@ test('C6 a withdrawal reads withdrawn, records.json says so, and the policy list
   assert.equal(b.lifecycleAttestations[0].node.targetNodeId, b.packageHash);
   const v = run(VERIFY, [], dir);
   assert.equal(v.status, 0, v.stdout);
-  assert.match(v.stdout, /^ {2}ok {4}withdrawn {2}map\/edges\/qsv\.yaml$/m);
-  assert.match(v.stdout, /37 served; 35 current records and version 1; #10 active 36, withdrawn 1/);
+  assert.match(v.stdout, /^ {2}ok {4}withdrawn {2}map\/edges\/w3c-prov-o\.yaml$/m);
+  assert.match(v.stdout, /52 served; 35 current records and version 1; #10 active 36, withdrawn 16/);
   assert.equal(run(BUILD, ['check'], dir).status, 0);
   const g = run('site/generate.mjs', [], dir);
   assert.equal(g.status, 0, g.stderr);
   const html = read('docs/index.html', dir);
   const svg = html.slice(html.indexOf('<svg class="map"'), html.indexOf('</svg>'));
-  assert.doesNotMatch(svg, /<title>\d+\. qsv /, 'a withdrawn edge is not drawn');
+  assert.doesNotMatch(svg, /<title>\d+\. W3C PROV-O /, 'a withdrawn edge is not drawn');
   const records = html.slice(html.indexOf('<section id="records"'), html.indexOf('</section>', html.indexOf('<section id="records"')));
-  assert.match(records, /<h3>Withdrawn \(1\)<\/h3>\n<ul><li>qsv <small><code>map\/edges\/qsv\.yaml<\/code><\/small>, withdrawn \S+: A test withdrawal\. <a href="https:\/\/typedstandards\.org\/verify\?url=https:\/\/core-satellite\.typedstandards\.org\/bundles\/map\/edges\/qsv\.bundle\.json">verify<\/a><\/li><\/ul>/);
-  assert.match(html, /35 current records and version 1, and 1 withdrawn/);
-  const again = run(BUILD, ['withdraw', 'map/edges/qsv', '--reason', 'Again.'], dir, { env: signedBaseline().env });
+  assert.match(records, /<h3>Withdrawn \(16\)<\/h3>/);
+  assert.match(records, /<li>W3C PROV-O <small><code>map\/edges\/w3c-prov-o\.yaml<\/code><\/small>, withdrawn \S+: A test withdrawal\. <a href="https:\/\/typedstandards\.org\/verify\?url=https:\/\/core-satellite\.typedstandards\.org\/bundles\/map\/edges\/w3c-prov-o\.bundle\.json">verify<\/a><\/li>/);
+  assert.match(html, /35 current records and version 1, and 16 withdrawn/);
+  const again = run(BUILD, ['withdraw', 'map/edges/w3c-prov-o', '--reason', 'Again.'], dir, { env: signedBaseline().env });
   assert.equal(again.status, 1);
   assert.match(again.stderr, /already withdrawn; nothing written/);
 });
 
 test('C6 records.json claiming active for a withdrawn record is red, in check and in verify.mjs', (t) => {
   const dir = signedCopy(t);
-  assert.equal(run(BUILD, ['withdraw', 'map/edges/qsv', '--reason', 'A test withdrawal.'], dir, { env: signedBaseline().env }).status, 0);
+  assert.equal(run(BUILD, ['withdraw', 'map/edges/w3c-prov-o', '--reason', 'A test withdrawal.'], dir, { env: signedBaseline().env }).status, 0);
   const file = path.join(dir, 'docs', 'records.json');
   const served = JSON.parse(fs.readFileSync(file, 'utf8'));
-  const rec = served.records.find((r) => r.name === 'map/edges/qsv');
+  const rec = served.records.find((r) => r.name === 'map/edges/w3c-prov-o');
   rec.status = 'active';
   delete rec.withdrawn;
   fs.writeFileSync(file, `${JSON.stringify(served, null, 2)}\n`);
@@ -215,20 +218,51 @@ test('C6 records.json claiming active for a withdrawn record is red, in check an
   assert.match(c.stdout, /docs\/records\.json DIFFERS from a fresh derivation/);
   const v = run(VERIFY, [], dir);
   assert.equal(v.status, 1);
-  assert.match(v.stdout, /map\/edges\/qsv\.yaml: #10 reads withdrawn, docs\/records\.json says active/);
+  assert.match(v.stdout, /map\/edges\/w3c-prov-o\.yaml: #10 reads withdrawn, docs\/records\.json says active/);
 });
 
 test('C6 a view that drops its carried withdrawal is red: the build log records it', (t) => {
   const dir = signedCopy(t);
-  assert.equal(run(BUILD, ['withdraw', 'map/edges/qsv', '--reason', 'A test withdrawal.'], dir, { env: signedBaseline().env }).status, 0);
-  for (const f of ['package/map/edges/qsv.bundle.json', 'docs/bundles/map/edges/qsv.bundle.json']) {
+  assert.equal(run(BUILD, ['withdraw', 'map/edges/w3c-prov-o', '--reason', 'A test withdrawal.'], dir, { env: signedBaseline().env }).status, 0);
+  for (const f of ['package/map/edges/w3c-prov-o.bundle.json', 'docs/bundles/map/edges/w3c-prov-o.bundle.json']) {
     const b = readJson(f, dir);
     delete b.lifecycleAttestations;
     fs.writeFileSync(path.join(dir, f), `${JSON.stringify(b, null, 2)}\n`);
   }
   const c = run(BUILD, ['check'], dir);
   assert.equal(c.status, 1);
-  assert.match(c.stdout, /withdrawal of map\/edges\/qsv: the node rebuilt from the build log does not equal the one its view carries/);
+  assert.match(c.stdout, /withdrawal of map\/edges\/w3c-prov-o: the node rebuilt from the build log does not equal the one its view carries/);
+});
+
+test('C6 the replay withdraws exactly the records sources.json\'s replaces names, and each restatement is current', () => {
+  const { dir, later } = signedBaseline();
+  const records = readJson('docs/records.json', dir).records;
+  assert.deepEqual(records.filter((r) => r.status === 'withdrawn').map((r) => r.name), later.withdrawn);
+  for (const f of later.files) assert.equal(records.find((r) => r.file === f)?.status, 'active', f);
+  assert.equal(later.withdrawn.length, 15);
+  assert.ok(later.withdrawn.includes('map/header') && later.withdrawn.includes('map/edges/qsv'));
+});
+
+test('C6 sign refuses a restatement while the record it restates is current, and writes nothing', (t) => {
+  const dir = scratch(t, signedThroughVersion2().dir);
+  const { env } = signedThroughVersion2();
+  const before = snapshot(dir);
+  const r = run(BUILD, ['sign'], dir, { env });
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /map\/header-2\.yaml restates map\/header, which is not withdrawn yet; run withdraw for it first\. Nothing written/);
+  assert.deepEqual(snapshot(dir), before);
+});
+
+test('on the committed tree, no restatement is current beside the record it restates', () => {
+  const sources = readJson('corpus/sources.json');
+  const records = readJson('docs/records.json').records;
+  const status = (file) => records.find((r) => r.file === file)?.status;
+  const pairs = [...(sources.headers ?? []).map((h) => [h.file, h.replaces]),
+    ...sources.edges.filter((e) => e.replaces).map((e) => [`map/edges/${e.key}.yaml`, `map/edges/${e.replaces}.yaml`])];
+  assert.equal(pairs.length, 15);
+  for (const [restatement, restated] of pairs) {
+    if (status(restatement) === 'active') assert.equal(status(restated), 'withdrawn', `${restatement} is current, so ${restated} must be withdrawn`);
+  }
 });
 
 // ---------- the host's other checks ----------

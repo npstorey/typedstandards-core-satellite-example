@@ -1,0 +1,25 @@
+# map/header-2.yaml: the second header of the map of Typed Standards' technical relations to public projects.
+# It differs from map/header.yaml in its relations and ring 3. Each edge is one file in map/edges/ and names its
+# header. Written by corpus/pin.mjs; this file's exact bytes are the output of one signed Typed Standards record in
+# package/.
+x-typedstandards:
+  map: "Typed Standards: relations to public projects"
+  domain: analysis-provenance
+  subject: typedstandards.org
+  createdAt: "2026-09-22"
+  writtenFrom: { sources: corpus/sources.json, manifest: corpus/manifest.json }
+  edgeTypes: The published schema shows one edge type, orbits, from a satellite to a core. This map has no orbits edge. No core record exists in this domain to be the object of one, and the model says a core is never a satellite. Each edge names its relation in x-typedstandards.relation, because the published schema has no edge type for any of these relations.
+  relations:
+    builds-on: The subject implements, or normatively uses, the object's published specification or code.
+    complements: The two address different layers or artifact classes of one job and can be used together. Neither depends on the other.
+    writes-recordable-output: "The subject's own published documentation shows a program writing text files computed from its inputs, content of the kind the scripted-recomputation Producer Profile records under raw-bytes/v1 (specification §8.7.5). Neither depends on the other."
+    adjacent: A related problem space. Neither depends on the other.
+  rings:
+    1: Standards the specification builds on.
+    2: Adjacent standards, drafts and proposals.
+    3: Implementations, tools and agent runtimes.
+  refs: Each ref is either a file at a 40-character commit SHA, a dated W3C TR URL, an rfc-editor.org text URL, or a published npm release tarball. A ref gives both the location and the SHA-256 of the bytes that location served when it was fetched. Where a project has no immutable location, the ref gives the location, a null sha256, and the reason in x-typedstandards.pin.
+  dropped:
+    - name: DSSE (Dead Simple Signing Envelope)
+      seed: Ring 1, listed with in-toto
+      reason: "Typed Standards uses neither the DSSE envelope nor its pre-authentication encoding. It signs an Ed25519ph signature over the envelope-hash hex string (specification §8.3.1). The specification does name DSSE: its adjacent-standards table lists in-toto / DSSE (§5.5), and Appendix C lists DSSE as a candidate envelope-serialization profile for in-toto-native consumers. Nothing is built on it. The in-toto entry covers the conventions the specification does use."

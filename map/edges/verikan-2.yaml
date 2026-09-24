@@ -1,0 +1,29 @@
+# One edge of the map whose header is map/header-2.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/verikan-2
+createdAt: "2026-09-22"
+subject:
+  id: github.com/dathere/Verikan
+  ref:
+    location: https://raw.githubusercontent.com/dathere/Verikan/8e5e85fdda9829d142358c51f9b5db797333ed47/README.md
+    sha256: 28e521a2d04351228578376487b4354e3ef39e9c2f46c2072d59eadee66dfe0b
+object:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+x-typedstandards:
+  relation: builds-on
+  basis: "Its README at the pinned release lists a module, evidence.py, annotated \"Typed Standards evidence packages\", and states \"Evidence format by Typed Standards\"."
+  ring: 3
+  name: Verikan
+  publisher: datHere
+  pin:
+    fetchedAt: "2026-09-22T19:20:31Z"
+    bytes: 14073
+    httpStatus: 200
+    basis: tag V1.0.1, the latest release (2026-08-31)
+    licence: MIT (repository LICENSE)
+  curation:
+    seed: added
+    reason: Found by searching the qsv publisher's public repositories for the specification's name. Restates map/edges/verikan.yaml, whose basis named a specification revision the pinned README does not.

@@ -16,8 +16,11 @@
 // contentHash.sha256 in its record's served bundle (docs/bundles/<name>.bundle.json). The bundles gate
 // the run; no byte of them reaches the page, and whatever the page shows per record comes from
 // docs/records.json. This is not signature verification: `npm run verify` is the check of the records.
-// It also refuses a record docs/host-policy.yaml does not display, and a page that would carry one of the
-// FORBIDDEN phrases.
+// It also refuses a record docs/host-policy.yaml does not display, two current map-header records, and a page
+// that would carry one of the FORBIDDEN phrases.
+//
+// The page quotes SciOS's paper where the example meets a rule the paper states. Every quotation is verbatim
+// from the dated read named in PAPER, marked as a quotation, attributed and linked.
 //
 // Exit codes: 0 written, or --check found no difference; 1 --check found a difference; 2 refused.
 import crypto from 'node:crypto';
@@ -53,13 +56,18 @@ const LINKED = new Map([
 ]);
 
 // One style per relation, so a relation is told apart by line dash and node shape as well as colour.
-// A relation the map defines but this table does not is an error, not a default.
+// A relation the map defines but this table does not is an error, not a default. could-emit is defined only
+// by the first header, map/header.yaml, and version 1's map.yaml; it keeps its style for that map.
 const RELATION_STYLE = {
   'builds-on': { shape: 'circle', line: 'solid line' },
   complements: { shape: 'square', line: 'dashed line' },
+  'writes-recordable-output': { shape: 'hexagon', line: 'long-dash line' },
   'could-emit': { shape: 'triangle', line: 'dash-dot line' },
   adjacent: { shape: 'diamond', line: 'dotted line' },
 };
+
+// The SciOS paper, as quoted on the page: every quotation is verbatim from this dated read.
+const PAPER = { publisher: 'SciOS', title: 'The Core-Satellite Model', url: 'https://scios.tech/thoughts', dated: '2026-06-30', read: '2026-09-22' };
 const ARROW_OUT = '→';
 const ARROW_IN = '←';
 
@@ -128,9 +136,15 @@ export function inline(md) {
 const count = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 const WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
 const word = (n) => WORDS[n] ?? String(n);
+const cap = (s) => `${s.charAt(0).toUpperCase()}${s.slice(1)}`;
 const andList = (xs) => (xs.length < 2 ? xs.join('') : `${xs.slice(0, -1).join(', ')} and ${xs[xs.length - 1]}`);
 const num = (x) => String(Math.round(x)); // SVG coordinates, in whole units of an 800-unit viewBox
 const link = (url) => `<a href="${esc(url)}">${esc(url)}</a>`;
+const paperLink = () => `<a href="${PAPER.url}"><i>${esc(PAPER.title)}</i></a>`;
+const paperRead = () => `dated ${PAPER.dated}, read ${PAPER.read}`;
+// A quotation from the paper, set as one, with where in the paper it stands.
+const quote = (text, where) => `<figure class="quote"><blockquote cite="${PAPER.url}"><p>“${esc(text)}”</p></blockquote><figcaption>${PAPER.publisher}, ${paperLink()}, ${esc(where)} (${paperRead()}).</figcaption></figure>`;
+const q = (text) => `<q cite="${PAPER.url}">${esc(text)}</q>`;
 
 // ---------- Markdown blocks (core.md tables, README sections) ----------
 
@@ -293,10 +307,14 @@ function parseEdge(e, n, header, record, file) {
   };
 }
 
-// The map as the policy says to draw it: from the current map-header record and the current edge
-// records, or, while no map-header record is current, from the version-1 record's map.yaml.
+// The map as the policy says to draw it: from the one current map-header record and the current edge
+// records, or, while no map-header record is current, from the version-1 record's map.yaml. Two current
+// map-header records are refused: a map has one header, and a later one is signed after the earlier one is
+// withdrawn.
 function parseMap(shown, text, policy) {
-  const header = shown.find((r) => r.as === 'current' && r.role === 'map-header');
+  const headers = shown.filter((r) => r.as === 'current' && r.role === 'map-header');
+  if (headers.length > 1) throw new PolicyRefusal(`${POLICY}: ${headers.length} current map-header records (${headers.map((r) => r.file).join(', ')}); the map has one header`);
+  const [header] = headers;
   if (header) {
     const h = parseHeader(yamlDocs(text(header.file), header.file)[0], header.file);
     const edges = shown.filter((r) => r.as === 'current' && r.role !== 'map-header' && policy.map.from.includes(r.role))
@@ -368,6 +386,7 @@ function shape(kind, x, y, cls) {
   if (kind === 'square') return `<rect class="${cls}" x="${num(x - 12.5)}" y="${num(y - 12.5)}" width="25" height="25" rx="2"/>`;
   if (kind === 'diamond') return p([[x, y - 17], [x + 17, y], [x, y + 17], [x - 17, y]]);
   if (kind === 'triangle') return p([[x, y - 18], [x + 17, y + 12], [x - 17, y + 12]]);
+  if (kind === 'hexagon') return p([[x - 8, y - 14], [x + 8, y - 14], [x + 16, y], [x + 8, y + 14], [x - 8, y + 14], [x - 16, y]]);
   throw new Error(`no shape ${kind}`);
 }
 
@@ -407,7 +426,7 @@ function picture(map, core) {
     const [x, y] = polar(r, deg);
     out.push(`<g class="node${unpinned(e) ? ' unpinned' : ''}"><title>${e.n}. ${esc(e.name)} (${esc(e.publisher)})</title>`);
     out.push(shape(RELATION_STYLE[e.relation].shape, x, y, `mark rel-${e.relation}`));
-    out.push(`<text x="${num(x)}" y="${num(e.relation === 'could-emit' ? y + 3 : y)}">${e.n}</text>`);
+    out.push(`<text x="${num(x)}" y="${num(RELATION_STYLE[e.relation].shape === 'triangle' ? y + 3 : y)}">${e.n}</text>`);
     if (unpinned(e)) {
       const [lx, ly] = polar(r + NODE_R + 16, deg);
       out.push(`<text class="unpinned-label" x="${num(lx)}" y="${num(ly)}">not pinned</text>`);
@@ -431,10 +450,10 @@ function sample(relation) {
 const CSS = `
 :root{--bg:#fbfbf8;--fg:#1f1f1c;--muted:#5c5b55;--rule:#d9d8d0;--panel:#fff;--code:#efeee8;
 --band-1:#e7ebf2;--band-2:#efece3;--band-3:#e6eee8;--absent:#9a3412;
---r-builds-on:#2957a4;--r-complements:#157349;--r-could-emit:#a8430c;--r-adjacent:#55555f;color-scheme:light dark}
+--r-builds-on:#2957a4;--r-complements:#157349;--r-writes-recordable-output:#7b3f98;--r-could-emit:#a8430c;--r-adjacent:#55555f;color-scheme:light dark}
 @media (prefers-color-scheme:dark){:root{--bg:#151514;--fg:#e8e6df;--muted:#a6a49a;--rule:#3a3934;--panel:#1d1d1b;--code:#2a2926;
 --band-1:#1d2330;--band-2:#27241d;--band-3:#1c2620;--absent:#fb9a5b;
---r-builds-on:#8fb2f4;--r-complements:#6ccf9d;--r-could-emit:#f4a26a;--r-adjacent:#b5b5c0}}
+--r-builds-on:#8fb2f4;--r-complements:#6ccf9d;--r-writes-recordable-output:#cfa2ec;--r-could-emit:#f4a26a;--r-adjacent:#b5b5c0}}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
@@ -450,6 +469,12 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:
 .note{color:var(--muted);font-size:.92rem}
 .absent{color:var(--absent);font-weight:700}
 blockquote{margin:.5rem 0;padding:.25rem 0 .25rem 1rem;border-left:3px solid var(--rule);max-width:48rem}
+figure.quote{margin:.75rem 0 1rem}figure.quote blockquote{margin:0}figure.quote blockquote p{margin:0}
+figure.quote figcaption{margin-top:.3rem;font-size:.88rem;color:var(--muted)}
+.check{max-width:48rem;margin:1rem 0;padding:.6rem 1rem;border:1px solid var(--rule);border-radius:4px;background:var(--panel)}
+.check p{margin:.3rem 0}
+pre.command{margin:.4rem 0;padding:.55rem .8rem;background:var(--code);border-radius:3px;font-size:1rem;overflow-x:auto}
+ol.rules,ol.questions{padding-left:1.5rem}ol.rules>li,ol.questions>li{margin-top:1rem;max-width:48rem}ol.rules h3{margin:0 0 .25rem}
 figure{margin:1rem 0}
 .figure-grid{display:grid;grid-template-columns:minmax(0,46rem) minmax(0,1fr);gap:1.5rem;align-items:start}
 svg.map{width:100%;height:auto;display:block}
@@ -461,16 +486,17 @@ figcaption{margin-top:.75rem;max-width:48rem}
 .legend{list-style:none;padding:0;margin:1rem 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:.5rem 1.5rem}
 .legend li{display:flex;gap:.6rem;align-items:flex-start;font-size:.92rem;margin:0}
 svg.sample{flex:none;width:64px;height:36px}
-.glyph{flex:none;width:64px;text-align:center;font-size:1.3rem;line-height:1.2}
+.glyph{flex:none;width:64px;text-align:center;font-size:1.3rem;line-height:1.2}.glyph.ab{font-size:1rem;font-weight:700}
 .band{stroke:none}.band-1{fill:var(--band-1)}.band-2{fill:var(--band-2)}.band-3{fill:var(--band-3)}.band-hole{fill:var(--bg)}
 svg text{dominant-baseline:central;text-anchor:middle}
 .ring-label{font-size:12px;font-weight:600;fill:var(--muted);letter-spacing:.04em}
 .e{fill:none;stroke-width:1.6}
 .rel-builds-on{stroke:var(--r-builds-on)}.e.rel-builds-on{marker-end:url(#arrow-builds-on)}
 .rel-complements{stroke:var(--r-complements)}.e.rel-complements{stroke-dasharray:7 4;marker-end:url(#arrow-complements)}
+.rel-writes-recordable-output{stroke:var(--r-writes-recordable-output)}.e.rel-writes-recordable-output{stroke-dasharray:14 5;marker-end:url(#arrow-writes-recordable-output)}
 .rel-could-emit{stroke:var(--r-could-emit)}.e.rel-could-emit{stroke-dasharray:10 3 2 3;marker-end:url(#arrow-could-emit)}
 .rel-adjacent{stroke:var(--r-adjacent)}.e.rel-adjacent{stroke-dasharray:2 3;marker-end:url(#arrow-adjacent)}
-.ah{stroke:none}.ah.rel-builds-on{fill:var(--r-builds-on)}.ah.rel-complements{fill:var(--r-complements)}.ah.rel-could-emit{fill:var(--r-could-emit)}.ah.rel-adjacent{fill:var(--r-adjacent)}
+.ah{stroke:none}.ah.rel-builds-on{fill:var(--r-builds-on)}.ah.rel-complements{fill:var(--r-complements)}.ah.rel-writes-recordable-output{fill:var(--r-writes-recordable-output)}.ah.rel-could-emit{fill:var(--r-could-emit)}.ah.rel-adjacent{fill:var(--r-adjacent)}
 .mark{fill:var(--panel);stroke-width:2.2}
 .unpinned .mark{stroke-dasharray:3 2.5}.mark.plain{stroke:var(--muted)}
 .node text{font-size:11px;font-weight:700;fill:var(--fg)}
@@ -560,11 +586,11 @@ function refRows(edges) {
   });
 }
 
-// What one step added, from the roles of its records.
+// What one step added, from the roles and files of its records.
 function stepText(records) {
   const parts = [];
-  for (const [role, file] of [['core', 'core.md'], ['map-v1', 'map.yaml'], ['map-header', 'map/header.yaml']]) {
-    if (records.some((r) => r.role === role)) parts.push(`<code>${file}</code>`);
+  for (const role of ['core', 'map-v1', 'map-header']) {
+    for (const r of records.filter((x) => x.role === role)) parts.push(`<code>${esc(r.file)}</code>`);
   }
   const edges = records.filter((r) => r.role === 'edge').length;
   if (edges) parts.push(count(edges, 'edge', 'edges'));
@@ -633,13 +659,18 @@ export function render(inputs) {
   h.push('<body>');
   h.push('<main>');
 
-  // Opening: what the map is, how many records, the newest change, and how to check them.
+  // Opening: what this is in the paper's terms, the offline check, and the newest change.
   h.push('<header>');
   h.push(`<h1>${esc(header.title)}</h1>`);
   h.push('<p class="subtitle">typedstandards-core-satellite-example: the SciOS core-and-satellite model applied to Typed Standards.</p>');
-  h.push(`<p>The map places ${edges.length} public projects in ${word(header.rings.length)} rings by their technical relation to Typed Standards, and the core record, <code>core.md</code>, assesses Typed Standards as a ${esc(core.selfAssessment)}. They are published here as ${recordCount}, each a signed Typed Standards record. This page is a view of them and is not signed itself.</p>`);
+  h.push(`<p>In the terms of SciOS's paper ${paperLink()}, Typed Standards is an artifact, a specification with reference code, and its own record, <code>core.md</code>, assesses it as a ${esc(core.selfAssessment)} and does not declare it a core. The map gives its technical relations to ${edges.length} public projects and has no <code>orbits</code> edge, because no core record exists in this domain for it to orbit. <code>core.md</code> and each map file are published as signed Typed Standards records that anyone can check offline: ${recordCount}.</p>`);
+  h.push(quote('One library or repo surfacing a record is, in spirit, a satellite.', '“What a core is not”'));
+  h.push('<div class="check">');
+  h.push(`<p><strong>Check every record offline</strong>, in a clone of <a href="https://${REPOSITORY}">${esc(REPOSITORY)}</a>:</p>`);
+  h.push('<pre class="command"><code>npm ci &amp;&amp; node verify.mjs</code></pre>');
+  h.push('<p class="note">The output should match <a href="verify-output.txt"><code>verify-output.txt</code></a>. Each record also links to typedstandards.org\'s verifier. This page is a view of the records and is not signed itself.</p>');
+  h.push('</div>');
   h.push(`<p><strong>Newest change:</strong> version ${esc(newest.step)}, ${esc(stepDate(newest))}: ${stepText(newest.records)}. <a href="#records">The records</a> lists every version.</p>`);
-  h.push('<p><strong>Check it yourself:</strong> each record links to typedstandards.org\'s verifier, and <code>npm ci &amp;&amp; node verify.mjs</code> checks every record offline in a clone of the repository.</p>');
   h.push('</header>');
 
   // The map
@@ -656,9 +687,14 @@ export function render(inputs) {
   });
   h.push('</div>');
   h.push('</div>');
-  h.push(`<figcaption><strong>${esc(header.subject)}</strong> is at the centre because it is one end of every edge: the subject of ${nOut} and the object of ${edges.length - nOut}. Its own record, <code>core.md</code>, assesses it as a ${esc(core.selfAssessment)} and does not declare <code>type: core</code>. The rings group the edges and are not orbits: the map has no orbits edge (<a href="#absent">What the map leaves out</a>). Each numbered node is one edge's other end, and each arrow runs from subject to object. <a href="#edges">Every edge</a> gives the same as text.</figcaption>`);
+  h.push(`<figcaption><strong>${esc(header.subject)}</strong> is at the centre only because it is one end of every edge: the subject of ${nOut} and the object of ${edges.length - nOut}. Its own record, <code>core.md</code>, assesses it as a ${esc(core.selfAssessment)} and does not declare <code>type: core</code>. The rings group each edge's other end by kind, as the header defines them. A ring is not a distance or a rank, and none is an orbit: the map has no orbits edge (<a href="#absent">What the map leaves out</a>). Each numbered node is one edge's other end, and each arrow runs from subject to object. <a href="#edges">Every edge</a> gives the same as text.</figcaption>`);
   h.push('</figure>');
   h.push('<ul class="legend">');
+  const neither = header.relations.filter((r) => /Neither depends on the other\b/.test(r.def)).map((r) => `<code>${esc(r.name)}</code>`);
+  const neitherText = neither.length === 1
+    ? ` ${neither[0]} says neither depends on the other; for it the arrow shows only which end is the subject.`
+    : ` ${andList(neither)} each say neither depends on the other; for them the arrow shows only which end is the subject.`;
+  h.push(`<li><span class="glyph ab" aria-hidden="true">A ${ARROW_OUT} B</span><span>Each edge reads subject ${ARROW_OUT} object: A ${ARROW_OUT} B reads “A ${esc(header.relations[0].name)} B”.${neither.length ? neitherText : ''}</span></li>`);
   for (const r of header.relations) {
     const n = edges.filter((e) => e.relation === r.name).length;
     h.push(`<li>${sample(r.name)}<span><code>${esc(r.name)}</code> (${n}), ${RELATION_STYLE[r.name].shape} and ${RELATION_STYLE[r.name].line}. ${esc(r.def)}</span></li>`);
@@ -666,6 +702,19 @@ export function render(inputs) {
   h.push(`<li><svg class="sample" viewBox="0 0 64 36" aria-hidden="true"><g class="unpinned">${shape('circle', 46, 18, 'mark plain')}</g></svg><span>Dashed outline: the source has no fixed version, so it is <span class="absent">not pinned</span> (sha256 null). ${count(notPinned.length, 'edge', 'edges')}.</span></li>`);
   h.push(`<li><span class="glyph" aria-hidden="true">${ARROW_OUT} ${ARROW_IN}</span><span>In the tables, ${ARROW_OUT} marks an edge whose subject is ${esc(header.subject)} (${esc(header.subject)} ${esc(firstOut.relation)} ${esc(firstOut.name)}). ${ARROW_IN} marks one whose subject is the project in the row (${esc(firstIn.name)} ${esc(firstIn.relation)} ${esc(header.subject)}).</span></li>`);
   h.push('</ul>');
+  h.push('</section>');
+
+  // The paper's rules: each quoted where the example meets it, and a plain statement where it does not.
+  const CRUCIBLE = 'the worked example on crucible, a materials-science core';
+  h.push('<section id="rules">');
+  h.push('<h2>The paper\'s rules, and what this example does</h2>');
+  h.push('<p class="note">Where the paper states a rule, it is quoted here, not paraphrased. Two of these rules are not implemented in this example, and one is not the paper\'s.</p>');
+  h.push('<ol class="rules">');
+  h.push(`<li><h3>Refs by content hash</h3>${quote('The agent pulls SMRS v3 by its content hash, not by a URL that might have moved or been edited since.', CRUCIBLE)}<p><strong>Here:</strong> every ref in <code>core.md</code> and the map gives a location and the SHA-256 of what that location served; ${word(notPinned.length)} ${notPinned.length === 1 ? 'edge gives' : 'edges give'} sha256 null and the reason (<a href="#absent">What the map leaves out</a>). The paper's examples write a ref as <code>ref: &lt;location + content-hash&gt;</code> in some places and <code>ref: &lt;content-hash&gt;</code> in others; this example always writes both. A check recomputes each signed file's own SHA-256. The source digests are signed assertions, which anyone can download again and compare.</p></li>`);
+  h.push(`<li><h3>Endorsements</h3>${quote('Any participant can endorse a core, or withdraw a prior endorsement — append-only and attributable.', '“Cores”')}<p><strong>Here:</strong> <span class="absent">not built.</span> This example makes no endorsement. Its own records keep both properties: a signed file is never rewritten, a correction is a signed withdrawal plus a new record, the withdrawn record stays served (<a href="#records">The records</a>), and one <code>did:key</code> signs every record and every withdrawal.</p></li>`);
+  h.push(`<li><h3>Agent contributions</h3>${quote('…stamped with provenance that marks it agent-generated and human-validated.', CRUCIBLE)}<p><strong>Here:</strong> <span class="absent">not implemented.</span> No record here marks anything as agent-generated or human-validated. Each record's labels say that a script wrote its file, and nothing verifies that label. The repository's commits name the AI assistant in a co-author line; the records carry no such mark.</p></li>`);
+  h.push('<li><h3>Identifiers</h3><p><strong>Here:</strong> the paper names no scheme for identifying who signs or publishes a record; its examples give each record an <code>id</code> such as <code>veil.org</code>. The signer here is a <code>did:key</code>, an identifier derived from its public key (hub ADR-0030): this example\'s choice, not the paper\'s. It shows which key signed, not who holds it.</p></li>');
+  h.push('</ol>');
   h.push('</section>');
 
   // How Typed Standards was used here
@@ -681,9 +730,23 @@ export function render(inputs) {
   h.push('<h3>No orbits edge</h3>');
   h.push(`<blockquote>${esc(header.edgeTypes)}</blockquote>`);
   h.push(`<p class="note"><code>${esc(header.file)}</code>, <code>x-typedstandards.edgeTypes</code></p>`);
+  // Two questions for the model's authors, measured from the drawn edges: a report from implementation.
+  const others = edges.filter((e) => !e.outward);
+  const account = REPOSITORY.split('/')[1];
+  const sameAccount = others.filter((e) => e.far.ref?.location?.startsWith(`https://raw.githubusercontent.com/${account}/`));
+  const byPublisher = new Map();
+  for (const e of others.filter((x) => !sameAccount.includes(x))) byPublisher.set(e.publisher, [...(byPublisher.get(e.publisher) ?? []), e.name]);
+  const elsewhere = [...byPublisher].map(([p, names]) => `${word(names.length)}, ${andList(names.map(esc))}, published by ${esc(p)}`);
+  h.push('<h3>Two questions from building this map</h3>');
+  h.push('<p class="note">A report from implementation, not a review: two things this map needed that the paper\'s published examples do not show.</p>');
+  h.push('<ol class="questions">');
+  h.push(`<li><strong>Is a relation between two artifacts meant to be a typed edge?</strong> In the paper's examples, dependence is typed in one place, as a zone on an orbits edge from a satellite to a core: <code>orbitZone: critical-dependency</code>, and ${q('cryptoseal was an orbits / critical-dependency edge')}. The paper also says any number of cores can ${q('recognize an artifact, depend on it, or map it')}. This map's ${edges.length} edges run between artifacts and standards, in both directions, with no core at either end. Should such a relation be expressible in the schema, and as what edge type?</li>`);
+  h.push(`<li><strong>How is an edge a third party asserts told apart from one its subject declares?</strong> One key signs all ${edges.length} edges drawn here. ${esc(header.subject)} is the subject of ${nOut}. ${cap(word(others.length))} name another project as subject: ${[...(sameAccount.length ? [`${word(sameAccount.length)} whose sources are in the same GitHub account as this repository`] : []), ...elsewhere].join(', and ')}. The paper's orbits example has a <code>type</code>, an <code>id</code>, a <code>createdAt</code>, a <code>subject</code>, an <code>object</code> and an <code>orbitZone</code>, and no field for who asserts the edge; insertion is ${q('how satellites declare or are recognized as orbiting a core')}.</li>`);
+  h.push('</ol>');
+  h.push(`<p class="note">Quoted from ${PAPER.publisher}, ${paperLink()} (${paperRead()}): “Core &lt;-&gt; Satellite” and “Conflict, competition, and common cores”, and the worked examples on the Veil Project and on cryptoseal.</p>`);
   h.push(`<h3>Not pinned (${notPinned.length})</h3>`);
   h.push(notPinned.length
-    ? `<ul>${notPinned.map((e) => `<li>${e.n}. ${esc(e.name)} (${link(e.far.ref.location)}): sha256 null. ${esc(e.pin.reason ?? 'No reason given.')}</li>`).join('')}</ul>`
+    ? `<ul>${notPinned.map((e) => `<li>${e.n}. ${esc(e.name)} (${link(e.far.ref.location)}): sha256 null. ${esc(e.pin.reason ?? 'No reason given.')}</li>`).join('')}</ul><p class="note">Why no digest: a ref here is a file at a 40-character commit, a dated W3C TR URL, an rfc-editor.org text or a published release archive, each a location whose bytes do not change. A page that can change between two reads has no such digest, so the edge gives the location, sha256 null and the reason instead.</p>`
     : '<p>None.</p>');
   h.push(`<h3>Dropped (${header.dropped.length})</h3>`);
   h.push(`<p class="note">Considered for the map and left out, with the reason <code>${esc(header.file)}</code> gives.</p>`);
@@ -736,6 +799,7 @@ export function render(inputs) {
   h.push('<h3>Whose rules these are</h3>');
   h.push('<p>What this page shows, and how, follows <a href="host-policy.yaml"><code>docs/host-policy.yaml</code></a>: the host\'s own display rule. It is not a Typed Standards record, and no Typed Standards check covers it.</p>');
   h.push(`<p>The key's registry, <a href=".well-known/typed-publisher.json"><code>docs/.well-known/typed-publisher.json</code></a>, is the example publisher's own statement that the key is active. It is not an endorsement by the Typed Standards specification or by typedstandards.org, although this host is a subdomain of typedstandards.org. Every record's view names it as <code>trustRegistryUrl</code>, which is not part of what the key signed.</p>`);
+  h.push('<p>A possible next step, not a commitment: publishing these records into a store that others operate, where scoring that others write can run over them.</p>');
   h.push('</section>');
 
   // What the records prove / what they do not

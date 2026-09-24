@@ -1,0 +1,29 @@
+# One edge of the map whose header is map/header-2.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/mira-schema-2
+createdAt: "2026-09-22"
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+object:
+  id: github.com/MIRA-science/schema
+  ref:
+    location: https://raw.githubusercontent.com/MIRA-science/schema/f42c5966629cbc90ca09464b52d55c82c4f21116/mira.yaml
+    sha256: 21eafff5ac0bd7ad5ef9edcd867491824a4ff833b4af1096cb4cdb4298eaae0a
+x-typedstandards:
+  relation: adjacent
+  basis: A schema for question, claim and evidence graphs in research, which links evidence to studies and to source documents such as papers, with one range marked provisional. It imports Discourse Graphs and PROV. It signs nothing.
+  ring: 2
+  name: MIRA schema
+  publisher: MIRA-science
+  pin:
+    fetchedAt: "2026-09-22T19:20:30Z"
+    bytes: 5637
+    httpStatus: 200
+    basis: "main HEAD on 2026-09-22 (the repository has no tags); its README calls it a draft"
+    licence: Apache-2.0 (repository LICENSE)
+  curation:
+    seed: added
+    reason: "Listed at scios.tech/thoughts (read 2026-09-22) as a published schema. Restates map/edges/mira-schema.yaml, whose name and basis called it a draft and LinkML; the pinned file says neither."

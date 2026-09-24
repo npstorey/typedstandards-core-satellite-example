@@ -1,0 +1,29 @@
+# One edge of the map whose header is map/header-2.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/discourse-graphs-2
+createdAt: "2026-09-22"
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+object:
+  id: github.com/DiscourseGraphs/schemas
+  ref:
+    location: https://raw.githubusercontent.com/DiscourseGraphs/schemas/19403e9e28d505dbce6cd2af5868eb27af6e3e36/owl/dg_core.ttl
+    sha256: 0e41bd5223785716146fac882667a56afdb14e705380c41704174a55f82a8982
+x-typedstandards:
+  relation: complements
+  basis: "Discourse Graphs is a content-representation pattern, and Typed Standards wraps claim, question and evidence content in signed envelopes (specification Appendix C). The specification adopts those content types and the support, opposition and answer relations (§5.5, §7.5), and lists Discourse Graphs as an informative reference (§14.2). The content types are reserved by name only, and the current schema file names its relations differently."
+  ring: 2
+  name: Discourse Graphs
+  publisher: Discourse Graphs project
+  pin:
+    fetchedAt: "2026-09-22T19:20:28Z"
+    bytes: 2806
+    httpStatus: 200
+    basis: main HEAD on 2026-09-22 (the repository has no tags)
+    licence: CC0-1.0 (repository LICENSE)
+  curation:
+    seed: moved
+    reason: "Moved from Ring 1 and relabelled complements. Restates map/edges/discourse-graphs.yaml: the specification lists Discourse Graphs as an informative reference (§14.2) and reserves the pattern's content types by name only (§7.4)."

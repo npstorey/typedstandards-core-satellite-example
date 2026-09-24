@@ -1,0 +1,29 @@
+# One edge of the map whose header is map/header-2.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/qsv-2
+createdAt: "2026-09-22"
+subject:
+  id: github.com/dathere/qsv
+  ref:
+    location: https://raw.githubusercontent.com/dathere/qsv/7c43b6bc77b22556220328eef22f29b9fac6d24b/README.md
+    sha256: 1541ba978efb0231096072c945df32e282dda499fb6a919bee13a987c3efb639
+object:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+x-typedstandards:
+  relation: writes-recordable-output
+  basis: "Its README at tag 23.0.1 documents commands that write text files from CSV input: schema writes a JSON Schema file, and sniff, sortcheck and validate write JSON with their JSON options. Commands with randomized output take a --seed option \"for reproducibility\". The README names no Typed Standards record, and the signing it describes covers its prebuilt binary archives (zipsign)."
+  ring: 3
+  name: qsv
+  publisher: datHere
+  pin:
+    fetchedAt: "2026-09-22T19:20:30Z"
+    bytes: 81584
+    httpStatus: 200
+    basis: tag 23.0.1, the latest release (2026-09-13)
+    licence: MIT (COPYING and Cargo.toml at the tag)
+  curation:
+    seed: kept
+    reason: Restates map/edges/qsv.yaml from the pinned README alone. That edge's could-emit relation rested on an issue thread that is not pinned.

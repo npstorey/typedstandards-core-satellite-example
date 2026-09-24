@@ -54,12 +54,25 @@ export function useKey(dir, key) {
   fs.writeFileSync(policy, fs.readFileSync(policy, 'utf8').replace(/^signer: .*$/m, `signer: ${key.identifier}`));
 }
 
-// A scratch copy with every record signed afresh by a throwaway key: version 1 (core.md, map.yaml) and
-// then the batch, as the owner's two signing steps did, with docs/records.json and the page regenerated.
-// Built once per test file; each test copies it.
-let baseline;
-export function signedBaseline() {
-  if (baseline) return baseline;
+// The files corpus/sources.json marks as later than version 2, and the records they restate: each entry of
+// `headers` and each edge that names a header is a later file; each `replaces` names a record withdrawn
+// before the later files are signed.
+export function laterFiles(dir) {
+  const sources = readJson('corpus/sources.json', dir);
+  const headers = sources.headers ?? [];
+  const edges = sources.edges.filter((e) => e.header);
+  return {
+    files: [...headers.map((h) => h.file), ...edges.map((e) => `map/edges/${e.key}.yaml`)],
+    withdrawn: [...headers.map((h) => h.replaces.replace(/\.yaml$/, '')), ...edges.filter((e) => e.replaces).map((e) => `map/edges/${e.replaces}`)],
+  };
+}
+
+// A scratch copy signed afresh by a throwaway key through version 2, as the owner's first two steps did:
+// version 1 (core.md, map.yaml), then the first header and its edges, with the later files set aside while
+// signing and put back after, unsigned. Built once per test file; copy it before changing it.
+let throughV2;
+export function signedThroughVersion2() {
+  if (throughV2) return throughV2;
   const dir = scratch(null);
   process.on('exit', () => fs.rmSync(dir, { recursive: true, force: true }));
   const key = throwawayKey();
@@ -69,13 +82,40 @@ export function signedBaseline() {
   }
   for (const f of fs.readdirSync(path.join(dir, 'package')).filter((x) => x.endsWith('.bundle.json'))) fs.rmSync(path.join(dir, 'package', f));
   const env = { SIGNING_SEED_B64: key.b64 };
+  const later = laterFiles(dir);
+  const aside = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'core-sat-later-')));
+  later.files.forEach((f, i) => fs.renameSync(path.join(dir, f), path.join(aside, String(i))));
   for (const step of [1, 2]) {
     const r = run('package/build.mjs', ['sign'], dir, { env });
     assert.equal(r.status, 0, `step ${step}: ${r.stderr}`);
   }
+  later.files.forEach((f, i) => fs.renameSync(path.join(aside, String(i)), path.join(dir, f)));
+  fs.rmSync(aside, { recursive: true, force: true });
+  throughV2 = { dir, key, env, later };
+  return throughV2;
+}
+
+// A scratch copy with every record signed afresh by a throwaway key, replaying the owner's steps: through
+// version 2 as above, then a withdrawal of each record a later file restates, then version 3, with
+// docs/records.json and the page regenerated. Built once per test file; each test copies it.
+let baseline;
+export function signedBaseline() {
+  if (baseline) return baseline;
+  const v2 = signedThroughVersion2();
+  const dir = scratch(null, v2.dir);
+  process.on('exit', () => fs.rmSync(dir, { recursive: true, force: true }));
+  const { key, env, later } = v2;
+  for (const name of later.withdrawn) {
+    const w = run('package/build.mjs', ['withdraw', name, '--reason', `Restated in a later file (test replay of ${name}).`], dir, { env });
+    assert.equal(w.status, 0, `withdraw ${name}: ${w.stderr}`);
+  }
+  if (later.files.length) {
+    const r = run('package/build.mjs', ['sign'], dir, { env });
+    assert.equal(r.status, 0, `step 3: ${r.stderr}`);
+  }
   const g = run('site/generate.mjs', [], dir);
   assert.equal(g.status, 0, g.stderr);
-  baseline = { dir, key, env };
+  baseline = { dir, key, env, later };
   return baseline;
 }
 
@@ -109,7 +149,7 @@ export function flipByte(file, needle) {
 }
 
 // Appends one source, one node and one edge, as a later addition would: the manifest only grows, and
-// neither an existing entry nor pinnedAt changes.
+// neither an existing entry nor pinnedAt changes. The edge names the newest header.
 export function addEdge(dir, key = 'example-added', fetchedAt = '2026-10-01T12:00:00Z') {
   const sourcesFile = path.join(dir, 'corpus', 'sources.json');
   const manifestFile = path.join(dir, 'corpus', 'manifest.json');
@@ -118,7 +158,8 @@ export function addEdge(dir, key = 'example-added', fetchedAt = '2026-10-01T12:0
   const location = `https://example.org/${key}/v1.json`;
   sources.sources.push({ key, location, kind: 'test-fixture', pinBasis: 'a test fixture', licence: 'not stated', licenceSource: location });
   sources.nodes[`example.org/${key}`] = { source: key };
-  sources.edges.push({ key, ring: 3, name: `Example ${key}`, publisher: 'Example', subject: sources.subject, object: `example.org/${key}`, relation: 'adjacent', basis: 'A test edge.', curation: { seed: 'added', reason: 'a test' } });
+  const header = sources.headers?.length ? { header: sources.headers[sources.headers.length - 1].file } : {};
+  sources.edges.push({ key, ring: 3, name: `Example ${key}`, publisher: 'Example', subject: sources.subject, object: `example.org/${key}`, relation: 'adjacent', basis: 'A test edge.', ...header, curation: { seed: 'added', reason: 'a test' } });
   manifest.sources.push({ key, location, kind: 'test-fixture', pinBasis: 'a test fixture', httpStatus: 200, bytes: 10, sha256: sha256(key), contentType: 'application/json', fetchedAt, licence: 'not stated', licenceSource: location });
   fs.writeFileSync(sourcesFile, `${JSON.stringify(sources, null, 2)}\n`);
   fs.writeFileSync(manifestFile, `${JSON.stringify(manifest, null, 2)}\n`);

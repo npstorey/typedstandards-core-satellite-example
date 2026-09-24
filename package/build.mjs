@@ -8,8 +8,9 @@
 //                                     key supply. The key must first reproduce every committed signature,
 //                                     and every signed file must still equal its record; otherwise nothing
 //                                     is written. With no build log the step is version 1: core.md and
-//                                     map.yaml. With nothing unsigned, nothing is written. `assemble` is the
-//                                     stage's earlier name.
+//                                     map.yaml. With nothing unsigned, nothing is written. A file that restates
+//                                     a record (sources.json `replaces`) is signed only once that record is
+//                                     withdrawn. `assemble` is the stage's earlier name.
 //   node package/build.mjs withdraw <name> --reason <text>
 //                                     sign an attestation/withdraws/v1 for the named record with the same
 //                                     key, and carry it in that record's view
@@ -28,7 +29,8 @@
 //   op run --env-file=.env.sign -- node package/build.mjs sign
 // where .env.sign is a copy of .env.sign.example, which holds an op:// reference, never a value.
 //
-// The record files are core.md, map.yaml (version 1's map), map/header.yaml and map/edges/<key>.yaml.
+// The record files are core.md, map.yaml (version 1's map), the headers (map/header.yaml and each later one
+// corpus/sources.json lists) and map/edges/<key>.yaml.
 // corpus/pin.mjs writes them; this program reads their bytes from disk, which is what makes the capture
 // method `script-run` (hub ADR-0029 §2). A record is named by its file's path without the extension, and
 // its bundle is package/<name>.bundle.json, served byte for byte as docs/bundles/<name>.bundle.json. Each
@@ -166,9 +168,12 @@ function loadSeed() {
 // ---------------------------------------------------------------------------------------------------
 // The record files and their inputs
 
-// Every record file, in the order records are signed and listed: version 1's two, the header, then one
-// per edge in corpus/sources.json order. `present` says whether the file exists.
+// Every record file, in the order records are signed and listed: version 1's two, the headers
+// (map/header.yaml, then each later one corpus/sources.json lists in `headers`), then one per edge in
+// corpus/sources.json order. `present` says whether the file exists.
 function recordFiles(sources) {
+  const headerFiles = [{ name: 'map/header', file: 'map/header.yaml' }, ...(sources.headers ?? []).map((h) => ({ name: h.file.replace(/\.yaml$/, ''), file: h.file }))]
+    .map((h) => ({ ...h, role: 'map-header' }));
   const edgeFiles = sources.edges.map((e) => ({ name: `map/edges/${e.key}`, file: `map/edges/${e.key}.yaml`, role: 'edge', edge: e }));
   const edgesDir = path.join(ROOT, 'map', 'edges');
   if (fs.existsSync(edgesDir)) {
@@ -179,7 +184,7 @@ function recordFiles(sources) {
   return [
     { name: 'core', file: 'core.md', role: 'core' },
     { name: 'map', file: 'map.yaml', role: 'map-v1' },
-    { name: 'map/header', file: 'map/header.yaml', role: 'map-header' },
+    ...headerFiles,
     ...edgeFiles,
   ].map((r) => ({ ...r, present: fs.existsSync(path.join(ROOT, r.file)) }));
 }
@@ -638,6 +643,16 @@ async function sign() {
   const step = log ? Math.max(...Object.values(log.records).map((e) => e.step ?? 1)) + 1 : 1;
   const batch = step === 1 ? pending.filter((r) => r.role === 'core' || r.role === 'map-v1') : pending;
   if (step === 1 && batch.length !== 2) die('version 1 needs core.md and map.yaml');
+  // A restatement is signed only after the record it restates is withdrawn, so the two are never current
+  // together.
+  const restates = (r) => (r.role === 'edge' ? (r.edge.replaces ? `map/edges/${r.edge.replaces}` : null)
+    : (cp.sources.headers ?? []).find((h) => h.file === r.file)?.replaces?.replace(/\.yaml$/, '') ?? null);
+  for (const r of batch) {
+    const target = restates(r);
+    if (target && log?.records[target] && lifecycleOf(readJson(bundlePath(target))).status !== 'withdrawn') {
+      die(`${r.file} restates ${target}, which is not withdrawn yet; run withdraw for it first. Nothing written`);
+    }
+  }
   if (!batch.length) {
     seed.fill(0);
     console.log('nothing to sign: every record file has a bundle, so nothing was written');

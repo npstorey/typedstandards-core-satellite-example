@@ -110,8 +110,8 @@ for (const rec of served.records) {
 }
 
 // Record files corpus/pin.mjs wrote that no served record carries yet.
-const candidates = ['core.md', 'map.yaml', 'map/header.yaml',
-  ...(fs.existsSync(path.join(ROOT, 'map', 'edges')) ? fs.readdirSync(path.join(ROOT, 'map', 'edges')).filter((f) => !f.startsWith('.')).map((f) => `map/edges/${f}`) : [])];
+const inDir = (dir, keep) => (fs.existsSync(path.join(ROOT, dir)) ? fs.readdirSync(path.join(ROOT, dir)).filter((f) => !f.startsWith('.') && keep(f)).map((f) => `${dir}/${f}`) : []);
+const candidates = ['core.md', 'map.yaml', ...inDir('map', (f) => /^header(-[a-z0-9-]+)?\.yaml$/.test(f)), ...inDir('map/edges', () => true)];
 const listed = new Set(served.records.map((r) => r.file));
 const pending = candidates.filter((f) => fs.existsSync(path.join(ROOT, f)) && !listed.has(f));
 

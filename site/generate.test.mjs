@@ -257,6 +257,7 @@ for (const [label, tree] of TREES) {
       assert.match(page(root), new RegExp(`<g class="node unpinned"><title>\\d+\\. ${name.replace(/[()]/g, '\\$&')} `));
       assert.ok(pageRows(visible(root)).some((r) => r.includes(name) && r.includes(`not pinned: sha256 null. ${reason}`)), name);
     }
+    assert.ok(text(section(visible(root), 'absent')).includes('Why no digest: a ref here is a file at a 40-character commit, a dated W3C TR URL, an rfc-editor.org text or a published release archive, each a location whose bytes do not change.'));
   });
 
   test(`C5 (${label}) no orbits edge is drawn, and the page carries the map's own edgeTypes explanation`, () => {
@@ -282,7 +283,7 @@ for (const [label, tree] of TREES) {
     assert.match(page(root), /<text class="hub-name"[^>]*>typedstandards\.org<\/text>/);
     assert.match(page(root), new RegExp(`<text class="hub-note"[^>]*>self-assessment: ${self}</text>`));
     assert.match(page(root), new RegExp(`<text class="hub-note"[^>]*>subject of ${asSubject}, object of ${asObject}</text>`));
-    assert.ok(text(visible(root)).includes(`is at the centre because it is one end of every edge: the subject of ${asSubject} and the object of ${asObject}. Its own record, core.md, assesses it as a ${self}`));
+    assert.ok(text(visible(root)).includes(`is at the centre only because it is one end of every edge: the subject of ${asSubject} and the object of ${asObject}. Its own record, core.md, assesses it as a ${self}`));
   });
 
   test(`C5 (${label}) the dropped entry appears with its reason`, () => {
@@ -319,25 +320,86 @@ test('C5 the README proof table appears whole, with its definitions', () => {
 
 // ---------- the phase 3 form: opening, records, policy, registry, links ----------
 
-test('D7 the sections come in the order ruled at G0: the picture right after the opening', () => {
+test('D7 the sections come in the order ruled at G0: the picture right after the opening, then the paper\'s rules', () => {
   assert.deepEqual([...page().matchAll(/<section id="([\w-]+)"/g)].map((m) => m[1]),
-    ['map', 'how', 'absent', 'core', 'edges', 'records', 'proof', 'provenance']);
+    ['map', 'rules', 'how', 'absent', 'core', 'edges', 'records', 'proof', 'provenance']);
 });
 
+// The paper's words the page quotes, verbatim from the dated read the generator names (checked against that
+// read at G1; the read itself is not committed).
+const QUOTES = [
+  'One library or repo surfacing a record is, in spirit, a satellite.',
+  'The agent pulls SMRS v3 by its content hash, not by a URL that might have moved or been edited since.',
+  'Any participant can endorse a core, or withdraw a prior endorsement — append-only and attributable.',
+  '…stamped with provenance that marks it agent-generated and human-validated.',
+];
+const INLINE_QUOTES = [
+  'cryptoseal was an orbits / critical-dependency edge',
+  'recognize an artifact, depend on it, or map it',
+  'how satellites declare or are recognized as orbiting a core',
+];
+const WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+const andList = (xs) => (xs.length < 2 ? xs.join('') : `${xs.slice(0, -1).join(', ')} and ${xs[xs.length - 1]}`);
+
 for (const [label, tree] of TREES) {
-  test(`D8 (${label}) the page opens with what the map is, how many records, the newest change and one check-it-yourself line`, () => {
+  test(`D8 (${label}) the page opens with what this is in the paper's terms, the offline check as a command, and the newest change`, () => {
     const root = tree();
     const records = readJson(RECORDS, root).records;
     const current = records.filter((r) => r.status === 'active' && r.role !== 'map-v1').length;
-    const opening = text(/<header>([\s\S]*?)<\/header>/.exec(page(root))[1]);
+    const withdrawn = records.filter((r) => r.status === 'withdrawn').length;
+    const html = /<header>([\s\S]*?)<\/header>/.exec(page(root))[1];
+    const opening = text(html);
     const edges = mapDocs(root).length - 1;
-    assert.ok(opening.includes(`The map places ${edges} public projects in three rings`), opening);
-    assert.ok(opening.includes(`published here as ${current} current record${current === 1 ? '' : 's'} and version 1, each a signed Typed Standards record`), opening);
+    assert.ok(opening.includes('In the terms of SciOS\'s paper The Core-Satellite Model, Typed Standards is an artifact, a specification with reference code, and its own record, core.md, assesses it as a satellite and does not declare it a core.'), opening);
+    assert.ok(opening.includes(`The map gives its technical relations to ${edges} public projects and has no orbits edge, because no core record exists in this domain for it to orbit.`), opening);
+    assert.ok(opening.includes(`published as signed Typed Standards records that anyone can check offline: ${current} current record${current === 1 ? '' : 's'} and version 1${withdrawn ? `, and ${withdrawn} withdrawn` : ''}.`), opening);
+    assert.match(html, /<blockquote cite="https:\/\/scios\.tech\/thoughts"><p>“One library or repo surfacing a record is, in spirit, a satellite\.”<\/p><\/blockquote>/);
+    assert.match(html, /<pre class="command"><code>npm ci &amp;&amp; node verify\.mjs<\/code><\/pre>/);
+    assert.ok(opening.includes('Check every record offline, in a clone of github.com/npstorey/typedstandards-core-satellite-example'), opening);
     const newest = records.filter((r) => r.step === records[records.length - 1].step);
     assert.ok(opening.includes(`Newest change: version ${newest[0].step}, ${newest[0].createdAt.slice(0, 10)}:`), opening);
     assert.ok(opening.includes(`(${newest.length} record${newest.length === 1 ? '' : 's'})`), opening);
-    assert.ok(opening.includes('Check it yourself: each record links to typedstandards.org\'s verifier, and npm ci && node verify.mjs checks every record offline'), opening);
     assert.ok(page(root).indexOf('</header>') < page(root).indexOf('<section id="map"'));
+  });
+
+  test(`D9 (${label}) every quotation of the paper is verbatim from the pinned list, marked, attributed and linked, with its read date`, () => {
+    const p = page(tree());
+    const blocks = [...p.matchAll(/<figure class="quote"><blockquote cite="([^"]+)"><p>“([^”]+)”<\/p><\/blockquote><figcaption>([\s\S]*?)<\/figcaption><\/figure>/g)];
+    assert.deepEqual(blocks.map((m) => decode(m[2])), QUOTES);
+    for (const m of blocks) {
+      assert.equal(m[1], 'https://scios.tech/thoughts');
+      assert.match(m[3], /^SciOS, <a href="https:\/\/scios\.tech\/thoughts"><i>The Core-Satellite Model<\/i><\/a>, .+ \(dated 2026-06-30, read 2026-09-22\)\.$/);
+    }
+    assert.deepEqual([...p.matchAll(/<q cite="https:\/\/scios\.tech\/thoughts">([^<]+)<\/q>/g)].map((m) => decode(m[1])), INLINE_QUOTES);
+    assert.equal((p.match(/<blockquote cite=/g) ?? []).length, QUOTES.length);
+  });
+
+  test(`D9 (${label}) the two questions carry counts measured from the drawn edges, beside the header's own edgeTypes text`, () => {
+    const root = tree();
+    const edges = mapDocs(root).slice(1);
+    const inward = edges.filter((d) => !/^subject:\n {2}id: typedstandards\.org$/m.test(d));
+    const location = (d) => /^subject:\n {2}id: .*\n {2}ref:\n {4}location: (.*)$/m.exec(d)[1];
+    const same = inward.filter((d) => location(d).startsWith('https://raw.githubusercontent.com/npstorey/')).length;
+    const absent = text(section(visible(root), 'absent'));
+    assert.ok(absent.indexOf('No orbits edge') < absent.indexOf('Two questions from building this map'));
+    assert.ok(absent.includes('A report from implementation, not a review'), absent);
+    assert.ok(absent.includes(`This map's ${edges.length} edges run between artifacts and standards, in both directions, with no core at either end.`), absent);
+    assert.ok(absent.includes(`One key signs all ${edges.length} edges drawn here. typedstandards.org is the subject of ${edges.length - inward.length}.`), absent);
+    assert.ok(absent.includes(`name another project as subject: ${WORDS[same]} whose sources are in the same GitHub account as this repository, and two, qsv and Verikan, published by datHere.`), absent);
+    const questions = text(/<ol class="questions">([\s\S]*?)<\/ol>/.exec(page(root))[1]);
+    assert.doesNotMatch(questions, /partner|adopt|conversation|meeting|outreach|contact|reached out/i);
+  });
+
+  test(`D9 (${label}) the legend gives the reading rule, naming every relation whose definition says neither depends on the other`, () => {
+    const root = tree();
+    const hdr = mapDocs(root)[0];
+    const block = hdr.slice(hdr.indexOf('  relations:\n'), hdr.indexOf('  rings:\n'));
+    const rels = [...block.matchAll(/^ {4}([\w-]+): (.*)$/gm)].map((m) => [m[1], unquote(m[2])]);
+    const neither = rels.filter(([, d]) => /Neither depends on the other\b/.test(d)).map(([n]) => n);
+    assert.ok(neither.length > 1);
+    const legend = text(/<ul class="legend">([\s\S]*?)<\/ul>/.exec(page(root))[1]);
+    assert.ok(legend.includes(`Each edge reads subject → object: A → B reads “A ${rels[0][0]} B”. ${andList(neither)} each say neither depends on the other; for them the arrow shows only which end is the subject.`), legend);
+    assert.ok(text(page(root)).includes('The rings group each edge\'s other end by kind, as the header defines them. A ring is not a distance or a rank, and none is an orbit'));
   });
 
   test(`D6 (${label}) every record has a verifier link to its served bundle, and every link is one the site fetches as given`, () => {
@@ -394,6 +456,35 @@ test('D8 each forbidden phrase is absent from the page and README.md, and the ge
     assert.equal(r.status, 2, p);
     assert.match(r.stderr, new RegExp(`refused: the page would say "${p}"`));
   }
+});
+
+test('D9 the rules section says which rules are not implemented, which is not the paper\'s, and gives no count a commit would change', () => {
+  const rules = section(visible(), 'rules');
+  const items = [...rules.matchAll(/<li><h3>([^<]+)<\/h3>([\s\S]*?)<\/li>/g)].map((m) => [decode(m[1]), text(m[2])]);
+  assert.deepEqual(items.map(([h]) => h), ['Refs by content hash', 'Endorsements', 'Agent contributions', 'Identifiers']);
+  const here = (i) => items[i][1].slice(items[i][1].indexOf('Here:'));
+  assert.ok(here(1).startsWith('Here: not built. This example makes no endorsement.'), here(1));
+  assert.ok(here(2).startsWith('Here: not implemented. No record here marks anything as agent-generated or human-validated.'), here(2));
+  assert.ok(here(2).includes('The repository\'s commits name the AI assistant in a co-author line; the records carry no such mark.'), here(2));
+  assert.doesNotMatch(here(2), /\d/);
+  assert.ok(here(3).includes('this example\'s choice, not the paper\'s'), here(3));
+  assert.doesNotMatch(text(rules), /partner|conversation|meeting|outreach|contact|reached out/i);
+});
+
+test('the generator refuses two current map-header records', (t) => {
+  const dir = signedCopy(t);
+  const file = path.join(dir, RECORDS);
+  const served = JSON.parse(fs.readFileSync(file, 'utf8'));
+  const first = served.records.find((r) => r.name === 'map/header');
+  assert.equal(first.status, 'withdrawn');
+  first.status = 'active';
+  delete first.withdrawn;
+  fs.writeFileSync(file, `${JSON.stringify(served, null, 2)}\n`);
+  const before = fs.readFileSync(path.join(dir, PAGE));
+  const r = run(GENERATOR, [], dir);
+  assert.equal(r.status, 2, r.stderr);
+  assert.match(r.stderr, /refused: docs\/host-policy\.yaml: 2 current map-header records \(map\/header\.yaml, map\/header-2\.yaml\); the map has one header/);
+  assert.ok(fs.readFileSync(path.join(dir, PAGE)).equals(before));
 });
 
 test('README\'s "How Typed Standards was used here" appears whole, after core.md\'s own description', () => {

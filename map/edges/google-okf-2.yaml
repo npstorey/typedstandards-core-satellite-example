@@ -1,0 +1,29 @@
+# One edge of the map whose header is map/header-2.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/google-okf-2
+createdAt: "2026-09-22"
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+object:
+  id: github.com/GoogleCloudPlatform/knowledge-catalog/okf
+  ref:
+    location: https://raw.githubusercontent.com/GoogleCloudPlatform/knowledge-catalog/22efaa5402775a7c4d4c37f89e41258daaf3cb65/okf/SPEC.md
+    sha256: 26aa5da029278939f914e578107242d9607d4f2dc5fe153272b82f9ed1030101
+x-typedstandards:
+  relation: complements
+  basis: Knowledge about data and systems as Markdown files with YAML front matter, with provenance and attested-computation fields that are not signed. A raw-bytes/v1 record can sign such a file byte for byte when a program computed it from pinned inputs, as this example signs core.md. The SciOS paper likens its common schema to Google's Open Knowledge Format.
+  ring: 2
+  name: Open Knowledge Format v0.2
+  publisher: Google Cloud
+  pin:
+    fetchedAt: "2026-09-22T19:20:30Z"
+    bytes: 37748
+    httpStatus: 200
+    basis: "main HEAD on 2026-09-22 (the repository has no tags); the document states Version 0.2"
+    licence: Apache-2.0 (okf/LICENSE.md)
+  curation:
+    seed: kept
+    reason: "Restates map/edges/google-okf.yaml. The paper likens its schema to OKF rather than naming it a model, and the specification admits raw-bytes/v1 only for program-computed content (§8.2)."

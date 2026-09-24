@@ -16,10 +16,14 @@ anything here.
 - Records: one per published file, each carrying its file's exact UTF-8 bytes inline as `output` under
   `raw-bytes/v1`. Version 1 is `core.md` and `map.yaml`; both stay active, and their signed packages,
   `packageHash` and signatures never change. Version 2 is `map/header.yaml` and one record per edge,
-  `map/edges/<key>.yaml`. The page and README say "N current records and version 1", never "superseded".
+  `map/edges/<key>.yaml`. Version 3 is `map/header-2.yaml` and 14 edges that restate withdrawn ones; the
+  first header and those 14 edges are withdrawn. A later header is an entry of `headers` in
+  `corpus/sources.json` with its own full block, and an edge that belongs to it names it in `header`.
+  The page and README say "N current records and version 1", never "superseded".
   A record is named by its file's path without the extension; its bundle is `package/<name>.bundle.json`.
 - A signed file is never rewritten or removed. A correction is a withdrawal plus a new record: the edge
-  gets a new key in `corpus/sources.json`, and the withdrawn edge's entry and file stay.
+  gets a new key in `corpus/sources.json`, names the key it restates in `replaces`, and the withdrawn
+  edge's entry and file stay.
 - Withdrawal: `attestation/withdraws/v1`, signed by the same key (`package/build.mjs withdraw <name>
   --reason <text>`, owner's terminal), carried in the record's view. No other attestation, and no
   record of a reserved type, is built here.
@@ -53,10 +57,12 @@ anything here.
 
 1. `corpus/pin.mjs` fetches every source once into `data/` (git-ignored), writes
    `corpus/manifest.json` once (it refuses to overwrite without `--force`), then writes `core.md`,
-   `map/header.yaml` and `map/edges/<key>.yaml` as a pure function of `corpus/sources.json`, the
-   template and the manifest. A rerun is byte-identical: `git diff --exit-code core.md map.yaml map/`.
-   - `map.yaml` is version 1's file: never overwritten, only compared. The rerun reproduces it while the
-     inputs are version 1's (their digests are in `package/build-log.json`).
+   every header (`map/header.yaml` from `map`, each later one from its entry in `headers`) and
+   `map/edges/<key>.yaml` as a pure function of `corpus/sources.json`, the template and the manifest. A
+   rerun is byte-identical: `git diff --exit-code core.md map.yaml map/`.
+   - `map.yaml` is version 1's file: never overwritten, only compared, against what `map` and the edges
+     that name no later header write. The rerun reproduces it while the manifest is version 1's (map.yaml's
+     header names the manifest's digest).
    - The manifest is append-only: an addition appends its sources and changes no entry and not
      `pinnedAt`, which dates `core.md` and the header. An edge's `createdAt` is its other end's fetch
      date, so an addition leaves every existing file byte-identical.
@@ -110,7 +116,8 @@ must answer HTTP 200 with a non-empty body, and no two sources may share a diges
 - Public sources only; every fact carries its source and fetch date.
 - Relations are described technically. No partnership, adoption, conversation, meeting, event or
   outreach wording in any file, commit message or issue.
-- A `could-emit` relation needs the other project's own public statement, cited by URL and date.
+- A relation states only what the other project's pinned bytes show, never its plans. `could-emit` is
+  defined only by version 1's map and the withdrawn first header; no current edge uses it.
 - Do not change the typedstandards or hub repositories.
 - Code is MIT (`LICENSE`). Text is CC BY 4.0 (`LICENSE-CC-BY-4.0.txt`). Third-party bytes keep the
   licence their source states, or "not stated", and are never committed.

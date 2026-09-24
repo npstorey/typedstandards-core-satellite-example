@@ -13,8 +13,9 @@ display:
   - { status: active, roles: [core, map-header, edge], as: current }
   - { status: active, roles: [map-v1], as: version 1 }
   - { status: withdrawn, roles: [core, map-v1, map-header, edge], as: withdrawn }
-# The map is drawn from the current map-header record and the current edge records. While no map-header
-# record is current, it is drawn from the version-1 record instead.
+# The map is drawn from the one current map-header record and the current edge records; two current
+# map-header records stop the generator. While no map-header record is current, it is drawn from the
+# version-1 record instead.
 map:
   from: [map-header, edge]
   otherwise: map-v1

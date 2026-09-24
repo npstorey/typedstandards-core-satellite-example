@@ -1,0 +1,29 @@
+# One edge of the map whose header is map/header-2.yaml. Written by corpus/pin.mjs; this file's exact bytes
+# are the output of one signed Typed Standards record in package/.
+id: typedstandards.org/map/rfc-3161-2
+createdAt: "2026-09-22"
+subject:
+  id: typedstandards.org
+  ref:
+    location: https://raw.githubusercontent.com/npstorey/civic-ai-tools/cfdb210cdae865a872ff30f7c86c5fdcd74e9886/docs/architecture/typed-standards-specification.md
+    sha256: 0e3b54b39e6877a076c495b82afd7295aefac09c70054c02e9832147037ff3f5
+object:
+  id: rfc-editor.org/rfc/rfc3161
+  ref:
+    location: https://www.rfc-editor.org/rfc/rfc3161.txt
+    sha256: 39fd17644ff2d654bc83814a78b1c5b5e7517f496741f34ead5064943eb98240
+x-typedstandards:
+  relation: builds-on
+  basis: "A record package SHOULD carry an RFC 3161 timestamp token from a public TSA (specification §8.3.2). When one is supplied, verify-core checks it against pinned TSA root anchors (§9.2 check #7). This example's records carry none."
+  ring: 1
+  name: RFC 3161 Time-Stamp Protocol
+  publisher: IETF
+  pin:
+    fetchedAt: "2026-09-22T19:20:27Z"
+    bytes: 54585
+    httpStatus: 200
+    basis: RFC 3161, August 2001 (Proposed Standard)
+    licence: The Internet Society Full Copyright Statement (2001), in the document
+  curation:
+    seed: kept
+    reason: "Restates map/edges/rfc-3161.yaml, which said records carry RFC 3161 tokens. The specification says a package SHOULD carry one (§8.3.2)."

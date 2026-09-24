@@ -13,12 +13,13 @@ picture and tables.
   `orbits` edge (see [Relations and the published schema](#relations-and-the-published-schema)). It is
   written in two forms from the same inputs:
   - `map.yaml`, the whole map in one file, which version 1 signed as one record;
-  - `map/header.yaml` and one file per edge in `map/edges/`, each for a record of its own, so that a project
-    can be added without re-signing the others.
+  - a header and one file per edge in `map/edges/`, each for a record of its own, so that a project can be
+    added without re-signing the others. The current header is `map/header-2.yaml`; the first,
+    `map/header.yaml`, is withdrawn.
 - **The records.** Each signed file is the inline output of one record under `raw-bytes/v1`, so
   `shasum -a 256 core.md` prints the record's `contentHash.sha256`. `docs/records.json` lists the records
-  the host serves: 36 current records and version 1. After `npm ci`, one command checks every one of them
-  with no network access: `node verify.mjs`.
+  the host serves: 36 current records and version 1, and 15 withdrawn. After `npm ci`, one command checks
+  every one of them with no network access: `node verify.mjs`.
 
 The example follows `typedstandards-eval-run-example` (hub ADR-0028). It pins the published releases
 `@typedstandards/produce-core` 0.6.0 and `@typedstandards/verify-core` 0.11.0 exactly. They carry
@@ -29,7 +30,8 @@ The example follows `typedstandards-eval-run-example` (hub ADR-0028). It pins th
 
 **What was produced.** Signed records, one per published file. Version 1 has two: `package/core.bundle.json`
 for `core.md`, and `package/map.bundle.json` for `map.yaml`. Version 2 is the map again, one record per
-file: its header, `map/header.yaml`, and each edge, `map/edges/<key>.yaml`. Each record carries:
+file: its header, `map/header.yaml`, and each edge, `map/edges/<key>.yaml`. Version 3 is a second header,
+`map/header-2.yaml`, and 14 edges that restate withdrawn ones. Each record carries:
 
 - the file's exact bytes and their SHA-256, a 64-character fingerprint that changes if any byte changes;
 - the sources the file cites, each with its location, SHA-256, size, HTTP status, fetch time and licence,
@@ -94,9 +96,15 @@ resting on the signer's word.
   specification's numbered checks, and carries its source pins and labels inside its signed bytes.
 - With one record per edge, adding a project signs one new record and leaves every other record as it is.
   The tests show it with a throwaway key (`package/build.test.mjs`).
-- Building this example ran into three gaps in the specification and its reference packages, all filed
+- A correction is a withdrawal plus a new record. Version 3 read every edge again against its pinned
+  source. It withdrew the 14 edges whose text said more than those bytes show, and the first header,
+  which defined `could-emit`, and signed a restatement of each. The withdrawn
+  records still verify, and each carries its reason.
+- Building this example ran into three gaps in the specification and its reference packages
   (`docs/findings.md`): two filed before (typedstandards#91, #88) and one found here (typedstandards#96,
-  hub#230). The releases pinned now carry the three package fixes (their `CHANGELOG.md` files).
+  hub#230). All four issues are closed. The releases pinned now carry the three package fixes (their
+  `CHANGELOG.md` files), and specification v0.1.10 lists `attestation/revises/v1` in all five places it
+  states the sub-type table.
 
 **Terms used below.**
 
@@ -132,7 +140,7 @@ This section describes the offline output of verify-core as `node verify.mjs` pr
 | Capture method and producer profile | Asserted | #15 reports `ok`: `script-run` is a value the `scripted-recomputation` profile allows. No check establishes that one program wrote the files and a second one packaged them. The label is signed, so it cannot be changed without breaking #1. |
 | The source digests | Asserted | `corpus/manifest.json` pins 40 sources. Each record lists the ones its file cites in `queries[].arguments`: location, SHA-256, bytes, HTTP status, fetch time and stated licence. These are signed assertions that no check recomputes. Every location is immutable, so anyone can re-fetch it and compare. An accidental second fetch, 38 seconds after the pin, got identical digests for all 40 (`docs/pin-record.md`). |
 | The signed files follow from the manifest | Asserted | `node corpus/pin.mjs` rewrites `core.md` and every file in `map/` from `corpus/sources.json` and `corpus/manifest.json` without the network, and `git diff --exit-code` shows the same bytes. It never overwrites `map.yaml`, version 1's file; it reports whether the current inputs still write it byte for byte. That reproduces the writer, but it is not a §9.2 check. |
-| The relations, the bases and the self-assessment | Asserted | They are the signer's reading of each project's own public text. No check evaluates them, and the published schema has no edge type for any of these relations. |
+| The relations, the bases and the self-assessment | Asserted | They are the signer's reading of each project's own public text. No check evaluates them, and the published schema has no edge type for any of these relations. Version 3 read each edge's basis again against its pinned bytes and restated the 14 that said more. |
 | Revocation of the key | Online only | A `did:key` has no rotation and no revocation (hub ADR-0030 §7). The host's registry could list the key as revoked, and a verifier that fetches it from the URL each view names would then report #5 `revoked` (verify-core, `self-certifying.ts`). Offline, `verify.mjs` supplies no registry, so nothing here reads it. |
 | When the records existed | Not covered | Check #7 reads n/a because no RFC 3161 token was requested. External proofs are left out of this version (gate G1, D7), and `metadata.createdAt` is the signer's own claim. |
 | Inclusion in a public transparency log | Not covered | Check #8 reads n/a because no Rekor entry was submitted. A Rekor entry is public and permanent, and a record re-signed after a gate would leave an abandoned hash in the log under this key. |
@@ -168,7 +176,8 @@ Signing runs only in the publisher's own terminal:
   deterministic, so only the signing key reproduces them. Then it signs every record file that has no bundle
   yet, as one step, and verifies each one offline before it writes anything. With none left, it writes
   nothing. If a signed file has changed, it refuses and writes nothing: a correction is a withdrawal plus a
-  new record.
+  new record. It also refuses, and writes nothing, while a file that restates a record (`replaces` in
+  `corpus/sources.json`) would be signed before that record is withdrawn.
 - **How a record is withdrawn.** `op run --env-file=.env.sign -- node package/build.mjs withdraw <name>
   --reason "<text>"` signs an `attestation/withdraws/v1` for the named record with the same key and carries
   it in that record's view. The record still verifies, and #10 reads it as withdrawn.
@@ -183,14 +192,16 @@ Signing runs only in the publisher's own terminal:
   the publisher's own withdrawals.
 - **Rules a verifier enforces.** The specification ratifies the v0.1 attestation sub-type table (§8.12.1),
   and check #12 recognizes `endorses` and `corroborates`. But nothing operationalizes it (§8.12.4): no
-  check enforces a sub-type's authorization rule or its payload. The specification also states the
-  ratified table twice, and the two statements disagree on `attestation/revises/v1` (hub#230). verify-core
-  0.10.0 followed the shorter list (typedstandards#96); 0.11.0 registers `attestation/revises/v1`, citing
-  specification v0.1.10 (its `CHANGELOG.md`).
-- **A hash check for every link.** The paper wants every link to carry a location and a content hash.
-  `raw-bytes/v1` fingerprints one file per record, so here only the signed files themselves are recomputed
-  by a check. The 40 links they cite are signed assertions. A rule over a set of files is not specified
-  (hub ADR-0029 §4).
+  check enforces a sub-type's authorization rule or its payload. The specification states the table in
+  five places. At v0.1.9, the revision this example pins, two of them omitted `attestation/revises/v1`
+  (hub#230), and verify-core 0.10.0 followed the shorter list (typedstandards#96). Specification v0.1.10
+  lists it in all five, and verify-core 0.11.0 registers it (its `CHANGELOG.md`).
+- **A hash check for each ref.** The paper's examples write a ref as `ref: <location + content-hash>` in
+  some places and `ref: <content-hash>` in others, and its agent example pulls reference data "by its
+  content hash, not by a URL". Every ref here gives both a location and a SHA-256. `raw-bytes/v1`
+  fingerprints one file per record, so here only the signed files themselves are recomputed by a check.
+  The 40 source digests they cite are signed assertions. A rule over a set of files is not specified (hub
+  ADR-0029 §4).
 - **A host's display rule.** What a host shows of the records it serves is its own choice here, written in
   `docs/host-policy.yaml` and not signed. verify-core 0.11.0 resolves no record type for such a rule
   (`KNOWN_TYPE_URIS`).
@@ -203,19 +214,23 @@ Signing runs only in the publisher's own terminal:
 - **Edge types.** The paper's published examples show one edge type, `orbits`, from a satellite to a core.
   This map has none: no core record exists in this domain to be the object of one, and the paper says a
   core is never a satellite. Each edge names its relation in `x-typedstandards.relation` (`builds-on`,
-  `complements`, `could-emit` or `adjacent`, defined in the map's header), because the published schema
-  has no edge type for any of them.
-  - A `could-emit` relation is asserted only where the project's own public text states the intent. qsv
-    (dathere/qsv#4448) is the one such case, with its sources cited by URL and date.
+  `complements`, `writes-recordable-output` or `adjacent`, defined in the map's header,
+  `map/header-2.yaml`), because the published schema has no edge type for any of them.
+  - A relation states only what the other project's pinned bytes show. `writes-recordable-output` says
+    that a project's own documentation shows a program writing text files from its inputs, the kind of
+    content the scripted-recomputation profile records. qsv's edge uses it, citing its README at tag 23.0.1.
+  - The first header, `map/header.yaml`, also defined `could-emit`, for a project whose public text states
+    an intent to produce Typed Standards records. Its one edge, qsv's, rested on an issue thread that is not
+    pinned. Both records are withdrawn, and version 1's `map.yaml` keeps `could-emit` as it was signed.
   - Humane Intelligence's red-teaming app keeps reviewable evaluation records. Its public text states no
     intent to produce signed records, so the map asserts no evaluator relation for it.
 - **Field names.** Outside `x-typedstandards`, the files use only field names the published examples show.
   The paper's schema v0.1 is not published (scios.tech/thoughts, read 2026-09-22).
 - **`type` is omitted.** The paper treats surfacing a core record as declaring oneself a core, and this
   record's self-assessment is "satellite" (gate G1, D2).
-- **The shape of `ref`.** The paper's examples write `ref: <location + content-hash>` without showing the
-  shape inside. This example writes `ref: { location, sha256 }`: the two sub-keys are its own choice
-  (gate G1, D4).
+- **The shape of `ref`.** The paper's examples write `ref: <location + content-hash>` in some places and
+  `ref: <content-hash>` in others, without showing the shape inside. This example writes
+  `ref: { location, sha256 }`: the two sub-keys are its own choice (gate G1, D4).
 - **What counts as a ref.** A ref is one of four things: a file at a 40-character commit SHA, a dated W3C
   TR URL, an rfc-editor.org text URL, or a published npm release tarball. A landing page or a rendered
   view is not a ref, because it can change between fetches. The Mila and Mozilla initiative has only
@@ -236,10 +251,11 @@ Every line should match `docs/verify-output.txt`. Further checks:
    compare with `contentHash.sha256` in its bundle in `docs/bundles/`.
 2. **The writer.** Run `node corpus/pin.mjs`, then `git diff --exit-code core.md map.yaml map/`.
    - The manifest exists, so nothing is fetched. `core.md` and every file in `map/` come back byte for
-     byte.
+     byte, both headers included.
    - `map.yaml` is version 1's file. The program never overwrites it, and says whether the current inputs
-     still write it byte for byte. While they are version 1's inputs (their digests are in
-     `package/build-log.json`), they do.
+     still write it byte for byte from the first header and the edges that name no later header. They do
+     while the manifest is version 1's: `map.yaml`'s header names the manifest's SHA-256, so a later source
+     would change it.
 3. **The envelopes.** Run `node package/build.mjs check`.
    - It rebuilds every record, unsigned, from the digests of the programs and inputs the build log recorded
      for it, and compares each with its bundle. It reports separately whether those files on disk still
@@ -257,9 +273,10 @@ Every line should match `docs/verify-output.txt`. Further checks:
 ## Layout
 
 - **`core.md`, `map.yaml`, `map/`:** the published files. `core.md` and `map.yaml` are version 1's records;
-  `map/header.yaml` and `map/edges/<key>.yaml` are one record each.
+  `map/header.yaml`, `map/header-2.yaml` and `map/edges/<key>.yaml` are one record each.
 - **`corpus/`:**
-  - `sources.json`: the curated sources, nodes and edges.
+  - `sources.json`: the curated sources, nodes, headers and edges. An edge that restates an earlier one
+    names it in `replaces`, and names its header.
   - `core.template.md`: the prose of `core.md`.
   - `pin.mjs`: program 1, which fetches once and writes the published files.
   - `manifest.json`: written once by `pin.mjs`, and only ever appended to.
